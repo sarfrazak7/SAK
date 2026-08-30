@@ -68,7 +68,7 @@ export default function Navbar({ current, onNavigate }: Props) {
                     onClick={() => go('panagram')}
                   />
                   <GameLink
-                    label="Table Tennis"
+                    label="Ping Pong 3D"
                     desc="Fast-paced rally"
                     active={current === 'tabletennis'}
                     onClick={() => go('tabletennis')}
@@ -103,7 +103,7 @@ export default function Navbar({ current, onNavigate }: Props) {
             <p className="px-3 pb-1 text-[10px] font-bold tracking-widest text-white/30">GAMES</p>
             <MobileLink active={current === 'crossword'} onClick={() => go('crossword')}>Crossword Puzzle</MobileLink>
             <MobileLink active={current === 'panagram'} onClick={() => go('panagram')}>Panagram</MobileLink>
-            <MobileLink active={current === 'tabletennis'} onClick={() => go('tabletennis')}>Table Tennis</MobileLink>
+            <MobileLink active={current === 'tabletennis'} onClick={() => go('tabletennis')}>Ping Pong 3D</MobileLink>
             <div className="my-2 h-px bg-white/10" />
             <MobileLink active={current === 'contact'} onClick={() => go('contact')}>Contact</MobileLink>
             <MobileLink active={current === 'feedback'} onClick={() => go('feedback')}>Feedback</MobileLink>
