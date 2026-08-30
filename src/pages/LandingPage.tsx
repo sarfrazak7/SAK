@@ -212,8 +212,8 @@ export default function LandingPage({ onNavigate }: Props) {
       </main>
 
       <div className="pointer-events-none fixed bottom-3 left-4 z-40">
-        <p className="text-[10px] font-medium tracking-wide text-white/25">
-          &copy; {new Date().getFullYear()} GamesAI
+        <p className="text-xs font-medium tracking-wide text-white/40">
+          &copy; {new Date().getFullYear()} GamesAI &middot; All rights reserved
         </p>
       </div>
 
