@@ -13,6 +13,3 @@ export default function TableTennisPage() {
     </div>
   );
 }
-
-
-export default TableTennisPage
