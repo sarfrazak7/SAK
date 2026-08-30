@@ -1,0 +1,3472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="format-detection" content="telephone=no"/>
+
+<title>Robo Ping Pro v59</title>
+<style>
+:root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;color:#eef3f7;font-family:Arial,Helvetica,sans-serif;touch-action:none}
+#game{position:fixed;left:0;top:0;width:100%;height:100%;display:block}
+#hud{position:fixed;inset:0;pointer-events:none}
+.panel{background:rgba(8,12,18,.92);border:1px solid rgba(210,222,234,.42);border-radius:10px}
+#build{position:absolute;left:8px;top:6px;font:700 9px Arial;color:#8fb7c9}
+#status{position:absolute;left:8px;top:20px;font:700 9px Arial;color:#6fe59a}
+#score{position:absolute;left:50%;transform:translateX(-50%);top:calc(5px + var(--safe-top));width:286px;padding:6px 10px;text-align:center}
+#score .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-weight:800;font-size:13px}
+#score .rally{margin-top:3px;color:#ffd86a;font-size:9px}
+#autoBtn{position:absolute;left:50%;transform:translateX(-50%);top:calc(88px + var(--safe-top));width:140px;height:30px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-weight:800;font-size:10px;background:linear-gradient(#56df89,#1b884d)}
+#audioBtn,#tipBtn{position:absolute;top:calc(7px + var(--safe-top));width:38px;height:38px;pointer-events:auto;border-radius:50%;border:1px solid #8298aa;background:#172737;color:#fff;padding:0}
+#audioBtn{right:58px}#tipBtn{right:12px}
+#audioBtn::before{content:'🔊';font-size:18px}.muted#audioBtn::before{content:'🔇'}
+#tipBtn::before{content:'💡';font-size:18px}
+#tipBtn::after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#ff2b2b;right:-1px;top:-1px;animation:blink .8s steps(1,end) infinite}
+@keyframes blink{0%,45%{opacity:1}46%,100%{opacity:.15}}
+#tip{
+ position:absolute;
+ right:10px;
+ top:52px;
+ bottom:10px;
+ width:min(400px,42vw);
+ padding:14px 16px;
+ display:none;
+ overflow-y:auto;
+ overflow-x:hidden;
+ z-index:35;
+ color:#eef7ff;
+ background:rgba(6,14,24,.70);
+ border:1px solid rgba(200,230,255,.38);
+ border-radius:16px;
+ backdrop-filter:blur(10px);
+ -webkit-backdrop-filter:blur(10px);
+ box-shadow:0 12px 32px rgba(0,0,0,.30);
+ font-size:clamp(11px,1.1vw,14px);
+ line-height:1.42;
+ pointer-events:auto;
+}
+#tip .tipTitle{position:sticky;top:-14px;margin:-14px -16px 6px;padding:12px 16px 9px;background:rgba(6,14,24,.84);font-weight:900;color:#fff}
+#tip .tipItem{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+#tip .tipItem:last-child{border-bottom:0}
+#tip b{color:#dff2ff}
+#playBtn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(108px + var(--safe-bottom));width:92px;height:36px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-size:16px;font-weight:800;background:#35637f}
+#speedWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-bottom));width:min(520px,48vw);pointer-events:auto}
+#speedLabel{display:block;text-align:center;font-size:9px;margin-bottom:2px}
+#speed{width:100%;appearance:none;height:14px;border-radius:8px;border:1px solid #d9e0e7;background:linear-gradient(90deg,#78b8ff,#e6ef7b,#ff6a4d)}
+#speed::-webkit-slider-thumb{appearance:none;width:19px;height:19px;border-radius:50%;background:#fff;border:2px solid #1a232c}
+.serveSideBtn,#resetBtn{position:absolute;bottom:calc(60px + var(--safe-bottom));width:106px;height:40px;pointer-events:auto;border-radius:9px;border:1px solid #8296a8;color:#fff;font-weight:800;font-size:10px}
+#resetBtn{right:14px;background:#613535}
+#serveArrow{font-size:15px;color:#ffd55a;margin-right:5px;display:inline-block}
+.serveSideBtn.armed .serveArrow{animation:serveBlink .44s steps(1,end) infinite}
+@keyframes serveBlink{0%,45%{opacity:1}46%,100%{opacity:.12}}
+#serveHint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(28px + var(--safe-bottom));font-size:8px;color:#c7d2dc;white-space:nowrap}
+#strokeBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(3px + var(--safe-bottom));display:flex;gap:4px;pointer-events:auto}
+.stroke{min-width:52px;padding:5px 7px;border-radius:7px;border:1px solid #62798d;background:#162331;color:#eef3f7;font-weight:800;font-size:9px}
+.stroke.active{background:#1b9b51;border-color:#7ef5a7;animation:pulse .55s ease-in-out infinite alternate;box-shadow:0 0 10px rgba(62,235,116,.5)}
+@keyframes pulse{from{filter:brightness(.8)}to{filter:brightness(1.35)}}
+#telemetry{position:absolute;right:12px;top:96px;width:180px;padding:8px 10px;font-size:9px;line-height:1.45}
+#rotateGuard{display:none;position:fixed;z-index:999;inset:0;background:#0b1017;color:white;place-items:center;text-align:center;font-size:19px;font-weight:800;padding:24px}
+body.mobile-device.portrait #rotateGuard{display:grid}
+
+/* 3D tactile controls */
+.serveSideBtn,#resetBtn{
+  transform:translateY(0) scale(1);
+  box-shadow:
+    0 6px 0 rgba(0,0,0,.42),
+    0 9px 14px rgba(0,0,0,.30),
+    inset 0 2px 0 rgba(255,255,255,.18);
+  transition:transform .08s ease,box-shadow .08s ease,filter .08s ease;
+}
+.serveSideBtn{background:linear-gradient(#29465e,#183247)}
+#resetBtn{background:linear-gradient(#7c4848,#5c3030)}
+
+.serveSideBtn.pressed,#resetBtn.pressed,
+.serveSideBtn:active,#resetBtn:active{
+  transform:translateY(5px) scale(.985);
+  box-shadow:
+    0 1px 0 rgba(0,0,0,.48),
+    0 3px 5px rgba(0,0,0,.20),
+    inset 0 3px 8px rgba(0,0,0,.24);
+  filter:brightness(.92);
+}
+.serveSideBtn.pressed::after,#resetBtn.pressed::after{
+  content:'';
+  position:absolute;inset:3px;border-radius:7px;
+  border:1px solid rgba(255,255,255,.22);
+  pointer-events:none;
+}
+
+
+.serveSideBtn{
+  position:absolute;bottom:calc(92px + var(--safe-bottom));
+  width:136px;height:42px;pointer-events:auto;border-radius:10px;
+  border:1px solid #8296a8;color:#fff;font-weight:800;font-size:10px;
+  background:linear-gradient(#29465e,#183247);
+}
+#cpuServeBtn{left:31%}
+#humanServeBtn{right:31%}
+.serveSideBtn:disabled{opacity:.42;filter:grayscale(.5)}
+.serveArrow{font-size:16px;color:#ffd55a;display:inline-block;margin:0 4px}
+.serveSideBtn.armed .serveArrow{animation:serveBlink .42s steps(1,end) infinite}
+
+:root{--human:#2f7cff;--cpu:#ff4f55;--hud:#08111b;--hudBorder:#33404d}
+#score{background:linear-gradient(180deg,var(--hud),#070d13);border:1px solid var(--hudBorder);border-radius:12px;box-shadow:0 8px 18px rgba(0,0,0,.28)}
+#humanServeBtn{background:linear-gradient(#173f7a,#0d2e61)!important;border-color:#5c9cff!important;box-shadow:0 0 14px rgba(47,124,255,.28)}
+#cpuServeBtn{background:linear-gradient(#7a1e25,#53151a)!important;border-color:#ff767b!important;box-shadow:0 0 14px rgba(255,79,85,.25)}
+#humanServeBtn .serveArrow{color:#78a9ff!important}
+#cpuServeBtn .serveArrow{color:#ff8b8f!important}
+#humanServeBtn.armed{box-shadow:0 0 0 2px rgba(95,155,255,.7),0 0 18px rgba(47,124,255,.55)}
+#cpuServeBtn.armed{box-shadow:0 0 0 2px rgba(255,108,113,.7),0 0 18px rgba(255,79,85,.5)}
+
+
+/* v54 mobile/tablet scaling QA rules */
+html,body{overscroll-behavior:none}
+#game{touch-action:none}
+button,input{touch-action:manipulation}
+
+@media (max-width:900px){
+ #score{width:min(365px,54vw)!important;padding:4px 7px}
+ #score .row{font-size:11px}
+ #score .rally{font-size:8px}
+ #autoBtn{top:74px;width:120px;height:28px;font-size:9px}
+ #audioBtn,#tipBtn{width:34px;height:34px}
+ #audioBtn{right:50px}
+ #tipBtn{right:8px}
+ #playBtn{bottom:146px;width:82px;height:34px;font-size:14px}
+ .serveSideBtn{bottom:94px;width:112px;height:38px;font-size:9px}
+ #cpuServeBtn{left:2%}
+ #humanServeBtn{right:2%}
+ #speedWrap{bottom:54px;width:min(360px,48vw)}
+ #resetBtn{right:8px;bottom:50px;width:82px;height:36px;font-size:9px}
+ #serveHint{bottom:25px;font-size:7px;max-width:78vw;overflow:hidden;text-overflow:ellipsis}
+ #strokeBar{bottom:2px;gap:2px}
+ .stroke{min-width:44px;padding:4px 5px;font-size:8px}
+ #telemetry{top:72px;right:6px;width:148px;font-size:8px;padding:6px 7px}
+ #build{font-size:7px}
+ #tip{
+   top:42px;
+   bottom:6px;
+   right:6px;
+   width:min(360px,48vw);
+   padding:9px 11px;
+   font-size:10px;
+   line-height:1.28;
+   border-radius:12px;
+ }
+ #tip .tipTitle{top:-9px;margin:-9px -11px 4px;padding:8px 11px 7px}
+ #tip .tipItem{padding:5px 0}
+}
+
+@media (max-width:720px) and (orientation:landscape){
+ #score{width:min(340px,52vw)!important}
+ #autoBtn{top:63px;width:108px;height:26px}
+ #playBtn{bottom:137px;width:74px;height:32px;font-size:13px}
+ .serveSideBtn{bottom:89px;width:104px;height:36px}
+ #cpuServeBtn{left:1.5%}
+ #humanServeBtn{right:1.5%}
+ #speedWrap{bottom:49px;width:42vw}
+ #resetBtn{bottom:46px;width:72px;height:34px}
+ #serveHint{bottom:22px}
+ .stroke{min-width:40px;padding:3px 4px;font-size:7px}
+ #telemetry{display:none}
+ #tip{width:48vw;font-size:9px}
+}
+
+@media (max-height:430px) and (orientation:landscape){
+ #score{top:2px;padding:3px 6px}
+ #score .row{font-size:10px}
+ #score .rally{font-size:7px}
+ #autoBtn{top:53px;height:24px}
+ #audioBtn,#tipBtn{top:4px;width:30px;height:30px}
+ #audioBtn{right:42px}
+ #playBtn{bottom:126px;height:30px}
+ .serveSideBtn{bottom:82px;height:34px}
+ #speedWrap{bottom:44px}
+ #resetBtn{bottom:42px;height:32px}
+ #serveHint{bottom:19px}
+ #strokeBar{bottom:1px}
+ .stroke{min-width:38px;padding:3px;font-size:7px}
+ #tip{top:36px;bottom:4px;width:46vw;font-size:8.5px;line-height:1.22}
+}
+
+@media (orientation:portrait) and (max-width:900px){
+ #tip{left:8px;right:8px;top:48px;bottom:8px;width:auto;font-size:12px}
+}
+
+
+/* v55 reduced-height iPhone preview / Safari viewport scaling */
+@media (orientation:landscape) and (max-height:360px){
+ #build{font-size:6px;top:2px}
+ #status{font-size:6px;top:11px}
+ #score{top:1px!important;width:min(315px,48vw)!important;padding:2px 5px!important}
+ #score .row{font-size:9px!important}
+ #score .rally{font-size:6px!important;margin-top:1px}
+ #autoBtn{top:43px!important;width:100px!important;height:22px!important;font-size:8px!important}
+ #audioBtn,#tipBtn{top:3px!important;width:28px!important;height:28px!important}
+ #playBtn{bottom:106px!important;width:68px!important;height:28px!important;font-size:12px!important}
+ .serveSideBtn{bottom:70px!important;width:98px!important;height:30px!important;font-size:8px!important}
+ #speedWrap{bottom:37px!important;width:44vw!important}
+ #speedLabel{font-size:7px!important}
+ #speed{height:10px!important}
+ #resetBtn{bottom:36px!important;width:68px!important;height:30px!important;font-size:8px!important}
+ #serveHint{bottom:17px!important;font-size:6px!important}
+ #strokeBar{bottom:1px!important}
+ .stroke{min-width:36px!important;padding:2px 3px!important;font-size:6px!important}
+ #telemetry{display:none!important}
+ #tip{top:32px!important;bottom:3px!important;width:48vw!important;font-size:8px!important}
+}
+
+
+/* v59 compact-fit HUD */
+#serveHint{display:none!important}
+#score{padding-bottom:7px!important}
+#playBtn{bottom:112px!important}
+.serveSideBtn{bottom:61px!important}
+#speedWrap{bottom:29px!important}
+#resetBtn{bottom:27px!important}
+#strokeBar{bottom:2px!important}
+
+@media (max-width:900px){
+ #playBtn{bottom:104px!important}
+ .serveSideBtn{bottom:57px!important}
+ #speedWrap{bottom:26px!important}
+ #resetBtn{bottom:24px!important}
+ #strokeBar{bottom:1px!important}
+}
+@media (max-height:430px) and (orientation:landscape){
+ #playBtn{bottom:91px!important}
+ .serveSideBtn{bottom:51px!important}
+ #speedWrap{bottom:22px!important}
+ #resetBtn{bottom:20px!important}
+ #strokeBar{bottom:0!important}
+}
+@media (orientation:landscape) and (max-height:360px){
+ #playBtn{bottom:83px!important}
+ .serveSideBtn{bottom:46px!important}
+ #speedWrap{bottom:18px!important}
+ #resetBtn{bottom:17px!important}
+ #strokeBar{bottom:0!important}
+}
+
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="canvasRecovery" style="display:none;position:absolute;left:8px;top:34px;z-index:40;font:700 8px Arial;color:#ffd86a;pointer-events:none">CANVAS RECOVERY</div>
+<div id="rotateGuard">Rotate your mobile device to landscape</div>
+<div id="announcement" style="display:none;position:fixed;z-index:50;left:50%;top:43%;transform:translate(-50%,-50%);
+ min-width:300px;padding:18px 24px;border-radius:16px;background:rgba(4,10,16,.94);border:2px solid #ffd86a;
+ box-shadow:0 0 28px rgba(255,216,106,.28);text-align:center;color:white;font:800 22px Arial;pointer-events:none"></div>
+<div id="hud">
+  <div id="build">BUILD v59 • CPU SHOULDER 0.50 + COMPACT HUD • RIGHT-HANDED PLAYERS</div>
+  <div id="status" style="display:none">BOOTING v14</div>
+  <div id="renderDiag" style="display:none">RENDER: WAITING</div>
+
+  <div id="score" class="panel" style="width:365px">
+    <div class="row"><span>HUMANOID <span id="cScore">00</span></span><span>HUMAN <span id="pScore">00</span></span></div>
+    <div class="rally">
+      GAMES <span id="cSets">0</span>–<span id="pSets">0</span> &nbsp; • &nbsp;
+      GAME <span id="setNo">1</span> &nbsp; • &nbsp; RALLY <span id="rally">00</span>
+    </div>
+    <div class="rally" style="color:#dce9ef">
+      POINTS <span id="setPointScore">00–00</span> &nbsp; • &nbsp; BEST OF 5
+    </div>
+    <div aria-hidden="true" style="display:none">
+      <span id="serverText">HUMAN</span>
+      <span id="servesLeft">2</span>
+      <span id="matchText">FIRST TO 3 GAMES</span>
+    </div>
+  </div>
+
+  <button id="autoBtn">AUTO MODE: OFF</button>
+  <button id="audioBtn" aria-label="audio"></button>
+  <button id="tipBtn" aria-label="pro tip"></button>
+  <div id="tip" class="panel" role="dialog" aria-label="Pro Tips"></div>
+
+  <div id="telemetry" class="panel">
+    Shot: <span id="shotName">FH</span><br>
+    Phase: <span id="phaseName">IDLE</span><br>
+    Bounce: <span id="bounceName">—</span><br>
+    Spin: <span id="spinName">mild top</span><br>
+    Ball speed: <span id="ballSpeed">0.0</span> m/s<br>
+    Human footwork: <span id="hMove">0.00</span><br>
+    CPU footwork: <span id="cMove">0.00</span>
+  </div>
+
+  <button id="playBtn">PLAY</button>
+  <button id="cpuServeBtn" class="serveSideBtn"><span class="serveArrow">➡</span> HUMANOID SERVE</button>
+  <button id="humanServeBtn" class="serveSideBtn"><span class="serveArrow">⬅</span> HUMAN SERVE</button>
+  <button id="resetBtn">RESET</button>
+
+  <div id="speedWrap">
+    <span id="speedLabel">BALL SPEED 50% • SLOW ← → FAST</span>
+    <input id="speed" type="range" min="0" max="100" value="50"/>
+  </div>
+
+  <div id="serveHint" aria-hidden="true"></div>
+
+  <div id="strokeBar">
+    <button class="stroke active" data-stroke="forehand">FH</button>
+    <button class="stroke" data-stroke="backhand">BH</button>
+    <button class="stroke" data-stroke="topspin">TOP</button>
+    <button class="stroke" data-stroke="slice">SLICE</button>
+    <button class="stroke" data-stroke="smash">SMASH</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
+window.addEventListener('error',e=>{
+ const rd=$('renderDiag');
+ const st=$('status');
+ if(rd){rd.style.display='block';rd.textContent='RUNTIME: '+(e.message||'error');rd.style.color='#ff6b6b';}
+ if(st){st.style.display='block';st.textContent='SCRIPT ERROR';st.style.color='#ff6b6b';}
+});
+
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function lerp(a,b,t){return a+(b-a)*t}
+function ease(t){t=clamp(t,0,1);return t*t*(3-2*t)}
+function dist3(a,b){return Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)}
+function detectDevice(){
+  const ua=navigator.userAgent||'';
+  const mobile=/iPhone|iPad|iPod|Android|Mobile/i.test(ua)||(navigator.userAgentData&&navigator.userAgentData.mobile===true);
+  document.body.classList.toggle('mobile-device',!!mobile);
+  document.body.classList.toggle('portrait',!!mobile&&innerHeight>innerWidth);
+}
+function viewportSize(){
+ const vv=window.visualViewport;
+ const w=Math.max(320,Math.round(vv&&vv.width?vv.width:document.documentElement.clientWidth||innerWidth));
+ const h=Math.max(240,Math.round(vv&&vv.height?vv.height:document.documentElement.clientHeight||innerHeight));
+ return{w,h};
+}
+function resize(){
+ const {w,h}=viewportSize();
+ const dpr=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.max(1,Math.round(w*dpr));
+ canvas.height=Math.max(1,Math.round(h*dpr));
+ canvas.style.width=w+'px';
+ canvas.style.height=h+'px';
+ document.documentElement.style.width=w+'px';
+ document.documentElement.style.height=h+'px';
+ document.body.style.width=w+'px';
+ document.body.style.height=h+'px';
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ detectDevice();
+ // iOS/QuickLook can show the DOM before RAF paints. Force a real first paint.
+ try{ if(typeof draw==='function'&&S&&S.human) draw(); }catch(_){}
+}
+addEventListener('resize',()=>{resize();kickRenderLoop();});
+addEventListener('orientationchange',()=>setTimeout(()=>{resize();kickRenderLoop();},90));
+if(window.visualViewport){
+ visualViewport.addEventListener('resize',()=>{resize();kickRenderLoop();});
+ visualViewport.addEventListener('scroll',resize);
+}
+resize();
+
+const profiles={
+  forehand:{label:'FH',preArc:.30,postArc:.23,duration:.86,bounceDepth:.78,lateral:.27,spinRate:16,spinDir:1,sideSpin:3,miss:.03,stepIn:.06},
+  backhand:{label:'BH',preArc:.28,postArc:.20,duration:.82,bounceDepth:.70,lateral:-.33,spinRate:14,spinDir:1,sideSpin:-5,miss:.04,stepIn:.05},
+  topspin:{label:'TOP',preArc:.47,postArc:.14,duration:.76,bounceDepth:.60,lateral:.12,spinRate:32,spinDir:1,sideSpin:4,miss:.06,stepIn:.10},
+  slice:{label:'SLICE',preArc:.52,postArc:.07,duration:1.02,bounceDepth:.48,lateral:-.18,spinRate:25,spinDir:-1,sideSpin:-7,miss:.05,stepIn:.02},
+  smash:{label:'SMASH',preArc:.16,postArc:.10,duration:.50,bounceDepth:.92,lateral:.40,spinRate:9,spinDir:1,sideSpin:2,miss:.16,stepIn:.28}
+};
+
+const S={
+  playing:false,auto:false,audio:true,server:'human',gameStartServer:'human',
+  p:0,c:0,hGames:0,cGames:0,gameNumber:1,gamesToWin:3,matchOver:false,matchWinner:'',
+  pointIndex:0,rallyWinner:'human',servicePair:0,servicePoint:0,pointLocked:false,serveToken:0,cpuServeCountdown:0,cpuServePending:false,robotScan:{phase:0,targetZ:0,targetDepth:.72,active:false},drill:{active:false,stage:0,t:0,phase:'idle'},rallyId:0,resolvedRallyId:-1,faceLocked:false,lockedStroke:'forehand',prevBall:null,setupPaddle:{pitch:0,yaw:0,roll:0,locked:false},
+  tactic:{exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55},
+  rally:0,best:0,speed:.5,stroke:'forehand',
+  last:performance.now(),audioCtx:null,shot:null,phase:'idle',rallyLimit:10,spinPhase:0,
+  ball:{x:1.72,y:1.10,z:0,r:.026},
+  human:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0},
+  cpu:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}},
+  serve:{armed:false,side:'human',drag:false,maxBackX:2.06,backswing:false,forward:false,last:null}, manualPaddle:{drag:false,last:null,active:false}, humanRally:{armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,
+  lastGesture:{dx:0,dy:0,dz:0},target:null,window:0,holdTime:0,assistStrength:.82,
+  gestureBase:null,pointerStart:null,totalDX:0,totalDY:0,maxBackDrag:0,maxForwardDrag:0,contactLatched:false,contactBall:null,contactElapsed:0,contactDuration:.72,contactGrace:0}
+};
+function speedFactor(){return lerp(1.45,.58,S.speed)}
+
+function spinLabel(stroke){
+ if(stroke==='topspin')return'heavy forward';
+ if(stroke==='slice')return'reverse/backspin';
+ if(stroke==='backhand')return'side-top left';
+ if(stroke==='smash')return'light top';
+ return'mild top-right';
+}
+function ui(){
+ computeServer();
+ $('pScore').textContent=String(S.p).padStart(2,'0');
+ $('cScore').textContent=String(S.c).padStart(2,'0');
+ if($('scoreState'))$('scoreState').textContent=S.pointIndex+' pts • '+S.server.toUpperCase()+' serve';
+ if($('paddleSetupState'))$('paddleSetupState').textContent=
+   (S.setupPaddle&&S.setupPaddle.locked)?'LOCKED':'FREE';
+ if($('shotOutcome'))$('shotOutcome').textContent=S.shot?
+   ((S.shot.deceptiveSpin?'SPIN ':'' )+(S.shot.outcome||'legal').toUpperCase()):'READY';
+ $('rally').textContent=String(S.rally).padStart(2,'0');
+ if($('best'))$('best').textContent=String(S.best).padStart(2,'0');
+ $('pSets').textContent=S.hGames;
+ $('cSets').textContent=S.cGames;
+ $('setNo').textContent=S.gameNumber;
+ $('setPointScore').textContent=String(S.c).padStart(2,'0')+'–'+String(S.p).padStart(2,'0');
+ $('serverText').textContent=S.server==='human'?'HUMAN':'HUMANOID';
+ const hb=$('humanServeBtn'),cb=$('cpuServeBtn');
+ if(hb&&cb){
+   hb.disabled=(S.drill&&S.drill.active)||S.server!=='human';
+   cb.disabled=(S.drill&&S.drill.active)||S.server!=='cpu'||S.cpuServePending;
+   hb.classList.toggle('armed',S.server==='human');
+   cb.classList.toggle('armed',S.server==='cpu');
+   hb.innerHTML='<span class="serveArrow">⬅</span> HUMAN SERVE';
+   cb.innerHTML='<span class="serveArrow">➡</span> '+(S.cpuServePending?('SERVE IN '+S.cpuServeCountdown):'HUMANOID SERVE');
+ }
+ if($('servesLeft')){
+   $('servesLeft').textContent=(S.p>=10&&S.c>=10)?'1':String(2-S.servicePoint);
+ }
+ if($('serveArrow'))$('serveArrow').textContent=S.server==='human'?'⬅':'➡';
+ $('matchText').textContent=S.matchOver?(S.matchWinner.toUpperCase()+' WON MATCH'):'FIRST TO 3 GAMES';
+ $('playBtn').textContent=(S.drill&&S.drill.active)?'WARM-UP':(S.playing?'LIVE':'PLAY');$('autoBtn').textContent='AUTO MODE: '+(S.auto?'ON':'OFF');
+ $('autoBtn').style.background=S.auto?'linear-gradient(#66ed94,#149148)':'linear-gradient(#56df89,#1b884d)';
+ if(S.auto&&S.autoDemo?.active){
+   $('serveHint').textContent=S.autoDemo.transition
+     ?'AUTO • 2 SEC TRANSITION'
+     :'AUTO • '+S.autoDemo.mode+' • '+autoDemoStrokeName(S.autoDemo.stroke)+' • 3 SEC';
+ }
+ $('audioBtn').classList.toggle('muted',!S.audio);
+ $('speedLabel').textContent='BALL SPEED '+Math.round(S.speed*100)+'% • SLOW ← → FAST';
+ $('shotName').textContent=profiles[S.stroke].label;$('phaseName').textContent=S.phase.toUpperCase();
+ $('spinName').textContent=spinLabel(S.shot?S.shot.stroke:S.stroke);
+ $('hMove').textContent=S.human.move.toFixed(2);if($('assistVal'))$('assistVal').textContent='ON';if($('contactWindow'))$('contactWindow').textContent=Math.round((S.humanRally.window||0)*100);
+ if($('faceLock'))$('faceLock').textContent=S.faceLocked?('ON • '+profiles[S.lockedStroke].label):'OFF';
+ if($('contactState')){
+   $('contactState').textContent=S.humanRally.contactReady?'TOUCH':'NO';
+   $('contactState').style.color=S.humanRally.contactReady?'#6ff39a':'#ff9a9a';
+ }if($('attackAngle'))$('attackAngle').textContent=S.tactic.angleBias>0?'RIGHT':'LEFT';if($('aggression'))$('aggression').textContent=Math.round(S.tactic.aggression*100);
+ $('cMove').textContent=S.cpu.move.toFixed(2);
+ if($('pPitch')&&S.human.paddle)$('pPitch').textContent=(S.human.paddle.pitch*180/Math.PI).toFixed(0);
+ if($('pYaw')&&S.human.paddle)$('pYaw').textContent=(S.human.paddle.yaw*180/Math.PI).toFixed(0);
+ if($('pRoll')&&S.human.paddle)$('pRoll').textContent=(S.human.paddle.roll*180/Math.PI).toFixed(0);
+ if($('faceTilt')&&S.human.paddle)$('faceTilt').textContent=(S.human.paddle.pitch*180/Math.PI).toFixed(0);
+ $('serveHint').textContent=S.serve.armed?(S.serve.forward?'FORWARD READY • RELEASE':S.serve.backswing?'PUSH LEFT toward table':'PULL RIGHT for backswing'):'3D CONTROL: tap HEAD / either HAND / either FOOT and drag • drag EMPTY SPACE to rotate body 360° or bend/lift';
+ document.querySelectorAll('.stroke').forEach(b=>b.classList.toggle('active',b.dataset.stroke===S.stroke));
+}
+
+
+
+function serveBtnFlash(){
+ const b=$('serveBtn'); if(!b)return;
+ b.classList.add('armed');
+ clearTimeout(serveBtnFlash._t);
+ serveBtnFlash._t=setTimeout(()=>{if(!S.serve.armed)b.classList.remove('armed')},900);
+}
+
+
+function press3DButton(id,ms=150){
+ const b=$(id);if(!b)return;
+ b.classList.add('pressed');
+ clearTimeout(press3DButton._timers?.[id]);
+ press3DButton._timers=press3DButton._timers||{};
+ press3DButton._timers[id]=setTimeout(()=>b.classList.remove('pressed'),ms);
+}
+
+function updateDynamicTactic(){
+ S.tactic.exchange++;
+
+ // Change direction every 1–2 returns.
+ if(S.tactic.exchange-S.tactic.lastSwitch >= (1+Math.floor(Math.random()*2))){
+   S.tactic.lastSwitch=S.tactic.exchange;
+   S.tactic.angleBias*=-1;
+
+   // Alternate short/deep pressure and lateral attack.
+   S.tactic.depthBias=(Math.random()*.36-.18);
+   S.tactic.lateralBias=S.tactic.angleBias*(.12+Math.random()*.20);
+   S.tactic.aggression=.45+Math.random()*.45;
+ }
+}
+
+function movementTargetForShot(actor,recvPoint,stroke){
+ const side=actor.homeX>0?'human':'cpu';
+ const towardTable=side==='human'?-1:1;
+
+ const depth=Math.abs(recvPoint.x);
+ const shortBall=clamp((1.55-depth)/.55,0,1);
+ const deepBall=clamp((depth-1.35)/.50,0,1);
+
+ // Ball-speed-driven aggression.
+ const speedAgg=clamp(S.speed,0,1);
+ const shotAgg=stroke==='smash'?1:stroke==='topspin'?.78:stroke==='slice'?.55:.62;
+
+ let forward=shortBall*(.12+.24*speedAgg+.08*shotAgg);
+ let retreat=deepBall*(.12+.24*speedAgg+.06*shotAgg);
+
+ if(stroke==='smash')forward+=.12+.10*speedAgg;
+ if(stroke==='slice')forward+=.04;
+ if(stroke==='topspin')retreat+=.04+.06*speedAgg;
+
+ let x=actor.homeX+towardTable*(forward-retreat);
+
+ // More lateral footwork at fast speed and wide trajectories.
+ const lateralGain=1.02+.38*speedAgg+.20*shotAgg;
+ let z=clamp(
+   recvPoint.z*lateralGain + S.tactic.lateralBias*.42,
+   -.64,.64
+ );
+
+ // hard no-step zone outside table
+ if(side==='human')x=clamp(x,1.80,2.50);
+ else x=clamp(x,-2.50,-1.80);
+
+ return{x,z};
+}
+
+function otherSide(side){return side==='human'?'cpu':'human'}
+
+
+function lockedPaddleAnglesForStroke(stroke){
+ if(stroke==='topspin') return {pitch:.18,yaw:0,roll:0};
+ if(stroke==='slice')   return {pitch:-.10,yaw:0,roll:0};
+ if(stroke==='smash')   return {pitch:-.03,yaw:0,roll:0};
+ if(stroke==='backhand')return {pitch:.01,yaw:-.055,roll:0};
+ return {pitch:.02,yaw:.05,roll:0};
+}
+
+function lockHumanPaddleFace(){
+ S.lockedStroke=S.stroke;
+ S.faceLocked=true;
+ const a=lockedPaddleAnglesForStroke(S.lockedStroke);
+ S.human.paddle.pitch=a.pitch;
+ S.human.paddle.yaw=a.yaw;
+ S.human.paddle.roll=0;
+}
+
+function clearPointInteractionState(){
+ S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?2.06:-2.06,backswing:false,forward:false,last:null};
+ S.manualPaddle={drag:false,last:null,active:false};
+ S.humanRally.armed=false;
+ S.humanRally.drag=false;
+ S.humanRally.last=null;
+ S.humanRally.gestureBase=null;
+ S.humanRally.pointerStart=null;
+ S.humanRally.contactLatched=false;
+ S.humanRally.contactBall=null;
+ S.humanRally.contactElapsed=0;S.humanRally.contactGrace=0;S.cpuServePending=false;S.cpuServeCountdown=0;
+}
+
+
+const PRO_TIPS=[
+ `<div class="tipItem"><b>1 • PLAY & POSTURE</b><br>Press PLAY to unlock the Human. Tap a body part to control it independently. Drag empty space to control the whole body.</div>`,
+ `<div class="tipItem"><b>2 • HEAD</b><br>Drag the head sideways/up/down to rotate it in 3D through the neck joint. The head remains attached to the neck.</div>`,
+ `<div class="tipItem"><b>3 • HANDS</b><br>Drag either hand independently. Fixed shoulder→elbow→wrist bone lengths make the elbow bend instead of stretching the arm.</div>`,
+ `<div class="tipItem"><b>4 • LEGS</b><br>Drag either foot/leg sideways or forward/back. The hip stays connected and the knee solves the leg position with fixed thigh and shin lengths.</div>`,
+ `<div class="tipItem"><b>5 • WHOLE BODY</b><br>Drag empty space after PLAY. Sideways drag rotates the Human through 360°. Up/down drag raises/lowers the body and bends the spine while the knees flex.</div>`,
+ `<div class="tipItem"><b>6 • SERVING</b><br>Use the serve button for the player whose turn it is. Human serve: position the paddle, drag through the serve motion, then release.</div>`,
+ `<div class="tipItem"><b>7 • SHOTS</b><br>FH = forehand drive • BH = backhand • TOP = topspin dip/kick • SLICE = low reverse-spin skid • SMASH = fastest attack.</div>`,
+ `<div class="tipItem"><b>8 • AUTO MODE</b><br>AUTO cycles very slow TOP, SLICE and SMASH, then very fast TOP, SLICE and SMASH. Each routine has a 5-second slot: 3 seconds active + 2 seconds transition.</div>`,
+ `<div class="tipItem"><b>9 • MATCH</b><br>Games are to 11, win by 2. Match is best of 5, first to 3. Watch SERVER, SERVES LEFT, rally count and stroke telemetry.</div>`
+];
+
+function renderProTips(){
+ $('tip').innerHTML=`<div class="tipTitle">💡 PRO TIPS • HOW TO PLAY</div>`+PRO_TIPS.join('');
+}
+function stopAutoDemo(){
+ if(!S.autoDemo)return;
+ S.autoDemo.token=(S.autoDemo.token||0)+1;
+ S.autoDemo.active=false;
+ S.autoDemo.transition=false;
+}
+
+function autoDemoStrokeName(s){
+ return s==='topspin'?'TOP SPIN':s.toUpperCase();
+}
+
+// 6 slots, each exactly 5 seconds:
+// 3 seconds active demonstration + 2 seconds transition.
+// Slow TOP/SLICE/SMASH, then fast TOP/SLICE/SMASH.
+function startAutoDemo(){
+ stopAutoDemo();
+ const token=(S.autoDemo?.token||0)+1;
+ S.autoDemo={active:true,token,slot:0,transition:false,stroke:'topspin',mode:'VERY SLOW'};
+ const slots=[
+   {stroke:'topspin',speed:.04,mode:'VERY SLOW'},
+   {stroke:'slice', speed:.04,mode:'VERY SLOW'},
+   {stroke:'smash', speed:.04,mode:'VERY SLOW'},
+   {stroke:'topspin',speed:.98,mode:'VERY FAST'},
+   {stroke:'slice', speed:.98,mode:'VERY FAST'},
+   {stroke:'smash', speed:.98,mode:'VERY FAST'}
+ ];
+
+ const runSlot=()=>{
+   if(!S.auto||!S.autoDemo?.active||S.autoDemo.token!==token)return;
+   const q=slots[S.autoDemo.slot%slots.length];
+   S.autoDemo.stroke=q.stroke;
+   S.autoDemo.mode=q.mode;
+   S.autoDemo.transition=false;
+   S.stroke=q.stroke;
+   S.speed=q.speed;
+   $('speed').value=Math.round(q.speed*100);
+   applySelectedPaddlePreset();
+   ui();
+   announce('AUTO • '+q.mode+' • '+autoDemoStrokeName(q.stroke),'3 SEC DEMO',900);
+
+   // Ensure an auto rally is actually running.
+   if(!S.shot&&!S.pointLocked)scheduleCurrentServe(80);
+
+   setTimeout(()=>{
+     if(!S.auto||!S.autoDemo?.active||S.autoDemo.token!==token)return;
+     S.autoDemo.transition=true;
+     S.phase='auto transition';
+     $('serveHint').textContent='AUTO • 2 SEC TRANSITION • NEXT ROUTINE IN 5-SECOND CYCLE';
+     ui();
+   },3000);
+
+   setTimeout(()=>{
+     if(!S.auto||!S.autoDemo?.active||S.autoDemo.token!==token)return;
+     S.autoDemo.slot=(S.autoDemo.slot+1)%slots.length;
+     runSlot();
+   },5000);
+ };
+ runSlot();
+}
+
+function scheduleCurrentServe(delay=280){
+ const token=++S.serveToken;
+ computeServer();
+ setTimeout(()=>{
+   if(token!==S.serveToken||S.matchOver||!S.playing||S.shot||S.pointLocked)return;
+   computeServer();
+
+   // v53 fix: previous scheduler stopped here and never launched the serve.
+   let stroke=S.autoDemo?.active ? S.autoDemo.stroke : S.stroke;
+   if(!stroke)stroke='forehand';
+
+   if(S.auto){
+     launchServe(S.server,stroke);
+   }else if(S.server==='cpu'){
+     launchServe('cpu',chooseCPUStroke());
+   }
+   ui();
+ },delay);
+}
+
+
+function computeServer(){
+ const oldServer=S.server;
+
+ if(S.p>=10&&S.c>=10){
+   // Deuce: one serve each.
+   S.servicePair=S.pointIndex-20;
+   S.servicePoint=0;
+   const flip=S.servicePair&1;
+   S.server=flip?otherSide(S.gameStartServer):S.gameStartServer;
+ }else{
+   // Normal play: exactly two completed points per service pair.
+   S.servicePair=Math.floor(S.pointIndex/2);
+   S.servicePoint=S.pointIndex%2;
+   const flip=S.servicePair&1;
+   S.server=flip?otherSide(S.gameStartServer):S.gameStartServer;
+ }
+
+ if(oldServer!==S.server){
+   serveBtnFlash();
+   announce(
+     (S.server==='human'?'HUMAN':'HUMANOID')+' TO SERVE',
+     S.p>=10&&S.c>=10?'ONE SERVE AT DEUCE':'TWO SERVES',
+     900
+   );
+ }
+}
+
+function chooseBalancedRallyWinner(){
+ // Keep the match competitive. The trailing side gets a recovery bias.
+ const pointGap=S.p-S.c;
+ const gameGap=S.hGames-S.cGames;
+ let humanChance=.52;
+ if(pointGap<=-2)humanChance=.68;
+ else if(pointGap>=2)humanChance=.38;
+ if(gameGap<0)humanChance=Math.max(humanChance,.62);
+ else if(gameGap>0)humanChance=Math.min(humanChance,.44);
+ return Math.random()<humanChance?'human':'cpu';
+}
+
+function beginRallyPlan(){
+ S.rallyLimit=7+Math.floor(Math.random()*10); // 7..16 exchanges before a designed miss
+ S.rallyWinner=chooseBalancedRallyWinner();
+}
+
+function announce(text,sub='',ms=1450){
+ const box=$('announcement');
+ box.innerHTML=text+(sub?'<div style="font-size:13px;color:#cbd8e2;margin-top:7px">'+sub+'</div>':'');
+ box.style.display='block';
+ clearTimeout(announce._timer);
+ announce._timer=setTimeout(()=>box.style.display='none',ms);
+}
+
+function gameWonBy(side){
+ return (side==='human'?S.p:S.c)>=11 && Math.abs(S.p-S.c)>=2;
+}
+
+function startNextGame(previouslyPlaying){
+ S.gameNumber++;
+ S.gameStartServer=(S.gameNumber%2===1)?'human':'cpu';
+ S.p=0;S.c=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;++S.serveToken;clearPointInteractionState();S.rally=0;S.shot=null;S.phase='game ready';
+ S.server=S.gameStartServer;
+ S.ball={x:S.server==='human'?1.62:-1.62,y:1.08,z:0,r:.026};
+ beginRallyPlan();
+ S.playing=previouslyPlaying;
+ ui();
+
+ if(S.playing){
+   if(S.auto || S.server==='cpu'){
+     scheduleCurrentServe(400);
+   }
+ }
+}
+
+function finishGame(side){
+ const wasPlaying=S.playing;
+ if(side==='human')S.hGames++; else S.cGames++;
+ S.playing=false;S.shot=null;S.phase='game over';
+ const label=side==='human'?'HUMAN':'HUMANOID';
+ announce(label+' WINS GAME '+S.gameNumber, 'Games '+S.cGames+'–'+S.hGames+' • Set score reset to 0–0',1600);
+
+ if((side==='human'?S.hGames:S.cGames)>=S.gamesToWin){
+   S.matchOver=true;S.matchWinner=side;S.p=0;S.c=0;S.rally=0;
+   S.server=S.gameStartServer;
+   ui();
+   setTimeout(()=>announce(label+' WINS THE MATCH',
+     'Final games: HUMANOID '+S.cGames+' – HUMAN '+S.hGames+' • Press RESET for a new match',5000),1650);
+   return;
+ }
+ setTimeout(()=>startNextGame(wasPlaying),1700);
+}
+
+
+function launchServe(side,stroke){
+ if(S.matchOver||S.pointLocked||S.shot)return;
+ computeServer();
+ if(side!==S.server)return;
+
+ S.rallyId++;
+ S.resolvedRallyId=-1;
+
+ serveVocal(side);
+ startShot(side,stroke);
+}
+
+function prepareNextPoint(){
+ clearPointInteractionState();
+ computeServer();
+ S.pointLocked=false;
+ S.ball={x:S.server==='human'?1.62:-1.62,y:1.08,z:0,r:.026};
+ S.prevBall=null;
+ beginRallyPlan();
+ ui();
+ if(S.playing&&(S.auto||S.server==='cpu'))scheduleCurrentServe(320);
+}
+
+function ensureAudio(){
+ if(!S.audioCtx)S.audioCtx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+ if(S.audioCtx.state==='suspended')S.audioCtx.resume();
+}
+function tone(f,d,g=.08,type='sine',delay=0){
+ if(!S.audio)return;ensureAudio();const a=S.audioCtx,t=a.currentTime+delay,o=a.createOscillator(),v=a.createGain();
+ o.type=type;o.frequency.value=f;v.gain.setValueAtTime(g,t);v.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(v).connect(a.destination);o.start(t);o.stop(t+d);
+}
+function grunt(side,stroke){
+ if(!S.audio)return;ensureAudio();
+ const base=side==='human'?122:106,amp=stroke==='smash'?.075:.045,dur=stroke==='smash'?.18:.12;
+ tone(base,dur,amp,'sawtooth',0);tone(base*1.75,dur*.82,amp*.35,'triangle',.005);tone(72,.07,amp*.42,'sine',0);
+}
+function hitSound(side,stroke){tone(1550,.042,.11,'sine');tone(3000,.022,.035,'sine');grunt(side,stroke)}
+function bounceSound(){tone(500,.032,.055,'triangle')}
+
+/* Higher spectator camera. Table is rendered undercarriage first, tabletop last. */
+const CAM={pos:{x:0,y:4.40,z:6.00},target:{x:0,y:.70,z:0},focal:1.38};
+function vsub(a,b){return{x:a.x-b.x,y:a.y-b.y,z:a.z-b.z}}
+function vdot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+function vcross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}
+function vnorm(a){const n=Math.hypot(a.x,a.y,a.z)||1;return{x:a.x/n,y:a.y/n,z:a.z/n}}
+function cameraBasis(){const f=vnorm(vsub(CAM.target,CAM.pos)),up={x:0,y:1,z:0},r=vnorm(vcross(f,up)),u=vcross(r,f);return{f,r,u}}
+function project(p){
+ const B=cameraBasis(),q=vsub(p,CAM.pos),depth=vdot(q,B.f),sx=vdot(q,B.r),sy=vdot(q,B.u),f=Math.min(innerWidth,innerHeight)*CAM.focal,s=f/Math.max(.25,depth);
+ return{x:innerWidth/2+sx*s,y:innerHeight*.485-sy*s,s};
+}
+function serveVocal(side){
+ if(!S.audio)return;
+ ensureAudio();
+ const base=side==='human'?94:86;
+ // Distinct low "thump" + short exertion vocal, fired at serve release.
+ tone(58,.085,.070,'sine',0);
+ tone(base,.17,.072,'sawtooth',.002);
+ tone(base*1.62,.115,.030,'triangle',.006);
+}
+
+function line(a,b,c='#dfe7ee',lw=4){const A=project(a),B=project(b);ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke()}
+function poly(P,fill,stroke='#fff',lw=2){P=P.map(project);ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(P[0].x,P[0].y);for(let i=1;i<P.length;i++)ctx.lineTo(P[i].x,P[i].y);ctx.closePath();ctx.fill();ctx.stroke()}
+function circ(p,r,c){const P=project(p);ctx.fillStyle=c;ctx.beginPath();ctx.arc(P.x,P.y,Math.max(2,r*P.s),0,Math.PI*2);ctx.fill()}
+
+function drawTable(){
+ const y=.82,hx=1.37,hz=.7625,e=.745;
+ /* UNDERCARRIAGE FIRST: prevents frame from covering the playing surface. */
+ for(const [x,z] of [[-.92,-.52],[-.92,.52],[.92,-.52],[.92,.52]])line({x,y:e,z},{x,y:.06,z},'#3b4349',9);
+ line({x:-.92,y:.26,z:-.52},{x:.92,y:.26,z:-.52},'#454d53',6);
+ line({x:-.92,y:.26,z:.52},{x:.92,y:.26,z:.52},'#454d53',6);
+
+ const A={x:-hx,y,z:-hz},B={x:hx,y,z:-hz},C={x:hx,y,z:hz},D={x:-hx,y,z:hz};
+ /* aprons */
+ poly([{x:-hx,y,z:hz},{x:hx,y,z:hz},{x:hx,y:e,z:hz},{x:-hx,y:e,z:hz}],'#0b1115','#252d34',1);
+ poly([{x:-hx,y,z:-hz},{x:hx,y,z:-hz},{x:hx,y:e,z:-hz},{x:-hx,y:e,z:-hz}],'#171d22','#252d34',1);
+ poly([{x:-hx,y,z:-hz},{x:-hx,y,z:hz},{x:-hx,y:e,z:hz},{x:-hx,y:e,z:-hz}],'#11171c','#252d34',1);
+ poly([{x:hx,y,z:-hz},{x:hx,y,z:hz},{x:hx,y:e,z:hz},{x:hx,y:e,z:-hz}],'#11171c','#252d34',1);
+
+ /* tabletop LAST: full green surface is never occluded */
+ poly([A,B,C,D],'#1f8a46','#ffffff',3);
+ line(A,B,'#fff',3);line(B,C,'#fff',3);line(C,D,'#fff',3);line(D,A,'#fff',3);
+ line({x:-hx,y:y+.004,z:0},{x:hx,y:y+.004,z:0},'#fff',2);
+
+ /* net on top */
+ const nt=y+.1525;
+ for(let i=0;i<=16;i++){let z=-hz+i*(2*hz/16);line({x:0,y,z},{x:0,y:nt,z},'#d9e1e5',1)}
+ for(let j=0;j<=4;j++){let yy=y+j*(.1525/4);line({x:0,y:yy,z:-hz},{x:0,y:yy,z:hz},'#d9e1e5',1)}
+ line({x:0,y:nt,z:-hz},{x:0,y:nt,z:hz},'#fff',4);
+}
+
+function baseTarget(actor,recvPoint,stroke,dt){
+ const tgt=movementTargetForShot(actor,recvPoint,stroke);
+
+ const speedAgg=clamp(S.speed,0,1);
+ const gain=(stroke==='smash'?17:11)+8*speedAgg;
+ const a=Math.min(1,gain*dt);
+
+ const ox=actor.baseX,oz=actor.baseZ;
+ actor.baseX=lerp(actor.baseX,tgt.x,a);
+ actor.baseZ=lerp(actor.baseZ,tgt.z,a);
+
+ if(actor.homeX>0)actor.baseX=clamp(actor.baseX,1.80,2.50);
+ else actor.baseX=clamp(actor.baseX,-2.50,-1.80);
+
+ actor.baseZ=clamp(actor.baseZ,-.66,.66);
+ actor.move=Math.hypot(actor.baseX-ox,actor.baseZ-oz)/Math.max(dt,.001);
+
+ // expose footwork direction for body tilt
+ actor.stepVX=(actor.baseX-ox)/Math.max(dt,.001);
+ actor.stepVZ=(actor.baseZ-oz)/Math.max(dt,.001);
+}
+function handReady(actor,recvPoint,stroke,phaseU,dt){
+ // CPU autonomously changes paddle face according to incoming shot.
+ if(actor===S.cpu){
+   const p=profiles[stroke];
+   actor.paddle.pitch=lerp(actor.paddle.pitch,stroke==='slice'?.28:stroke==='topspin'?-.24:stroke==='smash'?-.08:-.12,Math.min(1,10*dt));
+   actor.paddle.yaw=lerp(actor.paddle.yaw,clamp(recvPoint.z*.45,-.35,.35),Math.min(1,10*dt));
+ }
+
+ const side=actor.homeX>0?'human':'cpu';
+ const toward=side==='human'?-1:1;
+ let x=actor.baseX+toward*.38,z=actor.baseZ,y=1.14;
+ if(phaseU<.55){
+   const q=ease(phaseU/.55);
+   /* visible backswing in 3D */
+   x=lerp(x,actor.baseX-toward*(stroke==='smash'?.20:.10),q);
+   z=lerp(z,actor.baseZ+(stroke==='backhand'?-.30:.26),q);
+   y=lerp(y,stroke==='smash'?1.52:1.22,q);
+ }else{
+   const q=ease((phaseU-.55)/.45);
+   x=lerp(actor.baseX-toward*(stroke==='smash'?.20:.10),recvPoint.x,q);
+   z=lerp(actor.baseZ+(stroke==='backhand'?-.30:.26),recvPoint.z,q);
+   y=lerp(stroke==='smash'?1.52:1.22,recvPoint.y-.07,q);
+ }
+ const a=Math.min(1,22*dt);
+ actor.hand.x=lerp(actor.hand.x,x,a);actor.hand.y=lerp(actor.hand.y,y,a);actor.hand.z=lerp(actor.hand.z,z,a);
+}
+function followThrough(actor,stroke,u,dt){
+ const side=actor.homeX>0?'human':'cpu',toward=side==='human'?-1:1,p=profiles[stroke];
+ if(u>.34)return;
+ const q=ease(u/.34),x=actor.baseX+toward*(stroke==='smash'?.62:.48),y=stroke==='topspin'?1.48:stroke==='slice'?.96:stroke==='smash'?.92:1.24,z=actor.baseZ+(stroke==='backhand'?-.22:.18);
+ const a=Math.min(1,18*dt);actor.hand.x=lerp(actor.hand.x,x,a);actor.hand.y=lerp(actor.hand.y,y,a);actor.hand.z=lerp(actor.hand.z,z,a);
+}
+function rotX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c}}
+function rotY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c}}
+function rotZ(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c-p.y*s,y:p.x*s+p.y*c,z:p.z}}
+
+
+function vadd(a,b){return{x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}}
+function vscale(a,s){return{x:a.x*s,y:a.y*s,z:a.z*s}}
+function vlen(a){return Math.hypot(a.x,a.y,a.z)||1}
+function vunit(a){const n=vlen(a);return{x:a.x/n,y:a.y/n,z:a.z/n}}
+function vcross3(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}
+function vdot3(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+
+function humanPaddlePresetAngles(){
+ if(S.stroke==='topspin') return {pitch:.20,yaw:0,roll:0};
+ if(S.stroke==='slice') return {pitch:-.12,yaw:0,roll:0};
+ if(S.stroke==='smash') return {pitch:-.04,yaw:0,roll:0};
+ if(S.stroke==='backhand') return {pitch:.01,yaw:-.06,roll:0};
+ return {pitch:.02,yaw:.05,roll:0};
+}
+
+function applySelectedPaddlePreset(){
+ if(!S.human||!S.human.paddle)return;
+
+ if(S.setupPaddle&&S.setupPaddle.locked){
+   S.human.paddle.pitch=S.setupPaddle.pitch;
+   S.human.paddle.yaw=S.setupPaddle.yaw;
+   S.human.paddle.roll=S.setupPaddle.roll;
+   return;
+ }
+
+ // Before SERVE, preserve the user's freely adjusted setup.
+ if(S.playing&&S.setupPaddle&&!S.setupPaddle.locked)return;
+
+ const stroke=S.faceLocked?S.lockedStroke:S.stroke;
+ const p=lockedPaddleAnglesForStroke(stroke);
+ S.human.paddle.pitch=p.pitch;
+ S.human.paddle.yaw=p.yaw;
+ S.human.paddle.roll=0;
+}
+
+function paddleBasis(cpu,angles){
+ angles=angles||{pitch:0,yaw:0,roll:0};
+ const dir=cpu?1:-1;
+ const pitch=clamp(angles.pitch,-.30,.30);
+ const yaw=clamp(angles.yaw,-.22,.22);
+
+ const normal=vunit({
+   x:dir*Math.cos(pitch)*Math.cos(yaw),
+   y:Math.sin(pitch),
+   z:Math.sin(yaw)*Math.cos(pitch)
+ });
+
+ const worldUp={x:0,y:1,z:0};
+ const upDot=vdot3(worldUp,normal);
+ const vertical=vunit({
+   x:-normal.x*upDot,
+   y:1-normal.y*upDot,
+   z:-normal.z*upDot
+ });
+ const horizontal=vunit(vcross3(normal,vertical));
+ return{normal,vertical,horizontal};
+}
+
+function paddleBladeCenter(hand,cpu,angles){
+ const B=paddleBasis(cpu,angles);
+ const along=cpu?.13:-.13;
+ return vadd(hand,vadd(vscale(B.normal,along),vscale(B.vertical,.13)));
+}
+
+function worldToPaddleLocal(world,hand,cpu,angles){
+ const B=paddleBasis(cpu,angles);
+ const center=paddleBladeCenter(hand,cpu,angles);
+ const d={x:world.x-center.x,y:world.y-center.y,z:world.z-center.z};
+ return{x:vdot3(d,B.normal),y:vdot3(d,B.vertical),z:vdot3(d,B.horizontal)};
+}
+
+function ballTouchesPaddle(ball,hand,cpu,angles){
+ const q=worldToPaddleLocal(ball,hand,cpu,angles);
+ const ballR=ball.r||.026;
+ const planeTol=ballR+.008;
+ const ry=.125+ballR*.55;
+ const rz=.085+ballR*.55;
+ const ellipse=(q.y*q.y)/(ry*ry)+(q.z*q.z)/(rz*rz);
+ return{hit:Math.abs(q.x)<=planeTol&&ellipse<=1,plane:Math.abs(q.x),ellipse,local:q};
+}
+
+function desiredHandForBladeContact(ball,cpu,angles){
+ const B=paddleBasis(cpu,angles);
+ const along=cpu?.13:-.13;
+ const offset=vadd(vscale(B.normal,along),vscale(B.vertical,.13));
+ return{x:ball.x-offset.x,y:ball.y-offset.y,z:ball.z-offset.z};
+}
+
+
+function humanPaddleArrowGeometry(){
+ const hand=S.human.hand,angles=S.human.paddle||{pitch:0,yaw:0,roll:0};
+ const B=paddleBasis(false,angles);
+ const center=paddleBladeCenter(hand,false,angles);
+
+ // Narrow double-direction orientation arrow lies across the blade's local vertical axis.
+ const a=vadd(center,vscale(B.vertical,-.070));
+ const b=vadd(center,vscale(B.vertical,.070));
+ return{a,b,center,B};
+}
+
+function drawHumanPaddle3DArrow(){
+ if(!S.human||!S.human.hand)return;
+ const G=humanPaddleArrowGeometry();
+ const A=project(G.a),B=project(G.b);
+ const dx=B.x-A.x,dy=B.y-A.y,n=Math.hypot(dx,dy)||1,ux=dx/n,uy=dy/n;
+ const px=-uy,py=ux;
+
+ ctx.save();
+ ctx.strokeStyle='#64e9ff';
+ ctx.fillStyle='#64e9ff';
+ ctx.lineWidth=1.35;
+ ctx.globalAlpha=.95;
+
+ // Very narrow shaft.
+ ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();
+
+ // Small arrowhead at both ends to indicate free 3D orientation.
+ for(const [P,s] of [[B,1],[A,-1]]){
+   ctx.beginPath();
+   ctx.moveTo(P.x,P.y);
+   ctx.lineTo(P.x-ux*s*7+px*2.5,P.y-uy*s*7+py*2.5);
+   ctx.lineTo(P.x-ux*s*7-px*2.5,P.y-uy*s*7-py*2.5);
+   ctx.closePath();ctx.fill();
+ }
+ ctx.restore();
+}
+
+function humanPaddleArrowHit(x,y){
+ const G=humanPaddleArrowGeometry(),A=project(G.a),B=project(G.b);
+ // Narrow 10 px interaction corridor around the visible arrow.
+ return pointSegmentDistance(x,y,A.x,A.y,B.x,B.y)<=10;
+}
+
+function drawPaddle3D(hand,cpu,angles){
+ angles=angles||{pitch:0,yaw:0,roll:0};
+ const B=paddleBasis(cpu,angles);
+ const handleEnd=vadd(hand,vadd(vscale(B.normal,cpu?.075:-.075),vscale(B.vertical,.045)));
+ line(hand,handleEnd,'#2e353b',6);
+
+ const center=paddleBladeCenter(hand,cpu,angles);
+ const pts=[];
+ for(let i=0;i<22;i++){
+   const t=i*Math.PI*2/22;
+   pts.push(vadd(center,vadd(vscale(B.vertical,.125*Math.sin(t)),vscale(B.horizontal,.085*Math.cos(t)))));
+ }
+ poly(pts,cpu?'#3c8ca0':'#c94d56','#fff',2);
+ line(vadd(center,vscale(B.vertical,-.075)),vadd(center,vscale(B.vertical,.075)),'rgba(255,255,255,.78)',1);
+}
+
+
+function computeArmElbow(actor,cpu){
+ const x=actor.baseX,z=actor.baseZ;
+ const sh={x:x+(cpu?.02:-.02),y:1.46,z:z+(cpu?-.18:.18)};
+ const wrist=actor.hand;
+
+ const upperLen=.33,foreLen=.34;
+ const dx=wrist.x-sh.x,dy=wrist.y-sh.y,dz=wrist.z-sh.z;
+ const d=Math.max(.10,Math.min(upperLen+foreLen-.01,Math.hypot(dx,dy,dz)));
+ const ux=dx/d,uy=dy/d,uz=dz/d;
+ const cosA=clamp((upperLen*upperLen+d*d-foreLen*foreLen)/(2*upperLen*d),-1,1);
+ const along=upperLen*cosA;
+ const bend=Math.sqrt(Math.max(0,upperLen*upperLen-along*along));
+
+ let px=-uz,py=.28,pz=ux;
+ const pn=Math.hypot(px,py,pz)||1;
+ px/=pn;py/=pn;pz/=pn;
+ const bendSign=cpu?-1:1;
+
+ return{
+   shoulder:sh,
+   elbow:{
+     x:sh.x+ux*along+px*bend*bendSign,
+     y:sh.y+uy*along+py*bend,
+     z:sh.z+uz*along+pz*bend*bendSign
+   },
+   wrist
+ };
+}
+
+function pointSegmentDistance(px,py,ax,ay,bx,by){
+ const vx=bx-ax,vy=by-ay;
+ const wx=px-ax,wy=py-ay;
+ const vv=vx*vx+vy*vy;
+ let t=vv>1e-9?(wx*vx+wy*vy)/vv:0;
+ t=clamp(t,0,1);
+ const qx=ax+t*vx,qy=ay+t*vy;
+ return Math.hypot(px-qx,py-qy);
+}
+
+function humanControlZoneHit(clientX,clientY){
+ const arm=computeArmElbow(S.human,false);
+ const E=project(arm.elbow);
+ const W=project(arm.wrist);
+ const C=project(paddleBladeCenter(S.human.hand,false,S.human.paddle));
+
+ // Local screen-space capsule:
+ // elbow radius ~55 px, wrist corridor ~48 px, paddle radius ~82 px.
+ const dElbow=Math.hypot(clientX-E.x,clientY-E.y);
+ const dPaddle=Math.hypot(clientX-C.x,clientY-C.y);
+ const dForearm=pointSegmentDistance(clientX,clientY,E.x,E.y,W.x,W.y);
+ const dWristBlade=pointSegmentDistance(clientX,clientY,W.x,W.y,C.x,C.y);
+
+ return dElbow<=55 || dPaddle<=82 || dForearm<=48 || dWristBlade<=58;
+}
+function playerControlZoneHit(side,clientX,clientY){
+ if(side==='human')return humanControlZoneHit(clientX,clientY);
+ const arm=computeArmElbow(S.cpu,true);
+ const E=project(arm.elbow),W=project(arm.wrist);
+ const C=project(paddleBladeCenter(S.cpu.hand,true,S.cpu.paddle));
+ return Math.hypot(clientX-E.x,clientY-E.y)<=55 ||
+        Math.hypot(clientX-C.x,clientY-C.y)<=82 ||
+        pointSegmentDistance(clientX,clientY,E.x,E.y,W.x,W.y)<=48 ||
+        pointSegmentDistance(clientX,clientY,W.x,W.y,C.x,C.y)<=58;
+}
+
+
+function updateSpineDynamics(actor,cpu,dt){
+ const side=cpu?'cpu':'human';
+ let target=.15,twist=0;
+ if(!cpu&&S.manualPaddle.drag&&S.playing&&!S.auto){target=clamp(actor.spine.targetLean,.03,.34);twist=clamp(actor.spine.targetTwist,-.12,.12);}
+
+ if(S.serve.armed&&S.serve.side===side){
+   target=.17;
+   if(S.serve.backswing)target=.11;
+   if(S.serve.forward)target=.24;
+ }
+ if(S.shot){
+   if(S.shot.hitter===side){
+     target=S.shot.stroke==='smash'?.30:S.shot.stroke==='slice'?.21:.18;
+     twist=(S.shot.stroke==='backhand'?-1:1)*.075;
+   }else if(S.shot.receiver===side){
+     target=.18;
+     twist=clamp(S.shot.end.z*.075,-.075,.075);
+   }
+ }
+ const speedAgg=clamp(S.speed,0,1);
+ const motionLean=clamp(Math.abs(actor.stepVX||0)*.018,0,.12)*speedAgg;
+ const lateralTilt=clamp((actor.stepVZ||0)*.016,-.10,.10)*speedAgg;
+
+ actor.spine.targetLean=clamp(target+motionLean,.03,.36);
+ actor.spine.targetTwist=clamp(twist+lateralTilt,-.14,.14);
+ const g=Math.min(1,7.2*dt);
+ actor.spine.lean=lerp(actor.spine.lean,target,g);
+ actor.spine.twist=lerp(actor.spine.twist,twist,g);
+}
+function spineJoints(actor){
+ const J=[];
+ const rig=actor.rig||{bodyYaw:0,bodyLift:0,bodyBend:0};
+ const x=actor.baseX,z=actor.baseZ;
+ const lift=rig.bodyLift||0;
+ const lean=clamp((actor.spine?.lean||.095)+(rig.bodyBend||0),-.12,.46);
+ const twist=actor.spine?.twist||0;
+ const towardTable=actor.homeX>0?-1:1;
+ const yaw=rig.bodyYaw||0;
+
+ const fd=rotXZ(towardTable,0,yaw);
+
+ for(let i=0;i<7;i++){
+   const t=i/6;
+   const curve=t*t*(1.85-.85*t);
+   const lateral=twist*Math.sin(Math.PI*t);
+   const lat=rotXZ(0,lateral,yaw);
+   J.push({
+     x:x+fd.x*lean*curve+lat.x,
+     y:.92+lift+t*.64,
+     z:z+fd.z*lean*curve+lat.z
+   });
+ }
+ return J;
+}
+function drawSpine(actor){
+ // Hidden biomechanical rig: calculate joints but do not display bones.
+ return spineJoints(actor);
+}
+
+
+function updateLegDynamics(actor,cpu,dt){
+ const side=cpu?'cpu':'human';
+ let flex=.24,stance=.21;
+ if(!cpu&&S.manualPaddle.drag&&S.playing&&!S.auto){flex=clamp(actor.legs.targetFlex,.16,.40);stance=clamp(actor.legs.targetStance||.21,.18,.28);}
+
+ if(S.serve.armed&&S.serve.side===side){
+   flex=.28;
+   if(S.serve.backswing)flex=.30;
+   if(S.serve.forward)flex=.34;
+   stance=.22;
+ }
+ if(S.shot){
+   if(S.shot.hitter===side){
+     flex=S.shot.stroke==='smash'?.38:S.shot.stroke==='slice'?.30:.26;
+     stance=S.shot.stroke==='smash'?.24:.22;
+   }else if(S.shot.receiver===side){
+     flex=.28;stance=.23;
+   }
+ }
+ const speedAgg=clamp(S.speed,0,1);
+ const moveBoost=clamp(Math.hypot(actor.stepVX||0,actor.stepVZ||0)*.02,0,.12)*speedAgg;
+ actor.legs.targetFlex=clamp(flex+moveBoost,.16,.42);
+ actor.legs.targetStance=clamp(stance+.04*speedAgg,.18,.28);
+ const g=Math.min(1,8.5*dt);
+ actor.legs.kneeFlex=lerp(actor.legs.kneeFlex,flex,g);
+ actor.legs.stance=lerp(actor.legs.stance,stance,g);
+}
+
+function solveLeg2D(hip,foot,kneeFlex,sideSign){
+ const thigh=.39,shin=.41;
+ const dx=foot.x-hip.x,dy=foot.y-hip.y;
+ const dRaw=Math.hypot(dx,dy);
+ const d=clamp(dRaw,.10,thigh+shin-.015);
+ const ux=dx/d,uy=dy/d;
+
+ const cosA=clamp((thigh*thigh+d*d-shin*shin)/(2*thigh*d),-1,1);
+ const along=thigh*cosA;
+ const h=Math.sqrt(Math.max(0,thigh*thigh-along*along));
+
+ const px=-uy,py=ux;
+ const flexScale=.66+.58*kneeFlex;
+
+ return{
+   x:hip.x+ux*along+px*h*sideSign*flexScale,
+   y:hip.y+uy*along+py*h*sideSign*flexScale,
+   z:lerp(hip.z,foot.z,.48)
+ };
+}
+
+function lowerBodyPose(actor,pelvis,cpu){
+ ensureSkeleton();
+ const A=skeletonAnchors(actor,cpu),sk=actor.skel,lo=actor.rig?.footLOffset||{x:0,z:0},ro=actor.rig?.footROffset||{x:0,z:0};
+ const lf0=baseFootTarget(actor,cpu,'left'),rf0=baseFootTarget(actor,cpu,'right');
+ const lf={x:lf0.x+lo.x,y:lf0.y,z:lf0.z+lo.z},rf={x:rf0.x+ro.x,y:rf0.y,z:rf0.z+ro.z};
+ const t=cpu?1:-1;
+ const L=solveTwoBone3D(A.leftHip,lf,sk.thigh,sk.shin,{x:A.leftHip.x+t*.20,y:A.leftHip.y-.22,z:A.leftHip.z-.16});
+ const R=solveTwoBone3D(A.rightHip,rf,sk.thigh,sk.shin,{x:A.rightHip.x+t*.20,y:A.rightHip.y-.22,z:A.rightHip.z+.16});
+ return{hipL:A.leftHip,hipR:A.rightHip,kneeL:L.joint,kneeR:R.joint,footL:L.end,footR:R.end};
+}
+
+
+function capsulePoly(a,b,rA,rB,steps=5){
+ // Camera-facing tapered quadrilateral/capsule approximation.
+ const A=project(a),B=project(b);
+ const dx=B.x-A.x,dy=B.y-A.y;
+ const n=Math.hypot(dx,dy)||1;
+ const nx=-dy/n,ny=dx/n;
+
+ return[
+   {x:A.x+nx*rA,y:A.y+ny*rA},
+   {x:B.x+nx*rB,y:B.y+ny*rB},
+   {x:B.x-nx*rB,y:B.y-ny*rB},
+   {x:A.x-nx*rA,y:A.y-ny*rA}
+ ];
+}
+
+function fillScreenPoly(points,fill,stroke='rgba(255,255,255,.18)',width=1){
+ if(!points.length)return;
+ ctx.beginPath();
+ ctx.moveTo(points[0].x,points[0].y);
+ for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);
+ ctx.closePath();
+ ctx.fillStyle=fill;
+ ctx.fill();
+ if(stroke){
+   ctx.strokeStyle=stroke;
+   ctx.lineWidth=width;
+   ctx.stroke();
+ }
+}
+
+function drawLimbShell(a,b,rA,rB,fill){
+ fillScreenPoly(capsulePoly(a,b,rA,rB),fill,'rgba(255,255,255,.14)',1);
+}
+
+function eyeTrackingVector(head,cpu){
+ const target=S.ball||{x:0,y:1,z:0};
+ const dx=target.x-head.x;
+ const dy=target.y-head.y;
+ const dz=target.z-head.z;
+ const n=Math.hypot(dx,dy,dz)||1;
+ return{x:dx/n,y:dy/n,z:dz/n};
+}
+
+function trackedHeadPose(head,cpu,bodyTangent){
+ const target=S.ball||{x:0,y:1,z:0};
+ const dx=target.x-head.x,dy=target.y-head.y,dz=target.z-head.z;
+ const n=Math.hypot(dx,dy,dz)||1;
+ const look={x:dx/n,y:dy/n,z:dz/n};
+ return{
+   center:{
+     x:head.x+look.x*.035,
+     y:head.y+clamp(look.y,-.16,.16)*.018,
+     z:head.z+clamp(look.z,-.20,.20)*.025
+   },
+   look
+ };
+}
+
+
+function faceScreenDirection(head,cpu){
+ if(!S.playing&&S.resetIntro?.active){
+   // straight toward spectator camera at RESET/ready-bow stage
+   return{x:0,y:0};
+ }
+
+ const other=cpu?S.human:S.cpu;
+ let target={x:other.baseX,y:1.30,z:other.baseZ};
+ if(S.playing&&S.ball&&S.shot){
+   target={
+     x:lerp(target.x,S.ball.x,.72),
+     y:lerp(target.y,S.ball.y,.72),
+     z:lerp(target.z,S.ball.z,.72)
+   };
+ }
+ const H=project(head),T=project(target);
+ const dx=T.x-H.x,dy=T.y-H.y;
+ const n=Math.hypot(dx,dy)||1;
+ return{x:dx/n,y:dy/n};
+}
+
+function drawFace(head,cpu,bodyTangent){
+ const tracked=trackedHeadPose(head,cpu,bodyTangent);
+ const H=project(tracked.center);
+ const r=Math.abs(project({x:tracked.center.x,y:tracked.center.y+.118,z:tracked.center.z}).y-H.y);
+ const rr=Math.max(16,r);
+ const dir=faceScreenDirection(tracked.center,cpu);
+
+ if(cpu){
+   // ROBOT HEAD visibly turns by shifting visor/eyes toward its target.
+   ctx.save();
+
+   const squash=.88+.12*Math.abs(dir.x);
+   ctx.beginPath();
+   ctx.ellipse(H.x,H.y,rr*.82*squash,rr*.86,0,0,Math.PI*2);
+   ctx.fillStyle='#aeb6bf';
+   ctx.fill();
+   ctx.strokeStyle='#e5ebef';
+   ctx.lineWidth=1.4;
+   ctx.stroke();
+
+   const faceShift=dir.x*rr*.24;
+   const faceLift=dir.y*rr*.10;
+
+   ctx.beginPath();
+   ctx.roundRect(H.x-rr*.50+faceShift,H.y-rr*.30+faceLift,rr*.94,rr*.34,rr*.10);
+   ctx.fillStyle='#20252a';
+   ctx.fill();
+
+   ctx.shadowBlur=12;
+   ctx.shadowColor='#ff2a2a';
+   ctx.fillStyle='#ff3a3a';
+   for(const s of [-1,1]){
+     ctx.beginPath();
+     ctx.ellipse(
+       H.x+faceShift+s*rr*.20,
+       H.y-rr*.13+faceLift,
+       rr*.095,rr*.052,0,0,Math.PI*2
+     );
+     ctx.fill();
+   }
+   ctx.shadowBlur=0;
+   ctx.restore();
+   return;
+ }
+
+ // HUMAN HEAD. Facial features visibly move to the table/opponent-facing side.
+ ctx.beginPath();
+ ctx.arc(H.x,H.y,rr,0,Math.PI*2);
+ ctx.fillStyle='#e0b28f';
+ ctx.fill();
+ ctx.strokeStyle='rgba(255,255,255,.26)';
+ ctx.lineWidth=1.5;
+ ctx.stroke();
+
+ const faceShift=dir.x*rr*.25;
+ const faceLift=dir.y*rr*.08;
+ const eyeY=H.y-rr*.12+faceLift;
+ const eyeSep=rr*.26;
+ const eyeR=Math.max(2.5,rr*.095);
+
+ // Both eyes sit on the side of the face oriented toward the opponent.
+ for(const s of [-1,1]){
+   const ex=H.x+faceShift+s*eyeSep;
+   ctx.beginPath();
+   ctx.arc(ex,eyeY,eyeR,0,Math.PI*2);
+   ctx.fillStyle='#fff';
+   ctx.fill();
+
+   ctx.beginPath();
+   ctx.arc(
+     ex+dir.x*eyeR*.58,
+     eyeY+dir.y*eyeR*.58,
+     eyeR*.50,0,Math.PI*2
+   );
+   ctx.fillStyle='#17212a';
+   ctx.fill();
+ }
+
+ // Nose projects toward the opponent.
+ ctx.beginPath();
+ ctx.moveTo(H.x+faceShift,eyeY+rr*.10);
+ ctx.lineTo(
+   H.x+faceShift+dir.x*rr*.16,
+   eyeY+rr*.18+dir.y*rr*.08
+ );
+ ctx.strokeStyle='rgba(70,50,40,.60)';
+ ctx.lineWidth=1.2;
+ ctx.stroke();
+
+ ctx.beginPath();
+ ctx.moveTo(H.x+faceShift-rr*.10,H.y+rr*.24+faceLift);
+ ctx.lineTo(H.x+faceShift+rr*.10,H.y+rr*.24+faceLift);
+ ctx.stroke();
+}
+
+function drawTorsoShell(J,cpu){
+ const pelvis=J[0],mid=J[3],neck=J[6];
+ const P=project(pelvis),M=project(mid),N=project(neck);
+
+ if(cpu){
+   // metallic robot chest armor
+   fillScreenPoly([
+     {x:N.x-40,y:N.y+2},{x:N.x+40,y:N.y+2},
+     {x:M.x+34,y:M.y},{x:P.x+26,y:P.y+4},
+     {x:P.x-26,y:P.y+4},{x:M.x-34,y:M.y}
+   ],'#5c6670','#cfd7de',1.4);
+
+   // chest plate
+   fillScreenPoly([
+     {x:N.x-27,y:N.y+12},{x:N.x+27,y:N.y+12},
+     {x:M.x+23,y:M.y-2},{x:M.x-23,y:M.y-2}
+   ],'#313a42','#89949d',1);
+
+   // central red status strip
+   ctx.fillStyle='rgba(255,55,55,.85)';
+   ctx.fillRect(M.x-3,N.y+18,6,Math.max(12,M.y-N.y-22));
+   return;
+ }
+
+ // Human blue shirt
+ fillScreenPoly([
+   {x:N.x-38,y:N.y+2},{x:N.x+38,y:N.y+2},
+   {x:M.x+31,y:M.y},{x:P.x+24,y:P.y+4},
+   {x:P.x-24,y:P.y+4},{x:M.x-31,y:M.y}
+ ],'#245d9d','rgba(255,255,255,.20)',1.4);
+
+ const neckTopY=N.y-12;
+ fillScreenPoly([
+   {x:N.x-15,y:N.y+4},{x:N.x+15,y:N.y+4},
+   {x:N.x+12,y:neckTopY},{x:N.x-12,y:neckTopY}
+ ],'#245d9d','rgba(255,255,255,.15)',1);
+}
+
+function drawShortsShell(pelvis,hipL,hipR,cpu){
+ const P=project(pelvis),L=project(hipL),R=project(hipR);
+
+ const fill=cpu?'#3d464e':'#202b3c';
+ fillScreenPoly([
+   {x:P.x-25,y:P.y-1},{x:P.x+25,y:P.y-1},
+   {x:R.x+12,y:R.y+28},{x:R.x-1,y:R.y+36},
+   {x:L.x+1,y:L.y+36},{x:L.x-12,y:L.y+28}
+ ],fill,cpu?'#8b969f':'rgba(255,255,255,.12)',1);
+
+ if(cpu){
+   ctx.strokeStyle='rgba(180,190,200,.45)';
+   ctx.lineWidth=1;
+   ctx.beginPath();
+   ctx.moveTo(P.x,P.y+2);
+   ctx.lineTo(P.x,P.y+32);
+   ctx.stroke();
+ }
+}
+
+function drawShoe(foot,cpu){
+ const F=project(foot);
+ ctx.beginPath();
+ ctx.roundRect(F.x-(cpu?4:18),F.y-4,24,9,4);
+ ctx.fillStyle=cpu?'#161b20':'#f4f6f8';
+ ctx.fill();
+ ctx.strokeStyle=cpu?'#8d2f35':'#2d64a8';
+ ctx.lineWidth=1.6;
+ ctx.stroke();
+}
+
+
+function updateHeadTracking(actor,cpu,dt){
+ const J=spineJoints(actor);
+ const neck=J[6];
+ const other=cpu?S.human:S.cpu;
+
+ // Default visual orientation is always toward the opponent/table.
+ let target={x:other.baseX,y:1.30,z:other.baseZ};
+
+ // During a live trajectory, smoothly bias gaze/head toward the ball.
+ if(S.playing&&S.ball&&S.shot){
+   const ballWeight=.72;
+   target={
+     x:lerp(target.x,S.ball.x,ballWeight),
+     y:lerp(target.y,S.ball.y,ballWeight),
+     z:lerp(target.z,S.ball.z,ballWeight)
+   };
+ }
+
+ const dx=target.x-neck.x;
+ const dy=target.y-neck.y;
+ const dz=target.z-neck.z;
+
+ actor.headTrack.targetYaw=clamp(Math.atan2(dz,Math.abs(dx)+.001),-.36,.36);
+ actor.headTrack.targetPitch=clamp(Math.atan2(dy,Math.abs(dx)+.001),-.26,.26);
+
+ const g=Math.min(1,11.5*dt);
+ actor.headTrack.yaw=lerp(actor.headTrack.yaw,actor.headTrack.targetYaw,g);
+ actor.headTrack.pitch=lerp(actor.headTrack.pitch,actor.headTrack.targetPitch,g);
+}
+
+function trackedHeadCenter(actor,cpu,neck,tangent){
+ const ht=actor.headTrack||{yaw:0,pitch:0};
+ const towardOpponent=cpu?1:-1;
+
+ const toeFold=(
+   !cpu &&
+   S.drill &&
+   S.drill.active &&
+   S.drill.stage===1 &&
+   (S.drill.phase==='bend'||S.drill.phase==='downHold')
+ );
+
+ if(toeFold){
+   // head continues the cervical tangent, staying above shoulders/hands
+   return{
+     x:neck.x+tangent.x*.13+towardOpponent*.015,
+     y:neck.y+tangent.y*.13+.02,
+     z:neck.z+tangent.z*.13
+   };
+ }
+
+ return{
+   x:neck.x+tangent.x*.145+towardOpponent*.040,
+   y:neck.y+tangent.y*.145+Math.sin(ht.pitch)*.050,
+   z:neck.z+tangent.z*.145+Math.sin(ht.yaw)*.060
+ };
+}
+
+
+function updateRobotScan(dt){
+ const rs=S.robotScan;
+ const robotPlaying=!!(
+   S.playing &&
+   (
+     S.server==='cpu' ||
+     (S.shot && (S.shot.hitter==='cpu' || S.shot.receiver==='cpu'))
+   )
+ );
+
+ rs.active=robotPlaying;
+ if(!robotPlaying)return;
+
+ rs.phase+=dt*1.9;
+
+ // During robot's attacking phase, bias scan target toward planned bounce.
+ if(S.shot && S.shot.hitter==='cpu' && S.shot.bounce){
+   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.bounce.z,-.55,.55),Math.min(1,dt*4));
+   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.bounce.x)/1.37,.38,.96),Math.min(1,dt*4));
+ }else{
+   // gentle boundary sweep while preparing
+   rs.targetZ=Math.sin(rs.phase)*.48;
+   rs.targetDepth=.55+.30*(.5+.5*Math.sin(rs.phase*.73));
+ }
+}
+
+function tableScanTarget(){
+ // Convert scan plan into a table-surface world point on the Human court.
+ const z=clamp(S.robotScan.targetZ,-.58,.58);
+ const x=lerp(.18,1.22,clamp(S.robotScan.targetDepth,0,1));
+ return{x,y:.78,z};
+}
+
+function drawRobotScan(head){
+ if(!S.robotScan.active)return;
+
+ const target=tableScanTarget();
+ const H=project(head);
+ const T=project(target);
+
+ // twin red rays from robot eyes toward target area
+ const eyeSpread=7;
+ ctx.save();
+ ctx.globalCompositeOperation='lighter';
+
+ for(const s of [-1,1]){
+   const grad=ctx.createLinearGradient(H.x+s*eyeSpread,H.y,T.x,T.y);
+   grad.addColorStop(0,'rgba(255,35,35,.90)');
+   grad.addColorStop(.65,'rgba(255,35,35,.35)');
+   grad.addColorStop(1,'rgba(255,35,35,.08)');
+   ctx.strokeStyle=grad;
+   ctx.lineWidth=1.6;
+   ctx.beginPath();
+   ctx.moveTo(H.x+s*eyeSpread,H.y);
+   ctx.lineTo(T.x,T.y);
+   ctx.stroke();
+ }
+
+ // scan marker on table
+ ctx.beginPath();
+ ctx.arc(T.x,T.y,10+3*Math.sin(S.robotScan.phase*4),0,Math.PI*2);
+ ctx.strokeStyle='rgba(255,55,55,.82)';
+ ctx.lineWidth=1.8;
+ ctx.stroke();
+
+ // short boundary sweep line near intended placement
+ ctx.beginPath();
+ ctx.moveTo(T.x-22,T.y);
+ ctx.lineTo(T.x+22,T.y);
+ ctx.strokeStyle='rgba(255,70,70,.55)';
+ ctx.lineWidth=1.3;
+ ctx.stroke();
+
+ ctx.restore();
+}
+
+
+function ellipseScreen(center,rx,ry,fill,stroke=null,w=1){
+ ctx.beginPath();
+ ctx.ellipse(center.x,center.y,rx,ry,0,0,Math.PI*2);
+ ctx.fillStyle=fill;ctx.fill();
+ if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.stroke();}
+}
+
+function drawHumanAthleticTorso(J){
+ const pelvis=project(J[0]),mid=project(J[3]),neck=project(J[6]);
+
+ ctx.beginPath();
+ ctx.moveTo(neck.x-34,neck.y+2);
+ ctx.quadraticCurveTo(neck.x-48,neck.y+12,mid.x-35,mid.y-4);
+ ctx.quadraticCurveTo(mid.x-32,mid.y+22,pelvis.x-27,pelvis.y+12);
+ ctx.quadraticCurveTo(pelvis.x,pelvis.y+18,pelvis.x+27,pelvis.y+12);
+ ctx.quadraticCurveTo(mid.x+32,mid.y+22,neck.x+48,neck.y+12);
+ ctx.quadraticCurveTo(neck.x+34,neck.y+2,neck.x+24,neck.y-1);
+ ctx.closePath();
+
+ ctx.fillStyle='#f5f6f7';
+ ctx.fill();
+ ctx.strokeStyle='#9da7b2';
+ ctx.lineWidth=1.2;
+ ctx.stroke();
+
+ // collar
+ ctx.strokeStyle='#2d64a8';
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ ctx.moveTo(neck.x-13,neck.y+2);
+ ctx.quadraticCurveTo(neck.x,neck.y+10,neck.x+13,neck.y+2);
+ ctx.stroke();
+
+ // half-neck coverage
+ ctx.fillStyle='#f5f6f7';
+ ctx.fillRect(neck.x-12,neck.y-11,24,15);
+}
+
+
+function drawThighGarment(hip,knee,coverage,outerR,innerR,fill,stroke){
+ const end={
+   x:lerp(hip.x,knee.x,coverage),
+   y:lerp(hip.y,knee.y,coverage),
+   z:lerp(hip.z,knee.z,coverage)
+ };
+ drawConnectedLimb(hip,end,outerR,innerR,fill,stroke);
+ return end;
+}
+
+function drawHumanShorts(pelvis,hipL,hipR,kneeL,kneeR){
+ const P=project(pelvis);
+
+ // Full thigh coverage: each short leg is a true sleeve wrapped along
+ // the hip->knee segment, not only a front polygon.
+ const leftEnd=drawThighGarment(
+   hipL,kneeL,.82,20,17,'#f7f8f9','#9fa9b3'
+ );
+ const rightEnd=drawThighGarment(
+   hipR,kneeR,.82,20,17,'#f7f8f9','#9fa9b3'
+ );
+
+ const L=project(hipL),R=project(hipR);
+ const LE=project(leftEnd),RE=project(rightEnd);
+
+ // Pelvis/seat bridge overlaps both thigh sleeves deeply.
+ ctx.beginPath();
+ ctx.moveTo(P.x-38,P.y-6);
+ ctx.quadraticCurveTo(P.x-41,P.y+14,L.x-21,L.y+8);
+ ctx.lineTo(LE.x-15,LE.y+4);
+ ctx.lineTo(LE.x+14,LE.y+5);
+ ctx.quadraticCurveTo(LE.x+10,LE.y-4,P.x-8,P.y+37);
+ ctx.quadraticCurveTo(P.x,P.y+44,P.x+8,P.y+37);
+ ctx.quadraticCurveTo(RE.x-10,RE.y-4,RE.x-14,RE.y+5);
+ ctx.lineTo(RE.x+15,RE.y+4);
+ ctx.lineTo(R.x+21,R.y+8);
+ ctx.quadraticCurveTo(P.x+41,P.y+14,P.x+38,P.y-6);
+ ctx.closePath();
+
+ ctx.fillStyle='#f7f8f9';
+ ctx.fill();
+ ctx.strokeStyle='#9fa9b3';
+ ctx.lineWidth=1.15;
+ ctx.stroke();
+
+ // Wide waistband ensures outside-right-hip and inside-left-thigh overlap.
+ ctx.beginPath();
+ ctx.roundRect(P.x-38,P.y-7,76,13,6);
+ ctx.fillStyle='#f7f8f9';
+ ctx.fill();
+ ctx.strokeStyle='#9fa9b3';
+ ctx.stroke();
+
+ // Side piping follows the actual thigh sleeves.
+ ctx.strokeStyle='#2d64a8';
+ ctx.lineWidth=1.3;
+ ctx.beginPath();
+ ctx.moveTo(P.x-33,P.y+1);ctx.lineTo(LE.x-15,LE.y+1);
+ ctx.moveTo(P.x+33,P.y+1);ctx.lineTo(RE.x+15,RE.y+1);
+ ctx.stroke();
+}
+
+function drawRobotAthleticTorso(J,A){
+ const pelvis=project(J[0]),mid=project(J[3]),neck=project(J[6]);
+ const RS=project(A.rightShoulder),LS=project(A.leftShoulder),SC=project(A.shoulderCenter);
+
+ ctx.beginPath();
+ ctx.moveTo(LS.x,LS.y);
+ ctx.lineTo(RS.x,RS.y);
+ ctx.quadraticCurveTo(mid.x+41,mid.y-2,pelvis.x+30,pelvis.y+12);
+ ctx.quadraticCurveTo(pelvis.x,pelvis.y+18,pelvis.x-30,pelvis.y+12);
+ ctx.quadraticCurveTo(mid.x-41,mid.y-2,LS.x,LS.y);
+ ctx.closePath();
+ ctx.fillStyle='#151a20';ctx.fill();
+ ctx.strokeStyle='#6e7781';ctx.lineWidth=1.5;ctx.stroke();
+
+ // Solid shoulder beam connects both socket centers through the upper torso.
+ ctx.save();
+ ctx.lineCap='round';
+ ctx.strokeStyle='#343c44';ctx.lineWidth=18;
+ ctx.beginPath();ctx.moveTo(LS.x,LS.y);ctx.lineTo(RS.x,RS.y);ctx.stroke();
+ ctx.strokeStyle='#89939d';ctx.lineWidth=2;
+ ctx.beginPath();ctx.moveTo(LS.x,LS.y);ctx.lineTo(RS.x,RS.y);ctx.stroke();
+ ctx.restore();
+
+ // Neck is attached only to the center of the shoulder girdle.
+ ctx.beginPath();
+ ctx.moveTo(SC.x-14,SC.y+4);
+ ctx.lineTo(neck.x-12,neck.y+5);
+ ctx.lineTo(neck.x+12,neck.y+5);
+ ctx.lineTo(SC.x+14,SC.y+4);
+ ctx.closePath();
+ ctx.fillStyle='#151a20';ctx.fill();
+ ctx.strokeStyle='#6e7781';ctx.stroke();
+
+ ctx.fillStyle='#8f1f28';
+ ctx.beginPath();
+ ctx.moveTo(mid.x-31,mid.y-2);ctx.lineTo(pelvis.x-26,pelvis.y+10);
+ ctx.lineTo(pelvis.x-17,pelvis.y+11);ctx.lineTo(mid.x-22,mid.y);ctx.closePath();ctx.fill();
+}
+
+function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
+ const P=project(pelvis);
+
+ const leftEnd=drawThighGarment(
+   hipL,kneeL,.80,20,17,'#15191f','#69737d'
+ );
+ const rightEnd=drawThighGarment(
+   hipR,kneeR,.80,20,17,'#15191f','#69737d'
+ );
+
+ const L=project(hipL),R=project(hipR);
+ const LE=project(leftEnd),RE=project(rightEnd);
+
+ ctx.beginPath();
+ ctx.moveTo(P.x-39,P.y-6);
+ ctx.quadraticCurveTo(P.x-42,P.y+14,L.x-22,L.y+8);
+ ctx.lineTo(LE.x-16,LE.y+4);
+ ctx.lineTo(LE.x+15,LE.y+5);
+ ctx.quadraticCurveTo(LE.x+10,LE.y-4,P.x-8,P.y+37);
+ ctx.quadraticCurveTo(P.x,P.y+44,P.x+8,P.y+37);
+ ctx.quadraticCurveTo(RE.x-10,RE.y-4,RE.x-15,RE.y+5);
+ ctx.lineTo(RE.x+16,RE.y+4);
+ ctx.lineTo(R.x+22,R.y+8);
+ ctx.quadraticCurveTo(P.x+42,P.y+14,P.x+39,P.y-6);
+ ctx.closePath();
+
+ ctx.fillStyle='#15191f';
+ ctx.fill();
+ ctx.strokeStyle='#69737d';
+ ctx.lineWidth=1.15;
+ ctx.stroke();
+
+ ctx.beginPath();
+ ctx.roundRect(P.x-39,P.y-7,78,13,6);
+ ctx.fillStyle='#15191f';
+ ctx.fill();
+ ctx.strokeStyle='#69737d';
+ ctx.stroke();
+
+ ctx.strokeStyle='#a5222c';
+ ctx.lineWidth=2;
+ ctx.beginPath();
+ ctx.moveTo(P.x-34,P.y+1);ctx.lineTo(LE.x-16,LE.y+1);
+ ctx.moveTo(P.x+34,P.y+1);ctx.lineTo(RE.x+16,RE.y+1);
+ ctx.stroke();
+}
+
+function drawConnectedLimb(a,b,rA,rB,fill,stroke='rgba(255,255,255,.16)'){
+ const A=project(a),B=project(b);
+ fillScreenPoly(capsulePoly(a,b,rA,rB),fill,stroke,1);
+
+ // rounded caps eliminate flat cutouts at shoulders/elbows/knees
+ ctx.beginPath();
+ ctx.arc(A.x,A.y,rA,0,Math.PI*2);
+ ctx.fillStyle=fill;ctx.fill();
+ if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}
+
+ ctx.beginPath();
+ ctx.arc(B.x,B.y,rB,0,Math.PI*2);
+ ctx.fillStyle=fill;ctx.fill();
+ if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}
+}
+
+function solveOtherArm(a,cpu,shoulder,hitShoulder,hitElbow,hitWrist){
+ const side=cpu?1:-1;
+ const active=!!(S.playing&&S.shot);
+
+ if(!active){
+   // Reset/ready pose: left arm visibly open from the left shoulder.
+   const elbow={
+     x:shoulder.x-side*.025,
+     y:shoulder.y-.23,
+     z:shoulder.z+(cpu?.18:-.18)
+   };
+   const hand={
+     x:elbow.x-side*.03,
+     y:elbow.y-.20,
+     z:elbow.z+(cpu?.08:-.08)
+   };
+   return{elbow,hand};
+ }
+
+ // Dynamic counterbalance follows the right paddle arm while remaining
+ // anchored to the anatomical left shoulder at shoulder height.
+ const hx=hitWrist.x-hitShoulder.x;
+ const hy=hitWrist.y-hitShoulder.y;
+ const hz=hitWrist.z-hitShoulder.z;
+ const reach=Math.hypot(hx,hy,hz)||1;
+ const nx=hx/reach,ny=hy/reach,nz=hz/reach;
+ const elbow={
+   x:shoulder.x-nx*.12-side*.02,
+   y:shoulder.y-.19-ny*.05,
+   z:shoulder.z-nz*.12+(cpu?.15:-.15)
+ };
+ const hand={
+   x:elbow.x-nx*.12-side*.02,
+   y:elbow.y-.18-ny*.04,
+   z:elbow.z-nz*.08+(cpu?.06:-.06)
+ };
+ return{elbow,hand};
+}
+
+
+function humanShoulders(){
+ const J=spineJoints(S.human),neck=J[6],p5=J[5],p4=J[4];
+ const tx=(neck.x-p4.x)*.65+(neck.x-p5.x)*.35,ty=(neck.y-p4.y)*.65+(neck.y-p5.y)*.35,tz=(neck.z-p4.z)*.65+(neck.z-p5.z)*.35;
+ const tn=Math.hypot(tx,ty,tz)||1,sc={x:neck.x-(tx/tn)*.105,y:neck.y-(ty/tn)*.105,z:neck.z-(tz/tn)*.105};
+ return {hit:{x:sc.x-.075,y:sc.y-.015,z:sc.z+.145},free:{x:sc.x+.075,y:sc.y-.015,z:sc.z-.145}};
+}
+function solveArmToTarget(shoulder,target,bendSide){
+ const upper=.33,fore=.34,dx=target.x-shoulder.x,dy=target.y-shoulder.y,dz=target.z-shoulder.z;
+ const d=Math.max(.10,Math.min(upper+fore-.01,Math.hypot(dx,dy,dz))),ux=dx/d,uy=dy/d,uz=dz/d;
+ const cosA=clamp((upper*upper+d*d-fore*fore)/(2*upper*d),-1,1),along=upper*cosA,bend=Math.sqrt(Math.max(0,upper*upper-along*along));
+ let px=-uz,py=.30,pz=ux;const pn=Math.hypot(px,py,pz)||1;px/=pn;py/=pn;pz/=pn;
+ return {elbow:{x:shoulder.x+ux*along+px*bend*bendSide,y:shoulder.y+uy*along+py*bend,z:shoulder.z+uz*along+pz*bend*bendSide},hand:{...target}};
+}
+function drillPose(){
+ const D=S.drill,H=S.human;
+ const shoulders=humanShoulders();
+
+ let rightHand={x:H.homeX-.18,y:1.05,z:.18};
+ let leftHand={x:H.homeX-.08,y:1.02,z:-.22};
+ let lean=.12,twist=0,knee=.20,baseX=H.homeX,baseZ=0,headYaw=0;
+ let footL=null,footR=null;
+
+ if(D.stage===1){
+   if(D.phase==='raise'||D.phase==='upHold'){
+     rightHand={x:H.homeX-.02,y:2.10,z:.26};
+     leftHand={x:H.homeX+.04,y:2.08,z:-.26};
+     lean=.00;
+     knee=.12;
+   }else{
+     rightHand={x:H.homeX-.42,y:.16,z:.16};
+     leftHand={x:H.homeX-.39,y:.16,z:-.16};
+     lean=.46;
+     knee=.24;
+     baseX=H.homeX+.16;
+   }
+ }else if(D.stage===2){
+   const s=Math.sin(D.t*3.4);
+   rightHand={x:H.homeX-.30,y:1.12,z:s*.34};
+   leftHand={x:H.homeX-.30,y:1.12,z:s*.34};
+   twist=s*.22;
+   lean=.10;
+ }else if(D.stage===3){
+   // 5 steps left + 5 steps right in 2 seconds total.
+   // 10 alternating planted-foot moves => 0.20 s each.
+   const stepDur=.20;
+   const idx=Math.min(9,Math.floor(D.t/stepDur));
+   const u=(D.t-idx*stepDur)/stepDur;
+   const ease=u*u*(3-2*u);
+   const stepSize=.11;
+
+   let lz=-.18,rz=.18;
+
+   for(let k=0;k<idx;k++){
+     const dir=k<5?-1:1;
+     if(k%2===0) lz+=dir*stepSize;
+     else rz+=dir*stepSize;
+   }
+
+   const dir=idx<5?-1:1;
+   if(idx%2===0) lz+=dir*stepSize*ease;
+   else rz+=dir*stepSize*ease;
+
+   baseZ=(lz+rz)/2;
+
+   footL={x:H.homeX-.10,y:.02,z:lz};
+   footR={x:H.homeX+.10,y:.02,z:rz};
+
+   rightHand={x:H.homeX-.02,y:.88,z:.20+baseZ*.15};
+   leftHand={x:H.homeX+.02,y:.88,z:-.20+baseZ*.15};
+   knee=.30;
+   twist=clamp((rz-lz-.36)*.18,-.09,.09);
+ }else if(D.stage===4){
+   // 5 steps forward + 5 steps backward in 2 seconds total.
+   const stepDur=.20;
+   const idx=Math.min(9,Math.floor(D.t/stepDur));
+   const u=(D.t-idx*stepDur)/stepDur;
+   const ease=u*u*(3-2*u);
+   const stepSize=.10;
+
+   let lx=H.homeX-.10,rx=H.homeX+.10;
+
+   for(let k=0;k<idx;k++){
+     const dir=k<5?-1:1;
+     if(k%2===0) lx+=dir*stepSize;
+     else rx+=dir*stepSize;
+   }
+
+   const dir=idx<5?-1:1;
+   if(idx%2===0) lx+=dir*stepSize*ease;
+   else rx+=dir*stepSize*ease;
+
+   baseX=clamp((lx+rx)/2,1.82,2.42);
+
+   footL={x:lx,y:.02,z:-.18};
+   footR={x:rx,y:.02,z:.18};
+
+   rightHand={x:baseX-.02,y:.88,z:.20};
+   leftHand={x:baseX+.02,y:.88,z:-.20};
+   knee=.30;
+   lean=.11+clamp((H.homeX-baseX)*.30,-.06,.10);
+ }else if(D.stage===5){
+   headYaw=Math.sin(D.t*4.0)*.38;
+   rightHand={x:H.homeX-.02,y:.92,z:.20};
+   leftHand={x:H.homeX+.02,y:.92,z:-.20};
+   lean=.10;
+   knee=.19;
+ }
+
+ return{rightHand,leftHand,lean,twist,knee,baseX,baseZ,headYaw,shoulders,footL,footR};
+}
+function startPreGameDrills(){
+ S.drill.active=false;
+ S.drill.stage=0;
+ S.drill.phase='off';
+ S.drill.t=0;
+ finishPreGameDrills();
+}
+function finishPreGameDrills(){S.drill={active:false,stage:0,t:0,phase:'done'};S.phase='ready';S.human.baseX=S.human.homeX;S.human.baseZ=0;S.human.spine.targetLean=.12;S.human.spine.targetTwist=0;S.human.legs.targetFlex=.20;$('serveHint').textContent='WARM-UP COMPLETE • READY';$('status').textContent='WARM-UP COMPLETE • READY';computeServer();beginRallyPlan();ui();}
+function updatePreGameDrills(dt){
+ if(!S.drill.active)return;
+
+ const D=S.drill;
+ D.t+=dt;
+
+ if(D.stage===1){
+   if(D.phase==='raise'&&D.t>=.9){
+     D.phase='upHold';D.t=0;
+   }else if(D.phase==='upHold'&&D.t>=1){
+     D.phase='bend';D.t=0;
+   }else if(D.phase==='bend'&&D.t>=1.35){
+     D.phase='downHold';D.t=0;
+   }else if(D.phase==='downHold'&&D.t>=1){
+     D.stage=2;D.phase='rotate';D.t=0;
+     S.phase='PRE-GAME DRILL 2';
+     $('serveHint').textContent='READY';
+     $('status').textContent='READY • DRILL 2';
+   }
+ }else if(D.stage===2&&D.t>=1){
+   D.stage=3;D.phase='sideSteps';D.t=0;
+   S.phase='PRE-GAME DRILL 3';
+   $('serveHint').textContent='READY';
+   $('status').textContent='READY • DRILL 3';
+ }else if(D.stage===3&&D.t>=2){
+   D.stage=4;D.phase='foreAft';D.t=0;
+   S.phase='PRE-GAME DRILL 4';
+   $('serveHint').textContent='READY';
+   $('status').textContent='READY • DRILL 4';
+ }else if(D.stage===4&&D.t>=2){
+   D.stage=5;D.phase='headTurns';D.t=0;
+   S.phase='PRE-GAME DRILL 5';
+   $('serveHint').textContent='READY';
+   $('status').textContent='READY • DRILL 5';
+ }else if(D.stage===5&&D.t>=1){
+   finishPreGameDrills();
+   return;
+ }
+
+ const pose=drillPose();
+
+ const gp=Math.min(1,dt*8);
+ S.human.baseX=lerp(S.human.baseX,pose.baseX,gp);
+ S.human.baseZ=lerp(S.human.baseZ,pose.baseZ,gp);
+
+ S.human.spine.targetLean=pose.lean;
+ S.human.spine.lean=lerp(S.human.spine.lean,pose.lean,Math.min(1,dt*7));
+
+ S.human.spine.targetTwist=pose.twist;
+ S.human.spine.twist=lerp(S.human.spine.twist,pose.twist,Math.min(1,dt*8));
+
+ S.human.legs.targetFlex=pose.knee;
+ S.human.legs.kneeFlex=lerp(S.human.legs.kneeFlex,pose.knee,Math.min(1,dt*9));
+
+ S.human.headTrack.yaw=lerp(S.human.headTrack.yaw,pose.headYaw,Math.min(1,dt*9));
+}
+
+
+function playerHandedness(cpu){
+ // Both players are explicitly RIGHT-HANDED.
+ return 'right';
+}
+
+function drawRobot(a,cpu){
+ ensureSkeleton();
+ const J=drawSpine(a),pelvis=J[0],neck=J[6],A=skeletonAnchors(a,cpu),sk=a.skel;
+ const head=attachedHeadCenter(a,cpu,neck);
+ const L=lowerBodyPose(a,pelvis,cpu);
+
+ let rightTarget,leftTarget;
+ if(!S.playing&&S.resetIntro?.active){
+   rightTarget=straightArmTarget(a,cpu,'right');
+   leftTarget=straightArmTarget(a,cpu,'left');
+ }else if(!cpu){
+   rightTarget=clampTargetToReach(A.rightShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
+   leftTarget=clampTargetToReach(A.leftShoulder,a.rig.leftHand,sk.upperArm+sk.foreArm-.003);
+ }else{
+   rightTarget=clampTargetToReach(A.rightShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
+   leftTarget=straightArmTarget(a,true,'left');
+ }
+ const sgn=cpu?1:-1;
+ const RA=solveTwoBone3D(A.rightShoulder,rightTarget,sk.upperArm,sk.foreArm,{x:A.rightShoulder.x+sgn*.12,y:A.rightShoulder.y-.14,z:A.rightShoulder.z+(cpu?-.32:.32)});
+ const LA=solveTwoBone3D(A.leftShoulder,leftTarget,sk.upperArm,sk.foreArm,{x:A.leftShoulder.x+sgn*.12,y:A.leftShoulder.y-.14,z:A.leftShoulder.z+(cpu?.32:-.32)});
+
+ if(cpu){
+   drawConnectedLimb(L.hipR,L.kneeR,17,14,'#343b43','#68727c');
+   drawConnectedLimb(L.hipL,L.kneeL,17,14,'#343b43','#68727c');
+   drawRobotShorts(pelvis,L.hipL,L.hipR,L.kneeL,L.kneeR);
+   drawRobotAthleticTorso(J,A);
+   drawConnectedLimb(L.kneeR,L.footR,14,11,'#59636d','#8f99a2');
+   drawConnectedLimb(L.kneeL,L.footL,14,11,'#59636d','#8f99a2');
+   // Permanent CPU skeleton:
+   // shoulder girdle -> socket -> upper arm -> elbow -> forearm -> hand.
+   const cpuRightRoot={...A.rightShoulder};
+   const cpuLeftRoot ={...A.leftShoulder};
+
+   drawConnectedLimb(cpuRightRoot,RA.joint,17,13,'#20262c','#77818a');
+   drawConnectedLimb(RA.joint,RA.end,11,9,'#8b949d','#c1c7cc');
+   drawConnectedLimb(cpuLeftRoot,LA.joint,17,13,'#20262c','#77818a');
+   drawConnectedLimb(LA.joint,LA.end,11,9,'#8b949d','#c1c7cc');
+
+   // Socket shell overlaps the torso shoulder beam and the upper-arm capsule.
+   ellipseScreen(project(cpuRightRoot),14,14,'#59636d','#d7dde2',1.5);
+   ellipseScreen(project(cpuLeftRoot),14,14,'#59636d','#d7dde2',1.5);
+
+   a._shoulderSocketQA={
+     shoulderCenter:{...A.shoulderCenter},
+     rightSocket:{...cpuRightRoot},rightArmRoot:{...cpuRightRoot},
+     leftSocket:{...cpuLeftRoot},leftArmRoot:{...cpuLeftRoot},
+     rightElbow:{...RA.joint},leftElbow:{...LA.joint},
+     rightHand:{...RA.end},leftHand:{...LA.end}
+   };
+ }else{
+   const skin='#e0b28f';
+   drawConnectedLimb(L.hipR,L.kneeR,17,14,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(L.hipL,L.kneeL,17,14,skin,'rgba(120,85,60,.20)');
+   drawHumanShorts(pelvis,L.hipL,L.hipR,L.kneeL,L.kneeR);
+   drawHumanAthleticTorso(J);
+   drawConnectedLimb(L.kneeR,L.footR,14,11,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(L.kneeL,L.footL,14,11,skin,'rgba(120,85,60,.20)');
+   ellipseScreen(project(A.rightShoulder),11,11,'#f5f6f7','#a7b0ba',1.1);
+   ellipseScreen(project(A.leftShoulder),11,11,'#f5f6f7','#a7b0ba',1.1);
+   drawConnectedLimb(A.rightShoulder,RA.joint,15,12,'#f5f6f7','#a7b0ba');
+   drawConnectedLimb(RA.joint,RA.end,11,9,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(A.leftShoulder,LA.joint,15,12,'#f5f6f7','#a7b0ba');
+   drawConnectedLimb(LA.joint,LA.end,11,9,skin,'rgba(120,85,60,.20)');
+ }
+
+ drawShoe(L.footL,cpu);drawShoe(L.footR,cpu);
+ drawFace(head,cpu,{x:0,y:1,z:0});
+ if(cpu)drawRobotScan(head);
+ // paddle remains on designated right/paddle arm, now constrained to fixed reach
+ drawPaddle3D(RA.end,cpu,a.paddle);
+ if(!cpu)drawHumanPaddle3DArrow();
+}
+
+function makeShot(hitter,stroke,forceMiss=false){
+ const p=profiles[stroke],dir=hitter==='human'?-1:1,startX=hitter==='human'?1.62:-1.62,recvX=-startX;updateDynamicTactic();
+ const sign=S.tactic.angleBias;let dynamicDepth=clamp(p.bounceDepth+S.tactic.depthBias,.28,.98);let dynamicLat=clamp((p.lateral*sign)+S.tactic.lateralBias,-.58,.58);
+ const sliceDir=(Math.random()<.5?-1:1);if(stroke==='slice'){dynamicDepth=clamp(.38+Math.random()*.32,.32,.72);dynamicLat=sliceDir*(.26+Math.random()*.18);}
+ const bounceX=dir*dynamicDepth,bounceZ=dynamicLat;let endZ=clamp(bounceZ+(p.sideSpin*.012),-.70,.70);if(stroke==='slice')endZ=clamp(-bounceZ+sliceDir*.18,-.78,.78);
+ const deceptiveSpin=stroke==='topspin',spinKick=deceptiveSpin?clamp(sign*(.16+.16*S.tactic.aggression),-.34,.34):0;if(deceptiveSpin)endZ=clamp(bounceZ+spinKick,-.76,.76);
+ const start={x:startX,y:1.08,z:S.ball.z},bounce={x:bounceX,y:.845,z:bounceZ},end={x:recvX,y:stroke==='smash'?.98:stroke==='slice'?1.00:1.10,z:endZ},apparentEnd={x:recvX,y:end.y,z:bounceZ};
+ const total=p.duration*speedFactor()*(1.08-.18*S.tactic.aggression),pre=total*(stroke==='slice'?.61:.54),post=total-pre;let outcome='legal';if(Math.random()<.13&&stroke!=='smash'){outcome='short';bounce.x=dir*(.26+Math.random()*.17);}if(Math.random()<.035){outcome='net';bounce.x=0;bounce.y=.82;}
+ return{hitter,receiver:hitter==='human'?'cpu':'human',stroke,start,bounce,end,apparentEnd,phase:'pre',t:0,pre,post,forceMiss,outcome,clearance:.08,deceptiveSpin,spinKick,sliceDir};
+}
+function shotPoint(seg,u){
+ const p=profiles[seg.stroke],A=seg.phase==='pre'?seg.start:seg.bounce,B=seg.phase==='pre'?seg.bounce:seg.end;let arc=seg.phase==='pre'?p.preArc:p.postArc;
+ if(seg.outcome==='net'&&seg.phase==='pre')arc=Math.max(.005,seg.clearance||.01);
+ let z=lerp(A.z,B.z,u);
+ if(seg.stroke==='slice'){
+   const dir=seg.sliceDir||1;
+   if(seg.phase==='pre')z+=dir*.055*Math.sin(Math.PI*u);
+   else{const s=u*u*(3-2*u);z+=dir*(-.34*s+.09*Math.sin(Math.PI*u));}
+ }else if(seg.deceptiveSpin){
+   if(seg.phase==='pre')z+=.008*Math.sin(Math.PI*u);else{const delayed=u*u*(3-2*u);z+=(seg.spinKick||0)*delayed+.05*Math.sin(Math.PI*u);}
+ }else{
+   if(seg.stroke==='backhand'||seg.stroke==='forehand')z+=p.sideSpin*.005*Math.sin(Math.PI*u);
+   if(seg.stroke==='topspin'&&seg.phase==='post')z+=.035*Math.sin(Math.PI*u);
+ }
+ let y=lerp(A.y,B.y,u)+4*arc*u*(1-u);if(seg.stroke==='topspin'&&seg.phase==='post')y-=.06*u*u;if(seg.stroke==='slice'&&seg.phase==='post')y-=.10*u;
+ return{x:lerp(A.x,B.x,u),z,y};
+}
+function chooseCPUStroke(){
+ if(S.auto&&S.autoDemo?.active)return S.autoDemo.stroke;
+ if(S.stroke==='topspin')return S.rally%3?'topspin':'slice';
+ if(S.stroke==='slice')return S.rally%3?'backhand':'topspin';
+ if(S.stroke==='smash')return S.rally%2?'topspin':'forehand';
+ if(S.stroke==='backhand')return S.rally%3?'backhand':'slice';
+ return S.rally%4?'forehand':'topspin';
+}
+function humanPaddleStroke(){
+ // Convert paddle orientation to shot family + custom spin direction.
+ const p=S.human.paddle;
+ const pitchDeg=p.pitch*180/Math.PI;
+ const yawDeg=p.yaw*180/Math.PI;
+
+ let stroke=S.stroke;
+ if(pitchDeg>10)stroke='topspin';
+ else if(pitchDeg<-6)stroke='slice';
+
+ // Preserve the selected family but bend the bounce angle using paddle yaw.
+ const oldLat=profiles[stroke].lateral;
+ profiles[stroke].lateral=clamp(oldLat + p.yaw*.55,-.52,.52);
+ const shot=stroke;
+ // spin visual direction follows pitch/yaw immediately
+ S.spinPhase += p.yaw*.6;
+ profiles[stroke].lateral=oldLat;
+ return shot;
+}
+
+function startShot(hitter,stroke){
+ if(S.matchOver)return;
+ // A rally only ends on the planned winner's attack once the rally has become interesting.
+ const forceMiss=(S.rally>=S.rallyLimit && hitter===S.rallyWinner);
+ S.shot=makeShot(hitter,stroke,forceMiss);
+ S.phase='pre';S.rally++;S.best=Math.max(S.best,S.rally);
+ hitSound(hitter,stroke);ui();
+}
+function receiverCanReach(seg){
+ if(seg.forceMiss)return false;
+ const a=seg.receiver==='human'?S.human:S.cpu;
+ const reach=dist3(a.hand,seg.end);
+
+ // Deceptive spin is intentionally harder because receiver committed to apparent path.
+ const deceptionPenalty=seg.deceptiveSpin?.16:0;
+ const base=seg.receiver==='human'?.90:.84;
+ return reach < base + .12*(1-S.speed) - deceptionPenalty;
+}
+function updateShot(dt){
+ if(!S.shot||S.pointLocked)return;
+ const q=S.shot,p=profiles[q.stroke];
+ const recv=q.receiver==='human'?S.human:S.cpu;
+ const hit=q.hitter==='human'?S.human:S.cpu;
+ q.t+=dt;
+
+ if(q.phase==='humanContact'){
+   const rawU=clamp(q.t/q.contactDuration,0,1);
+   const u=S.humanRally.drag?Math.min(rawU,.82):rawU;
+   S.ball={
+     x:lerp(q.contactStart.x,q.contactEnd.x,u),
+     y:lerp(q.contactStart.y,q.contactEnd.y,u),
+     z:lerp(q.contactStart.z,q.contactEnd.z,u),
+     r:.026
+   };
+   S.phase='human contact';
+   S.humanRally.contactElapsed=q.t;
+
+   if(!S.humanRally.drag)prepareHumanIntercept();
+   const beforeContactShot=S.shot;
+   updateContactWindow();
+   if(S.shot!==beforeContactShot)return;
+
+   if(S.humanRally.contactGrace>0){
+     S.humanRally.contactGrace=Math.max(0,S.humanRally.contactGrace-dt);
+   }
+
+   if(u>=1&&!S.pointLocked){
+     if(!S.humanRally.contactLatched){
+       $('serveHint').textContent='MISSED RETURN • HUMANOID POINT';
+       pointTo('cpu');
+       return;
+     }
+     if(S.humanRally.drag&&S.humanRally.contactGrace<=0){
+       $('serveHint').textContent='RETURN NOT RELEASED • HUMANOID POINT';
+       S.humanRally.contactLatched=false;
+       pointTo('cpu');
+       return;
+     }
+   }
+   return;
+ }
+
+ if(q.phase==='pre'){
+   const u=clamp(q.t/q.pre,0,1);
+   S.ball=Object.assign(S.ball,shotPoint(q,u));
+   S.phase=q.outcome==='net'?'to net':'to bounce';
+
+   if(q.outcome==='net')$('bounceName').textContent='NET';
+   else $('bounceName').textContent=q.receiver.toUpperCase()+' COURT';
+
+   followThrough(hit,q.stroke,u,dt);
+
+   // Receiver reads apparent trajectory, not hidden spin kick.
+   const readTarget=(q.deceptiveSpin&&q.receiver==='cpu')?q.apparentEnd:q.end;
+
+   if(q.receiver==='human'&&!S.auto){
+     armHumanRallyControl();
+     baseTarget(recv,q.end,q.stroke,dt);
+   }else{
+     baseTarget(recv,readTarget,q.stroke,dt);
+     handReady(recv,readTarget,q.stroke,u*.45,dt);
+   }
+
+   if(u>=1){
+     // Illegal human/CPU shots resolve immediately at net or off-table landing.
+     if(q.outcome==='net'||q.outcome==='wide'||q.outcome==='long'){
+       pointTo(q.receiver);
+       return;
+     }
+
+     q.phase='post';
+     q.t=0;
+     S.phase=q.outcome==='short'?'short bounce':'after bounce';
+     bounceSound();
+   }
+ }else{
+   const u=clamp(q.t/q.post,0,1);
+   S.ball=Object.assign(S.ball,shotPoint(q,u));
+   S.phase=q.deceptiveSpin?'spin kick':'to paddle';
+
+   // CPU commits to the apparent straight line until after bounce,
+   // then realizes the sidespin progressively.
+   let readTarget=q.end;
+   if(q.deceptiveSpin&&q.receiver==='cpu'){
+     const deception=clamp((u-.48)/.52,0,1);
+     readTarget={
+       x:q.end.x,
+       y:q.end.y,
+       z:lerp(q.apparentEnd.z,q.end.z+(q.spinKick||0),deception)
+     };
+   }
+
+   if(q.receiver==='human'&&!S.auto){
+     armHumanRallyControl();
+     baseTarget(recv,q.end,q.stroke,dt);
+   }else{
+     baseTarget(recv,readTarget,q.stroke,dt);
+     handReady(recv,readTarget,q.stroke,.45+.55*u,dt);
+   }
+
+   if(u>=1){
+     if(q.receiver==='human'&&!S.auto){
+       q.phase='humanContact';
+       q.t=0;
+       q.contactStart={x:q.end.x,y:q.end.y,z:q.end.z};
+       q.contactEnd={x:q.end.x+.48,y:q.end.y-.10,z:q.end.z};
+       q.contactDuration=1.30*speedFactor();
+       S.phase='human contact';
+       S.humanRally.contactElapsed=0;
+       S.humanRally.contactGrace=0;
+       S.cpuServePending=false;
+       S.cpuServeCountdown=0;
+       S.humanRally.contactDuration=q.contactDuration;
+       armHumanRallyControl();
+       return;
+     }
+
+     recv.hand={x:q.end.x,y:q.end.y-.07,z:q.end.z};
+     if(receiverCanReach(q))startShot(q.receiver,chooseCPUStroke());
+     else pointTo(q.hitter);
+   }
+ }
+ S.spinPhase+=p.spinDir*p.spinRate*dt;
+}
+function pointTo(side){
+ if(S.matchOver)return;
+ if(S.resolvedRallyId===S.rallyId)return;
+
+ // Lock this rally before ANY score mutation.
+ S.resolvedRallyId=S.rallyId;
+ S.pointLocked=true;
+ ++S.serveToken;
+
+ if(side==='human')S.p++;
+ else S.c++;
+
+ // Exactly one completed point.
+ S.pointIndex++;
+
+ S.best=Math.max(S.best,S.rally);
+ S.rally=0;
+ S.shot=null;
+ S.phase='point';
+
+ clearPointInteractionState();
+
+ // Recompute service immediately from completed-point count.
+ computeServer();
+
+ $('bounceName').textContent='—';
+ $('status').textContent=
+   (side==='human'?'HUMAN':'HUMANOID')+
+   ' POINT • SCORE '+String(S.c).padStart(2,'0')+'–'+String(S.p).padStart(2,'0');
+
+ ui();
+
+ if(gameWonBy(side)){
+   finishGame(side);
+   return;
+ }
+
+ S.pointLocked=false;
+ S.ball={x:S.server==='human'?1.62:-1.62,y:1.08,z:0,r:.026};
+ S.prevBall=null;
+ beginRallyPlan();
+ ui();
+
+ // v32.1 keeps v28+ behavior: both servers wait for their own serve button.
+}
+
+function rotXZ(ox,oz,yaw){
+ const c=Math.cos(yaw),s=Math.sin(yaw);
+ return{x:ox*c-oz*s,z:ox*s+oz*c};
+}
+
+function ensureHumanRigState(){
+ if(!S.human.rig){
+   S.human.rig={
+     bodyYaw:0,
+     bodyLift:0,
+     bodyBend:0,
+     headOffset:{x:0,y:0,z:0},
+     leftHand:{x:S.human.baseX-.02,y:.92,z:-.28},
+     footLOffset:{x:0,z:0},
+     footROffset:{x:0,z:0}
+   };
+ }
+ if(!S.rigControl)S.rigControl={active:false,part:null,last:null};
+ if(!S.resetIntro)S.resetIntro={active:true,t:0,phase:'front'};
+}
+
+function resetRigDefaults(){
+ ensureHumanRigState();
+ ensureSkeleton();
+ S.human.rig.bodyYaw=0;S.human.rig.bodyLift=0;S.human.rig.bodyBend=0;
+ S.human.rig.headOffset={x:0,y:0,z:0};
+ S.human.rig.footLOffset={x:0,z:0};S.human.rig.footROffset={x:0,z:0};
+ S.rigControl={active:false,part:null,last:null};
+ S.resetIntro={active:true,t:0,phase:'frontLocked'};
+}
+
+function resetPresentationPose(cpu){
+ const actor=cpu?S.cpu:S.human,A=skeletonAnchors(actor,cpu);
+ return{rightShoulder:A.rightShoulder,leftShoulder:A.leftShoulder,rightHand:straightArmTarget(actor,cpu,'right'),leftHand:straightArmTarget(actor,cpu,'left'),bend:0};
+}
+
+function updateResetPresentation(dt){
+ if(S.playing)return;
+ ensureSkeleton();
+ if(!S.resetIntro)S.resetIntro={active:true,t:0,phase:'frontLocked'};
+ S.resetIntro.active=true;S.resetIntro.phase='frontLocked';S.resetIntro.t+=dt;
+ for(const a of [S.human,S.cpu]){
+   a.rig.bodyYaw=0;a.rig.bodyLift=0;a.rig.bodyBend=0;
+   a.spine.lean=lerp(a.spine.lean,.01,Math.min(1,dt*10));a.spine.targetLean=.01;
+   a.spine.twist=lerp(a.spine.twist,0,Math.min(1,dt*10));a.spine.targetTwist=0;
+   a.legs.kneeFlex=lerp(a.legs.kneeFlex,.08,Math.min(1,dt*10));a.legs.targetFlex=.08;
+   a.headTrack.yaw=0;a.headTrack.pitch=0;
+ }
+ S.human.hand=straightArmTarget(S.human,false,'right');
+ S.human.rig.leftHand=straightArmTarget(S.human,false,'left');
+ S.cpu.hand=straightArmTarget(S.cpu,true,'right');
+}
+
+function humanRigGeometry(){
+ ensureSkeleton();
+ const a=S.human,A=skeletonAnchors(a,false),sk=a.skel;
+ const head=attachedHeadCenter(a,false,A.neck);
+ const rt=clampTargetToReach(A.rightShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
+ const lt=clampTargetToReach(A.leftShoulder,a.rig.leftHand,sk.upperArm+sk.foreArm-.003);
+ const ra=solveTwoBone3D(A.rightShoulder,rt,sk.upperArm,sk.foreArm,{x:A.rightShoulder.x-.12,y:A.rightShoulder.y-.14,z:A.rightShoulder.z+.34});
+ const la=solveTwoBone3D(A.leftShoulder,lt,sk.upperArm,sk.foreArm,{x:A.leftShoulder.x-.12,y:A.leftShoulder.y-.14,z:A.leftShoulder.z-.34});
+ const L=lowerBodyPose(a,A.pelvis,false);
+ return{J:A.J,pelvis:A.pelvis,neck:A.neck,rightShoulder:A.rightShoulder,leftShoulder:A.leftShoulder,rightHip:A.rightHip,leftHip:A.leftHip,head,rightHand:ra.end,leftHand:la.end,rightElbow:ra.joint,leftElbow:la.joint,footL:L.footL,footR:L.footR,kneeL:L.kneeL,kneeR:L.kneeR};
+}
+
+function screenDist(world,x,y){
+ const p=project(world);
+ return Math.hypot(p.x-x,p.y-y);
+}
+
+function pickHumanRigPart(x,y){
+ // Paddle arrow has priority over the hand, so blade orientation can be changed
+ // without accidentally moving the wrist/arm.
+ if(humanPaddleArrowHit(x,y))return 'paddle3D';
+
+ const g=humanRigGeometry();
+ const candidates=[
+   ['head',g.head,42],
+   ['rightHand',g.rightHand,38],
+   ['leftHand',g.leftHand,38],
+   ['leftLeg',g.footL,46],
+   ['rightLeg',g.footR,46]
+ ];
+ let best=null,bestD=1e9;
+ for(const [name,p,r] of candidates){
+   const d=screenDist(p,x,y);
+   if(d<r&&d<bestD){best=name;bestD=d}
+ }
+ return best||'body';
+}
+
+function beginRigControl(x,y){
+ if(!S.playing||S.auto||S.serve.armed||humanIncoming())return false;
+ ensureHumanRigState();
+ S.rigControl.active=true;
+ S.rigControl.part=pickHumanRigPart(x,y);
+ S.rigControl.last={x,y};
+ $('status').textContent='3D CONTROL • '+S.rigControl.part.toUpperCase();
+ $('status').style.color='#7fc8ff';
+ return true;
+}
+
+function moveRigControl(x,y){
+ if(!S.rigControl?.active||!S.rigControl.last)return;
+ ensureSkeleton();
+ const dx=x-S.rigControl.last.x,dy=y-S.rigControl.last.y,r=S.human.rig,part=S.rigControl.part,A=skeletonAnchors(S.human,false),sk=S.human.skel;
+ if(part==='head'){
+   S.human.headTrack.yaw=clamp(S.human.headTrack.yaw+dx*.006,-1.15,1.15);
+   S.human.headTrack.pitch=clamp(S.human.headTrack.pitch-dy*.005,-.65,.65);
+ }else if(part==='paddle3D'){
+   // Independent blade orientation. Arm/wrist coordinates do not change.
+   S.human.paddle.yaw=clamp(S.human.paddle.yaw+dx*.0045,-.22,.22);
+   S.human.paddle.pitch=clamp(S.human.paddle.pitch-dy*.0045,-.30,.30);
+   S.human.paddleInputAt=performance.now();
+   $('status').textContent='PADDLE 3D • YAW '+Math.round(S.human.paddle.yaw*180/Math.PI)+'° • PITCH '+Math.round(S.human.paddle.pitch*180/Math.PI)+'°';
+ }else if(part==='rightHand'){
+   let t={...S.human.hand};t.z+=dx*.0020;t.y-=dy*.0020;t.x-=dy*.00075;
+   S.human.hand=clampTargetToReach(A.rightShoulder,t,sk.upperArm+sk.foreArm-.003);
+ }else if(part==='leftHand'){
+   let t={...r.leftHand};t.z+=dx*.0020;t.y-=dy*.0020;t.x-=dy*.00075;
+   r.leftHand=clampTargetToReach(A.leftShoulder,t,sk.upperArm+sk.foreArm-.003);
+ }else if(part==='leftLeg'){
+   r.footLOffset.z=clamp(r.footLOffset.z+dx*.0018,-.34,.34);r.footLOffset.x=clamp(r.footLOffset.x+dy*.0015,-.26,.26);
+ }else if(part==='rightLeg'){
+   r.footROffset.z=clamp(r.footROffset.z+dx*.0018,-.34,.34);r.footROffset.x=clamp(r.footROffset.x+dy*.0015,-.26,.26);
+ }else{
+   r.bodyYaw=(r.bodyYaw+dx*.010)%(Math.PI*2);r.bodyLift=clamp(r.bodyLift-dy*.0012,-.12,.16);r.bodyBend=clamp(r.bodyBend+dy*.0017,-.10,.28);
+   S.human.spine.targetLean=clamp(.08+r.bodyBend,.01,.34);S.human.legs.targetFlex=clamp(.12+Math.max(0,r.bodyBend)*.55,.08,.32);
+ }
+ S.rigControl.last={x,y};
+}
+
+function endRigControl(){
+ if(!S.rigControl)return;
+ S.rigControl.active=false;
+ S.rigControl.part=null;
+ S.rigControl.last=null;
+ $('status').textContent='3D BODY CONTROL READY';
+ $('status').style.color='#6fe59a';
+}
+
+
+function vadd3(a,b){return{x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}}
+function vsub3(a,b){return{x:a.x-b.x,y:a.y-b.y,z:a.z-b.z}}
+function vmul3(a,s){return{x:a.x*s,y:a.y*s,z:a.z*s}}
+function vlen3(a){return Math.hypot(a.x,a.y,a.z)}
+function vnorm3(a){const n=vlen3(a)||1;return vmul3(a,1/n)}
+function vdot3(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+
+function clampTargetToReach(root,target,maxReach,minReach=.015){
+ const d=vsub3(target,root),n=vlen3(d)||1;
+ const rr=clamp(n,minReach,maxReach);
+ return vadd3(root,vmul3(d,rr/n));
+}
+function solveTwoBone3D(root,target,L1,L2,pole){
+ const end=clampTargetToReach(root,target,L1+L2-.003,Math.abs(L1-L2)+.003);
+ const d=vsub3(end,root),dist=Math.max(.0001,vlen3(d)),dir=vnorm3(d);
+ let pv=vsub3(pole,root);
+ pv=vsub3(pv,vmul3(dir,vdot3(pv,dir)));
+ if(vlen3(pv)<.001) pv={x:0,y:0,z:1};
+ pv=vnorm3(pv);
+ const along=(L1*L1-L2*L2+dist*dist)/(2*dist);
+ const h=Math.sqrt(Math.max(0,L1*L1-along*along));
+ const joint=vadd3(vadd3(root,vmul3(dir,along)),vmul3(pv,h));
+ return{joint,end};
+}
+function ensureSkeleton(){
+ ensureHumanRigState();
+ const proto={upperArm:.30,foreArm:.29,thigh:.43,shin:.43,neck:.13,shoulderWidth:.34,hipWidth:.28};
+ if(!S.human.skel)S.human.skel={...proto};
+ if(!S.cpu.skel)S.cpu.skel={...proto};
+}
+function skeletonAnchors(actor,cpu){
+ ensureSkeleton();
+ const J=spineJoints(actor),pelvis=J[0],neck=J[6],yaw=actor.rig?.bodyYaw||0;
+ const hw=actor.skel.hipWidth/2;
+
+ let rightShoulder,leftShoulder,shoulderCenter;
+
+ if(cpu){
+   // Rigid CPU shoulder girdle parented to upper chest.
+   // It follows the torso but cannot slide toward the neck or down the ribs.
+   const upper=J[5];
+   shoulderCenter={
+     x:lerp(upper.x,neck.x,.72),
+     y:lerp(upper.y,neck.y,.72),
+     z:lerp(upper.z,neck.z,.72)
+   };
+
+   // Wider CPU shoulder span to keep sockets clearly outside the neck/chest.
+   // For this fixed 2.5D camera, use the camera-lateral axis for the shoulder
+   // girdle. Both sockets therefore remain on the visible upper-chest line
+   // instead of one projecting downward along camera depth.
+   const halfWidth=.25;
+   const cb=cameraBasis();
+   const lateralLen=Math.hypot(cb.r.x,cb.r.z)||1;
+   const lx=cb.r.x/lateralLen, lz=cb.r.z/lateralLen;
+
+   rightShoulder={
+     x:shoulderCenter.x+lx*halfWidth,
+     y:shoulderCenter.y,
+     z:shoulderCenter.z+lz*halfWidth
+   };
+   leftShoulder={
+     x:shoulderCenter.x-lx*halfWidth,
+     y:shoulderCenter.y,
+     z:shoulderCenter.z-lz*halfWidth
+   };
+ }else{
+   shoulderCenter={x:neck.x,y:neck.y-.10,z:neck.z};
+   const sw=actor.skel.shoulderWidth/2;
+   const r=rotXZ(0, sw,yaw),l=rotXZ(0,-sw,yaw);
+   rightShoulder={x:shoulderCenter.x+r.x,y:shoulderCenter.y,z:shoulderCenter.z+r.z};
+   leftShoulder ={x:shoulderCenter.x+l.x,y:shoulderCenter.y,z:shoulderCenter.z+l.z};
+ }
+
+ const rh=rotXZ(0,cpu?-hw:hw,yaw),lh=rotXZ(0,cpu?hw:-hw,yaw);
+ return{
+   J,pelvis,neck,shoulderCenter,
+   rightShoulder,leftShoulder,
+   rightHip:{x:pelvis.x+rh.x,y:pelvis.y-.02,z:pelvis.z+rh.z},
+   leftHip:{x:pelvis.x+lh.x,y:pelvis.y-.02,z:pelvis.z+lh.z}
+ };
+}
+function attachedHeadCenter(actor,cpu,neck){
+ const sk=actor.skel||{neck:.13},yaw=(actor.rig?.bodyYaw||0)+(actor.headTrack?.yaw||0),pitch=actor.headTrack?.pitch||0;
+ const f=cpu?1:-1,rz=rotXZ(f,0,yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+ return{x:neck.x+rz.x*sk.neck*.34*cp,y:neck.y+sk.neck*.92+sp*sk.neck*.22,z:neck.z+rz.z*sk.neck*.34*cp};
+}
+function straightArmTarget(actor,cpu,side){
+ const A=skeletonAnchors(actor,cpu),sh=side==='right'?A.rightShoulder:A.leftShoulder,sk=actor.skel;
+ return{x:sh.x,y:sh.y-(sk.upperArm+sk.foreArm)*.95,z:sh.z};
+}
+function baseFootTarget(actor,cpu,side){
+ const A=skeletonAnchors(actor,cpu),hip=side==='right'?A.rightHip:A.leftHip;
+ return{x:hip.x,y:.02+(actor.rig?.bodyLift||0),z:hip.z};
+}
+function lockResetPose(){
+ ensureSkeleton();
+ for(const a of [S.human,S.cpu]){
+   a.rig.bodyYaw=0;a.rig.bodyLift=0;a.rig.bodyBend=0;
+   a.spine.lean=.01;a.spine.targetLean=.01;a.spine.twist=0;a.spine.targetTwist=0;
+   a.legs.kneeFlex=.08;a.legs.targetFlex=.08;a.headTrack.yaw=0;a.headTrack.pitch=0;
+ }
+ S.human.hand=straightArmTarget(S.human,false,'right');
+ S.human.rig.leftHand=straightArmTarget(S.human,false,'left');
+ S.cpu.hand=straightArmTarget(S.cpu,true,'right');
+ S.resetIntro={active:true,t:0,phase:'frontLocked'};
+}
+
+function resetAll(){
+ S.playing=false;S.auto=false;S.p=S.c=0;S.hGames=S.cGames=0;S.gameNumber=1;S.gamesToWin=3;
+ S.gameStartServer='human';S.server='human';S.matchOver=false;S.matchWinner='';S.setupPaddle={pitch:0,yaw:0,roll:0,locked:false};S.faceLocked=false;S.drill={active:false,stage:0,t:0,phase:'idle',enteredAt:0,watchdog:false};S.cpuServePending=false;S.cpuServeCountdown=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;S.serveToken=0;S.faceLocked=false;S.lockedStroke='forehand';S.prevBall=null;S.tactic={exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55};
+ S.rally=S.best=0;S.shot=null;S.phase='idle';S.spinPhase=0;
+ S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
+ S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
+ ensureHumanRigState();
+ S.cpu.rig={bodyYaw:0,bodyLift:0,bodyBend:0,headOffset:{x:0,y:0,z:0}};
+ resetRigDefaults();
+ lockResetPose();
+ S.ball={x:1.62,y:1.08,z:0,r:.026};
+ S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?2.06:-2.06,backswing:false,forward:false,last:null};
+ S.manualPaddle={drag:false,last:null,active:false};S.humanRally={armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,lastGesture:{dx:0,dy:0,dz:0},target:null,window:0,holdTime:0,assistStrength:.82,
+  gestureBase:null,pointerStart:null,totalDX:0,totalDY:0,maxBackDrag:0,maxForwardDrag:0,contactLatched:false,contactBall:null,contactElapsed:0,contactDuration:.72,contactGrace:0};
+ beginRallyPlan();
+ $('announcement').style.display='none';
+ applySelectedPaddlePreset();
+ ui();
+}
+
+function drawBall(){
+ const P=project(S.ball),r=Math.max(4,S.ball.r*P.s);
+ ctx.save();ctx.translate(P.x,P.y);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+ /* rotating red seam shows spin direction and speed */
+ ctx.rotate(S.spinPhase);ctx.strokeStyle='#e34c55';ctx.lineWidth=Math.max(1,r*.18);ctx.beginPath();ctx.arc(0,0,r*.72,-1.05,1.05);ctx.stroke();
+ ctx.strokeStyle='#26313a';ctx.lineWidth=Math.max(1,r*.10);ctx.beginPath();ctx.moveTo(-r*.55,0);ctx.lineTo(r*.55,0);ctx.stroke();ctx.restore();
+}
+function draw(){
+ ctx.clearRect(0,0,innerWidth,innerHeight);const g=ctx.createLinearGradient(0,0,0,innerHeight);g.addColorStop(0,'#0d1520');g.addColorStop(1,'#11161b');ctx.fillStyle=g;ctx.fillRect(0,0,innerWidth,innerHeight);
+ poly([{x:-3,y:0,z:-2.4},{x:3,y:0,z:-2.4},{x:3,y:0,z:2.4},{x:-3,y:0,z:2.4}],'#181e24','#181e24',1);
+ drawTable();
+ try{drawRobot(S.cpu,true)}catch(e){console.error('CPU ROBOT',e)}
+ try{drawRobot(S.human,false)}catch(e){console.error('HUMAN ROBOT',e)}
+ try{drawBall()}catch(e){console.error('BALL',e)}
+ $('ballSpeed').textContent=S.shot?(2.8/speedFactor()).toFixed(1):'0.0';
+ if(S.auto&&S.autoDemo?.active){
+   $('phaseName').textContent=(S.autoDemo.transition?'TRANSITION':S.autoDemo.mode+' '+autoDemoStrokeName(S.autoDemo.stroke)).toUpperCase();
+ }else $('phaseName').textContent=S.phase.toUpperCase();
+}
+
+/* No blue trajectory line in v10. */
+
+$('playBtn').onclick=()=>{
+ ensureAudio();if(S.matchOver)return;ensureSkeleton();
+ stopAutoDemo();
+ S.playing=true;S.auto=false;S.faceLocked=false;S.setupPaddle.locked=false;
+ if(S.resetIntro)S.resetIntro.active=false;
+ $('status').textContent='3D BODY CONTROL READY';$('status').style.color='#6fe59a';
+ $('serveHint').textContent='3D CONTROL: tap HEAD / either HAND / either FOOT and drag • drag EMPTY SPACE to rotate body 360° or bend/lift';
+ ui();
+};
+$('autoBtn').onclick=()=>{
+ ensureAudio();if(S.matchOver)return;
+ S.auto=!S.auto;
+ S.playing=true;
+ S.serve.armed=false;
+ S.shot=null;
+ S.pointLocked=false;
+ S.rally=0;
+ if(S.resetIntro)S.resetIntro.active=false;
+ computeServer();beginRallyPlan();
+ if(S.auto){
+   startAutoDemo();
+ }else{
+   stopAutoDemo();
+   S.speed=.50;
+   $('speed').value=50;
+   S.stroke='forehand';
+   applySelectedPaddlePreset();
+   $('serveHint').textContent='3D CONTROL: tap HEAD / either HAND / either FOOT and drag • drag EMPTY SPACE to rotate body 360° or bend/lift';
+ }
+ ui();
+};
+$('resetBtn').onclick=()=>{stopAutoDemo();press3DButton('resetBtn',180);setTimeout(resetAll,70)};
+$('audioBtn').onclick=()=>{S.audio=!S.audio;if(S.audio)ensureAudio();ui()};
+$('tipBtn').onclick=()=>{
+ const panel=$('tip');
+ const isOpen=getComputedStyle(panel).display==='block';
+ if(isOpen){
+   panel.style.display='none';
+ }else{
+   renderProTips();
+   panel.style.display='block';
+   panel.scrollTop=0;
+ }
+};
+$('speed').oninput=e=>{S.speed=+e.target.value/100;ui()};
+document.querySelectorAll('.stroke').forEach(b=>b.onclick=()=>{
+ ensureAudio();
+ S.stroke=b.dataset.stroke;
+ if(!S.playing||!S.faceLocked)applySelectedPaddlePreset();
+ ui();
+});
+
+
+function beginCpuServeCountdown(){
+ ensureAudio();
+ if(!S.playing||S.matchOver||S.drill.active)return;
+ computeServer();
+ if(S.server!=='cpu')return;
+
+ ++S.serveToken;
+ const token=S.serveToken;
+ S.cpuServePending=true;
+ S.cpuServeCountdown=3;
+ ui();
+
+ const tick=()=>{
+   if(token!==S.serveToken||S.matchOver||!S.playing||S.server!=='cpu'){
+     S.cpuServePending=false;
+     S.cpuServeCountdown=0;
+     ui();
+     return;
+   }
+
+   if(S.cpuServeCountdown<=0){
+     S.cpuServePending=false;
+     armServeFor('cpu');
+
+     // CPU performs its own mirrored serve biomechanics.
+     S.serve.backswing=true;
+     S.serve.forward=false;
+     S.cpu.hand.x=-2.28;
+     S.cpu.hand.y=1.10;
+     S.ball={x:-2.23,y:1.19,z:S.cpu.hand.z,r:.026};
+     ui();
+
+     setTimeout(()=>{
+       if(token!==S.serveToken||S.matchOver||S.server!=='cpu')return;
+       S.serve.forward=true;
+       S.cpu.hand.x=-1.56;
+       S.cpu.hand.y=1.04;
+       S.ball={x:-1.61,y:1.12,z:S.cpu.hand.z,r:.026};
+       ui();
+
+       setTimeout(()=>{
+         if(token!==S.serveToken||S.matchOver||S.server!=='cpu')return;
+         releaseServe();
+       },180);
+     },380);
+     return;
+   }
+
+   S.cpuServeCountdown--;
+   ui();
+   setTimeout(tick,1000);
+ };
+ setTimeout(tick,1000);
+}
+
+function armServeFor(side){
+ ensureAudio();
+ if(!S.playing||S.matchOver||S.drill.active)return;
+ computeServer();
+ if(S.server!==side)return;
+ S.auto=false;
+ if(side==='human'){
+   S.setupPaddle.pitch=S.human.paddle.pitch;
+   S.setupPaddle.yaw=S.human.paddle.yaw;
+   S.setupPaddle.roll=S.human.paddle.roll;
+   S.setupPaddle.locked=true;
+   S.faceLocked=true;
+ }
+ S.shot=null;
+ S.serve={armed:true,side,drag:false,maxBackX:side==='human'?2.06:-2.06,backswing:false,forward:false,last:null};
+ const actor=side==='human'?S.human:S.cpu;
+ S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.07,z:actor.hand.z,r:.026};
+ ui();
+}
+$('humanServeBtn').onclick=()=>{press3DButton('humanServeBtn',180);armServeFor('human')};
+$('cpuServeBtn').onclick=()=>{press3DButton('cpuServeBtn',180);beginCpuServeCountdown()};
+
+
+function prepareHumanIntercept(){
+ if(S.auto||!S.shot||S.shot.receiver!=='human')return;
+ const ball=S.shot.end;
+ S.humanRally.target={x:ball.x,y:ball.y,z:ball.z};
+
+ const a=.72;
+ S.human.baseX=lerp(S.human.baseX,S.human.homeX-(ball.x<1.55?.16:.04),a);
+ S.human.baseZ=lerp(S.human.baseZ,clamp(ball.z*1.05,-.48,.48),a);
+
+ if((performance.now()-S.human.paddleInputAt)>700)applySelectedPaddlePreset();
+
+ const desired=desiredHandForBladeContact(ball,false,S.human.paddle);
+ const B=paddleBasis(false,S.human.paddle);
+ const behind=vscale(B.normal,-.025);
+
+ S.human.hand.x=lerp(S.human.hand.x,desired.x+behind.x,.82);
+ S.human.hand.y=lerp(S.human.hand.y,desired.y+behind.y,.82);
+ S.human.hand.z=lerp(S.human.hand.z,desired.z+behind.z,.82);
+}
+
+
+function sweptBallPaddleContact(prevBall,currBall,hand,cpu,angles){
+ if(!prevBall||!currBall)return null;
+
+ const a=worldToPaddleLocal(prevBall,hand,cpu,angles);
+ const b=worldToPaddleLocal(currBall,hand,cpu,angles);
+
+ const da=a.x,db=b.x;
+ const denom=da-db;
+ let t;
+
+ if(Math.abs(denom)<1e-8){
+   if(Math.min(Math.abs(da),Math.abs(db))>.040)return null;
+   t=.5;
+ }else{
+   t=da/denom;
+   if(t<0||t>1)return null;
+ }
+
+ const y=lerp(a.y,b.y,t);
+ const z=lerp(a.z,b.z,t);
+ const ballR=currBall.r||.026;
+ const ry=.125+ballR*.55;
+ const rz=.085+ballR*.55;
+ const ellipse=(y*y)/(ry*ry)+(z*z)/(rz*rz);
+ if(ellipse>1)return null;
+
+ return{
+   hit:true,
+   t,
+   point:{
+     x:lerp(prevBall.x,currBall.x,t),
+     y:lerp(prevBall.y,currBall.y,t),
+     z:lerp(prevBall.z,currBall.z,t),
+     r:ballR
+   }
+ };
+}
+
+
+function sweptBladeClosestContact(prevBall,currBall,hand,cpu,angles){
+ if(!prevBall||!currBall)return null;
+
+ const a=worldToPaddleLocal(prevBall,hand,cpu,angles);
+ const b=worldToPaddleLocal(currBall,hand,cpu,angles);
+
+ const vx=b.x-a.x,vy=b.y-a.y,vz=b.z-a.z;
+ const vv=vx*vx+vy*vy+vz*vz;
+ let t=vv>1e-9?-(a.x*vx+a.y*vy+a.z*vz)/vv:0;
+ t=clamp(t,0,1);
+
+ const x=a.x+vx*t;
+ const y=a.y+vy*t;
+ const z=a.z+vz*t;
+
+ const ballR=currBall.r||.026;
+ const planeTol=ballR+.018;
+ const ry=.125+ballR*.72;
+ const rz=.085+ballR*.72;
+ const ellipse=(y*y)/(ry*ry)+(z*z)/(rz*rz);
+
+ if(Math.abs(x)>planeTol||ellipse>1)return null;
+
+ return{
+   hit:true,
+   t,
+   point:{
+     x:lerp(prevBall.x,currBall.x,t),
+     y:lerp(prevBall.y,currBall.y,t),
+     z:lerp(prevBall.z,currBall.z,t),
+     r:ballR
+   },
+   ellipse
+ };
+}
+
+
+function humanPaddleRecentlyControlled(){
+ const now=performance.now();
+ return S.humanRally.drag ||
+        S.manualPaddle.drag ||
+        (now-(S.human.paddleInputAt||0))<1400;
+}
+
+function launchHumanReturnFromContact(contact){
+ if(!S.shot||S.shot.receiver!=='human'||S.pointLocked)return false;
+
+ const built=buildManualHumanShot();
+ built.shot.start={x:contact.x,y:contact.y,z:contact.z};
+
+ S.shot=built.shot;
+ S.phase='manual human return';
+ S.rally++;
+ S.best=Math.max(S.best,S.rally);
+ hitSound('human',built.stroke);
+ S.spinPhase+=(built.stroke==='slice'?-1:1)*(8+Math.abs(S.human.paddle.yaw)*8);
+
+ S.humanRally.armed=false;
+ S.humanRally.drag=false;
+ S.humanRally.contactLatched=false;
+ S.humanRally.contactBall=null;
+ S.humanRally.contactGrace=0;
+ $('serveHint').textContent='CONTACT • HUMAN RETURN';
+ ui();
+ return true;
+}
+
+function updateContactWindow(){
+ if(!S.shot||S.shot.receiver!=='human'){
+   S.humanRally.window=0;
+   S.humanRally.contactReady=false;
+   return;
+ }
+
+ const staticHit=ballTouchesPaddle(S.ball,S.human.hand,false,S.human.paddle);
+ const swept=sweptBallPaddleContact(S.prevBall,S.ball,S.human.hand,false,S.human.paddle);
+ const closest=sweptBladeClosestContact(S.prevBall,S.ball,S.human.hand,false,S.human.paddle);
+
+ const center=paddleBladeCenter(S.human.hand,false,S.human.paddle);
+ const dx=S.ball.x-center.x,dy=S.ball.y-center.y,dz=S.ball.z-center.z;
+
+ // Slightly enlarged touchscreen-friendly physical blade corridor.
+ const corridor=Math.sqrt(dx*dx+dy*dy+dz*dz)<.135;
+ const dynamicHit=swept||closest;
+
+ S.humanRally.contactReady=staticHit.hit||!!dynamicHit||corridor;
+
+ if(S.humanRally.contactReady&&humanPaddleRecentlyControlled()){
+   const contact=dynamicHit?.point || S.ball;
+
+   // Physical paddle contact wins immediately. No later timeout is allowed
+   // to turn this visible hit into a Humanoid point.
+   if(launchHumanReturnFromContact(contact))return;
+ }
+
+ const planeScore=clamp(1-staticHit.plane/.13,0,1);
+ const ovalScore=clamp(1-(Math.sqrt(Math.max(0,staticHit.ellipse))-1)/.85,0,1);
+ S.humanRally.window=clamp(Math.max(planeScore*ovalScore,corridor?.86:0),0,1);
+}
+
+function humanIncoming(){
+ return !!(S.shot&&S.shot.receiver==='human'&&(S.shot.phase==='post'||S.shot.phase==='humanContact'));
+}
+
+function armHumanRallyControl(){
+ if(S.auto)return;
+ S.humanRally.armed=true;
+ if((performance.now()-S.human.paddleInputAt)>900)applySelectedPaddlePreset();
+ prepareHumanIntercept();
+ updateContactWindow();
+ $('serveHint').textContent='YOUR RETURN • DRAG HAND/PADDLE TO BALL • RELEASE TO HIT';
+}
+
+function beginHumanRallyGesture(x,y){
+ if(!S.playing || S.auto || !humanIncoming())return false;
+ if(!humanControlZoneHit(x,y))return false;
+
+ prepareHumanIntercept();
+ updateContactWindow();
+
+ S.humanRally.drag=true;
+ S.humanRally.last={x,y,t:performance.now()};
+ S.humanRally.pointerStart={x,y};
+ S.humanRally.start={...S.human.hand};
+ S.humanRally.gestureBase={
+   hand:{...S.human.hand},
+   paddle:{...S.human.paddle}
+ };
+ S.humanRally.totalDX=0;
+ S.humanRally.totalDY=0;
+ S.humanRally.peakSpeed=0;S.humanRally.maxBackDrag=0;S.humanRally.maxForwardDrag=0;S.humanRally.contactLatched=false;S.humanRally.contactBall=null;
+ S.humanRally.contactReady=false;
+ S.human.paddleInputAt=performance.now();
+ return true;
+}
+
+function moveHumanRallyGesture(x,y){
+ if(!S.humanRally.drag||!S.humanRally.last||!S.humanRally.gestureBase||S.auto)return;
+
+ const now=performance.now();
+ const prev=S.humanRally.last;
+ const dt=Math.max(.012,(now-prev.t)/1000);
+ const dxStep=x-prev.x,dyStep=y-prev.y;
+ const totalDX=x-S.humanRally.pointerStart.x;
+ const totalDY=y-S.humanRally.pointerStart.y;
+
+ S.humanRally.totalDX=totalDX;
+ S.humanRally.totalDY=totalDY;
+
+ // Preserve backswing magnitude for shot-depth physics.
+ const backDrag=Math.max(0,-totalDX);
+ const fwdDrag=Math.max(0,totalDX);
+ S.humanRally.maxBackDrag=Math.max(S.humanRally.maxBackDrag,backDrag);
+ S.humanRally.maxForwardDrag=Math.max(S.humanRally.maxForwardDrag,fwdDrag);
+
+ applySelectedPaddlePreset();
+
+ const desired=desiredHandForBladeContact(S.ball,false,S.human.paddle);
+
+ // CURSOR-SYNCED mapping:
+ // cursor right  -> paddle right on screen
+ // cursor left   -> paddle left on screen
+ // cursor up     -> paddle up
+ // cursor down   -> paddle down
+ //
+ // world Z controls visible left/right most directly in this camera.
+ // world X adds only a smaller depth component.
+ const lateral=clamp(totalDX*.00155,-.22,.22);
+ const depth=clamp(totalDX*.00055,-.08,.08);
+ const vertical=clamp(-totalDY*.00135,-.18,.18);
+
+ S.human.hand.z=clamp(desired.z+lateral,-.78,.78);
+ S.human.hand.x=clamp(desired.x-depth,1.05,2.52);
+ S.human.hand.y=clamp(desired.y+vertical,.66,1.78);
+
+ const eventVX=(-dxStep*.00055)/dt;
+ const eventVY=(-dyStep*.00135)/dt;
+ const eventVZ=(dxStep*.00155)/dt;
+ const eventSpeed=Math.hypot(eventVX,eventVY,eventVZ);
+
+ S.humanRally.peakSpeed=Math.max(S.humanRally.peakSpeed,eventSpeed);
+ S.humanRally.lastGesture={dx:eventVX,dy:eventVY,dz:eventVZ};
+
+ updateContactWindow();
+ S.humanRally.last={x,y,t:now};
+ ui();
+}
+
+
+function manualShotOutcome(stroke){
+ const g=S.humanRally.lastGesture;
+ const speed=Math.max(.01,S.humanRally.peakSpeed);
+ const backPx=S.humanRally.maxBackDrag||0;
+ const fwdPx=S.humanRally.maxForwardDrag||0;
+ const totalDY=S.humanRally.totalDY||0;
+
+ // Normalize player gesture into intent.
+ const backNorm=clamp(backPx/260,0,1.35);
+ const fwdNorm=clamp(fwdPx/220,0,1.35);
+ const speedNorm=clamp(speed/5.2,0,1.35);
+
+ // Main rule requested by user:
+ // long backswing + faster swing -> deeper toward baseline/edge
+ // short slow swing -> mid-table or short near net
+ let depth=.28 + backNorm*.62 + fwdNorm*.28 + speedNorm*.24;
+
+ // Vertical/lateral control
+ const z=clamp(
+   profiles[stroke].lateral*.38 +
+   (g?.dz||0)*.095 +
+   (S.humanRally.totalDX||0)*.00135,
+   -1.05,1.05
+ );
+ let clearance=.07 + clamp(-totalDY/220,-.7,.7)*.18 + speedNorm*.035;
+
+ if(stroke==='smash'){depth+=.18;clearance-=.045}
+ if(stroke==='slice'){depth-=.10;clearance+=.015}
+ if(stroke==='topspin'){depth+=.08;clearance+=.025}
+
+ const wide=Math.abs(z)>.72;
+ const long=depth>1.40;
+ const tooShort=depth<.18;
+
+ let outcome='legal';
+ if(clearance<.025||tooShort)outcome='net';
+ else if(wide)outcome='wide';
+ else if(long)outcome='long';
+ else if(depth<.46)outcome='short';
+
+ return{
+   outcome,depth,z,clearance,speed,
+   backNorm,fwdNorm,speedNorm
+ };
+}
+
+function buildFreeHumanShot(stroke,contact){
+ const intent=manualShotOutcome(stroke);
+ const p=profiles[stroke];
+
+ let bounceX=-clamp(intent.depth,.12,1.72);
+ let bounceZ=intent.z;
+ let bounceY=.845;
+ let endX=-1.62;
+ let endZ=bounceZ+p.sideSpin*.012;
+
+ // Backward drag also pushes cross-court placement farther toward a side edge.
+ const edgeBias=clamp(intent.backNorm*.34 + intent.speedNorm*.12,0,.48);
+ const dragSign=Math.sign((S.humanRally.totalDX||0) || (S.humanRally.lastGesture?.dz||1))||1;
+ if(Math.abs(bounceZ)<.18 && edgeBias>.10){
+   bounceZ=dragSign*(.18+edgeBias);
+ }
+
+ const sliceDir=dragSign;
+ if(stroke==='slice'){
+   bounceZ=clamp(dragSign*(.24+Math.abs(intent.z)*.55+edgeBias*.25),-.62,.62);
+   endZ=clamp(-bounceZ+dragSign*.18,-.80,.80);
+ }
+
+ if(intent.outcome==='net'){
+   bounceX=0;
+   bounceY=.825+clamp(intent.clearance,-.05,.02);
+   bounceZ=lerp(contact.z,intent.z,.45);
+   endX=0;endZ=bounceZ;
+ }
+ if(intent.outcome==='wide'){
+   bounceX=-clamp(intent.depth,.45,1.25);
+   bounceZ=clamp(intent.z,-1.05,1.05);
+   endZ=bounceZ;
+ }
+ if(intent.outcome==='long'){
+   bounceX=-clamp(intent.depth,1.42,1.72);
+   endX=-2.10;
+ }
+ if(intent.outcome==='short'){
+   bounceX=-clamp(intent.depth,.24,.45);
+ }
+
+ const total=clamp(p.duration*speedFactor()*(1.08-.09*intent.speed),.38,1.45);
+ const pre=total*(stroke==='slice'?.62:.54),post=total-pre;
+
+ const bounce={x:bounceX,y:bounceY,z:bounceZ};
+ const end={x:endX,y:stroke==='smash'?.98:stroke==='slice'?1.00:1.10,z:endZ};
+ const apparentEnd={x:end.x,y:end.y,z:bounceZ};
+
+ return{
+   hitter:'human',receiver:'cpu',stroke,
+   start:{...contact},bounce,end,apparentEnd,
+   outcome:intent.outcome,clearance:intent.clearance,
+   phase:'pre',t:0,pre,post,forceMiss:false,
+   deceptiveSpin:stroke==='topspin',
+   spinKick:stroke==='topspin'?clamp((S.humanRally.totalDX||0)*.0028,-.46,.46):0,
+   sliceDir,
+   userBackNorm:intent.backNorm,
+   userSpeedNorm:intent.speedNorm
+ };
+}
+
+function buildManualHumanShot(){
+ let stroke=S.stroke;
+ const pitchDeg=S.human.paddle.pitch*180/Math.PI;
+ if(pitchDeg>10)stroke='topspin';
+ else if(pitchDeg<-6)stroke='slice';
+
+ const contact=S.humanRally.contactBall||S.ball;
+ const shot=buildFreeHumanShot(stroke,contact);
+ return{stroke,shot};
+}
+
+function endHumanRallyGesture(){
+ if(!S.humanRally.drag||S.auto||S.pointLocked)return false;
+
+ S.humanRally.drag=false;
+ S.humanRally.last=null;
+ S.humanRally.gestureBase=null;
+ S.humanRally.pointerStart=null;
+
+ if(!humanIncoming())return false;
+
+ // A visually/physically valid paddle touch must count.
+ // Keep only a small minimum swing-speed threshold.
+ if(!S.humanRally.contactLatched || S.humanRally.peakSpeed<.08){
+   $('serveHint').textContent='MISS • SWING THROUGH THE BALL';
+   pointTo('cpu');
+   return true;
+ }
+
+ const contact=S.humanRally.contactBall||S.ball;
+ const built=buildManualHumanShot();
+ built.shot.start={x:contact.x,y:contact.y,z:contact.z};
+
+ S.shot=built.shot;
+ S.phase='manual human return';
+ S.rally++;
+ S.best=Math.max(S.best,S.rally);
+ hitSound('human',built.stroke);
+ S.spinPhase+=(built.stroke==='slice'?-1:1)*(8+Math.abs(S.human.paddle.yaw)*8);
+
+ S.humanRally.armed=false;
+ S.humanRally.contactLatched=false;
+ S.humanRally.contactBall=null;
+ S.humanRally.contactGrace=0;
+
+ $('serveHint').textContent='RETURN RELEASED • HUMANOID TRACKING';
+ ui();
+ return true;
+}
+
+function beginManualPaddle(x,y){
+ if(!S.playing || S.auto || S.serve.armed)return false;
+ if(!humanControlZoneHit(x,y))return false;
+ S.manualPaddle.drag=true;S.manualPaddle.last={x,y};
+ S.human.paddleInputAt=performance.now();
+ return true;
+}
+function moveManualPaddle(x,y){
+ if(!S.manualPaddle.drag||!S.manualPaddle.last)return;
+
+ const p=S.manualPaddle.last;
+ const dx=x-p.x,dy=y-p.y;
+
+ if(S.playing&&!S.auto&&!S.setupPaddle.locked){
+   // PRE-SERVE SETUP MODE:
+   // drag horizontally -> yaw
+   // drag vertically   -> pitch
+   // diagonal component -> roll
+   S.human.paddle.yaw=clamp(S.human.paddle.yaw-dx*.0050,-.65,.65);
+   S.human.paddle.pitch=clamp(S.human.paddle.pitch-dy*.0050,-.55,.55);
+   S.human.paddle.roll=clamp(S.human.paddle.roll+(dx-dy)*.0018,-.45,.45);
+
+   S.setupPaddle.pitch=S.human.paddle.pitch;
+   S.setupPaddle.yaw=S.human.paddle.yaw;
+   S.setupPaddle.roll=S.human.paddle.roll;
+
+   // move wrist a little too so user can position paddle around body
+   S.human.hand.z=clamp(S.human.hand.z+dx*.00085,-.78,.78);
+   S.human.hand.y=clamp(S.human.hand.y-dy*.00115,.72,1.72);
+
+   // body follows setup position
+   const reach=clamp((S.human.homeX-S.human.hand.x)*.75,-.18,.32);
+   S.human.spine.targetLean=clamp(.10+reach,.04,.32);
+   S.human.spine.targetTwist=clamp(S.human.hand.z*.10,-.11,.11);
+ }else if(S.playing&&!S.auto&&S.setupPaddle.locked){
+   // Once serve is armed, preserve the chosen face exactly.
+   S.human.paddle.pitch=S.setupPaddle.pitch;
+   S.human.paddle.yaw=S.setupPaddle.yaw;
+   S.human.paddle.roll=S.setupPaddle.roll;
+
+   // allow position movement without changing face
+   S.human.hand.z=clamp(S.human.hand.z+dx*.00145,-.78,.78);
+   S.human.hand.y=clamp(S.human.hand.y-dy*.00180,.66,1.78);
+   S.human.hand.x=clamp(S.human.hand.x-dx*.00045,1.05,2.52);
+ }else{
+   S.human.paddle.yaw=clamp(S.human.paddle.yaw-dx*.0040,-.65,.65);
+   S.human.paddle.pitch=clamp(S.human.paddle.pitch-dy*.0040,-.55,.55);
+   S.human.paddle.roll=clamp(S.human.paddle.roll+(dx-dy)*.0015,-.45,.45);
+ }
+
+ S.human.paddleInputAt=performance.now();
+ S.manualPaddle.last={x,y};
+ ui();
+}
+function endManualPaddle(){S.manualPaddle.drag=false;S.manualPaddle.last=null}
+
+function beginGesture(x,y){
+ if(!S.serve.armed)return;
+ if(!playerControlZoneHit(S.serve.side,x,y))return;
+ S.serve.drag=true;
+ S.serve.last={x,y,t:performance.now()};
+ ensureAudio();
+}
+function releaseServe(){
+ computeServer();if(!S.serve.armed||S.server!==S.serve.side||S.pointLocked)return false;
+ const side=S.serve.side,actor=side==='human'?S.human:S.cpu;const moved=S.serve.forward||S.serve.backswing||(S.serve.lastMotion&&S.serve.lastMotion>.015);if(side==='human'&&!moved)return false;
+ S.serve.armed=false;S.serve.drag=false;S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.07,z:actor.hand.z,r:.026};launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
+}
+function moveGesture(x,y){
+ if(!S.serve.armed||!S.serve.drag||!S.serve.last)return;
+ const side=S.serve.side;
+ const actor=side==='human'?S.human:S.cpu;
+ const p=S.serve.last,dx=x-p.x,dy=y-p.y;S.serve.lastMotion=Math.hypot(dx,dy);
+ if(side==='human'){
+   actor.hand.x=clamp(actor.hand.x+dx*.0042,1.34,2.48);
+   S.serve.maxBackX=Math.max(S.serve.maxBackX,actor.hand.x);
+   if(S.serve.maxBackX>2.16)S.serve.backswing=true;
+   if(S.serve.backswing&&actor.hand.x<S.serve.maxBackX-.16)S.serve.forward=true;
+ }else{
+   actor.hand.x=clamp(actor.hand.x-dx*.0042,-2.48,-1.34);
+   S.serve.maxBackX=Math.min(S.serve.maxBackX,actor.hand.x);
+   if(S.serve.maxBackX<-2.16)S.serve.backswing=true;
+   if(S.serve.backswing&&actor.hand.x>S.serve.maxBackX+.16)S.serve.forward=true;
+ }
+ actor.hand.y=clamp(actor.hand.y-dy*.0035,.90,1.50);
+ actor.hand.z=clamp(actor.hand.z+dy*.0018,-.50,.50);
+ S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.08,z:actor.hand.z,r:.026};
+ S.serve.last={x,y,t:performance.now()};
+ ui();
+}
+function endGesture(){
+ if(!S.serve.armed)return;
+ S.serve.drag=false;
+ S.serve.last=null;
+ if(!releaseServe())ui();
+}
+canvas.addEventListener('pointerdown',e=>{
+ let accepted=false;
+
+ if(S.serve.armed){
+   if(playerControlZoneHit(S.serve.side,e.clientX,e.clientY)){
+     beginGesture(e.clientX,e.clientY);
+     accepted=true;
+   }
+ }else if(humanIncoming()&&!S.auto){
+   if(humanControlZoneHit(e.clientX,e.clientY)){
+     accepted=beginHumanRallyGesture(e.clientX,e.clientY)!==false;
+   }
+ }else if(S.playing&&!S.auto){
+   accepted=beginRigControl(e.clientX,e.clientY);
+ }
+
+ if(accepted){
+   try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+ }
+});
+
+canvas.addEventListener('pointermove',e=>{
+ if(!S.rigControl?.active && S.playing && !S.auto){
+   canvas.style.cursor=humanPaddleArrowHit(e.clientX,e.clientY)?'grab':'default';
+ }
+});
+canvas.addEventListener('pointermove',e=>{
+ if(S.serve.drag)moveGesture(e.clientX,e.clientY);
+ else if(S.humanRally.drag)moveHumanRallyGesture(e.clientX,e.clientY);
+ else if(S.rigControl?.active)moveRigControl(e.clientX,e.clientY);
+ else if(S.manualPaddle.drag)moveManualPaddle(e.clientX,e.clientY);
+});
+
+canvas.addEventListener('pointerup',()=>{
+ if(S.serve.drag)endGesture();
+ else if(S.humanRally.drag)endHumanRallyGesture();
+ else if(S.rigControl?.active)endRigControl();
+ else if(S.manualPaddle.drag)endManualPaddle();
+});
+
+canvas.addEventListener('touchstart',e=>{
+ if(!e.touches[0])return;
+ e.preventDefault();
+ const x=e.touches[0].clientX,y=e.touches[0].clientY;
+
+ if(S.serve.armed&&!playerControlZoneHit(S.serve.side,x,y))return;
+
+ if(S.serve.armed)beginGesture(x,y);
+ else if(humanIncoming()&&!S.auto)beginHumanRallyGesture(x,y);
+ else if(S.playing&&!S.auto)beginRigControl(x,y);
+},{passive:false});
+
+canvas.addEventListener('touchmove',e=>{
+ if(!e.touches[0])return;
+ e.preventDefault();
+ const x=e.touches[0].clientX,y=e.touches[0].clientY;
+ if(S.serve.drag)moveGesture(x,y);
+ else if(S.humanRally.drag)moveHumanRallyGesture(x,y);
+ else if(S.rigControl?.active)moveRigControl(x,y);
+ else if(S.manualPaddle.drag)moveManualPaddle(x,y);
+},{passive:false});
+
+canvas.addEventListener('touchend',e=>{
+ e.preventDefault();
+ if(S.serve.drag)endGesture();
+ else if(S.humanRally.drag)endHumanRallyGesture();
+ else if(S.rigControl?.active)endRigControl();
+ else if(S.manualPaddle.drag)endManualPaddle();
+},{passive:false});
+
+
+['humanServeBtn','cpuServeBtn','resetBtn'].forEach(id=>{
+ const b=$(id);
+ if(!b)return;
+ b.addEventListener('pointerdown',()=>b.classList.add('pressed'));
+ ['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>b.classList.remove('pressed')));
+ b.addEventListener('touchstart',()=>b.classList.add('pressed'),{passive:true});
+ b.addEventListener('touchend',()=>b.classList.remove('pressed'),{passive:true});
+});
+
+
+
+
+let rafHandle=0;
+let lastRenderBeat=0;
+let renderLoopRunning=false;
+
+function renderStep(t,physics=true){
+ try{
+   const now=Number.isFinite(t)?t:performance.now();
+   let dt=Math.min(.03,Math.max(0,(now-S.last)/1000));
+   if(!Number.isFinite(dt))dt=.016;
+   S.last=now;
+
+   if(physics){
+     S.prevBall=S.ball?{...S.ball}:null;
+     updateResetPresentation(dt);
+     if(S.drill.active)updatePreGameDrills(dt);
+     else if(S.playing&&S.shot&&!S.pointLocked)updateShot(dt);
+     if(S.playing&&!S.drill.active)updateSpineDynamics(S.human,false,dt);
+     if(S.playing)updateSpineDynamics(S.cpu,true,dt);
+     if(S.playing&&!S.drill.active)updateLegDynamics(S.human,false,dt);
+     if(S.playing)updateLegDynamics(S.cpu,true,dt);
+     if(!S.drill.active)updateHeadTracking(S.human,false,dt);
+     updateHeadTracking(S.cpu,true,dt);
+     updateRobotScan(dt);
+   }
+
+   draw();
+   lastRenderBeat=performance.now();
+   const rd=$('renderDiag');
+   if(rd){
+     rd.textContent='RENDER: PASS • TABLE + PLAYERS';
+     rd.style.color='#6fe59a';
+   }
+   const cr=$('canvasRecovery'); if(cr)cr.style.display='none';
+ }catch(err){
+   const st=$('status'),rd=$('renderDiag');
+   if(st){st.textContent='RUNTIME ERROR';st.style.color='#ff6b6b';}
+   if(rd){
+     rd.textContent='RENDER ERROR: '+String(err&&err.message?err.message:err);
+     rd.style.color='#ff6b6b';
+   }
+   console.error(err);
+ }
+}
+
+function frame(t){
+ renderStep(t,true);
+ rafHandle=requestAnimationFrame(frame);
+}
+
+function kickRenderLoop(){
+ // Always force a synchronous paint first.
+ renderStep(performance.now(),false);
+ if(!renderLoopRunning){
+   renderLoopRunning=true;
+   rafHandle=requestAnimationFrame(frame);
+ }
+}
+
+function frameWatchdog(){
+ const age=performance.now()-lastRenderBeat;
+ if(document.visibilityState==='visible' && age>450){
+   // Some iPhone HTML previewers throttle or fail RAF. Paint without waiting for RAF.
+   const cr=$('canvasRecovery'); if(cr)cr.style.display='block';
+   resize();
+   renderStep(performance.now(),false);
+ }
+}
+
+resetAll();
+try{draw();lastRenderBeat=performance.now();}catch(_){}
+
+(function(){
+ try{
+   const tests=[
+     ['ctx',!!ctx],
+     ['drawTable',typeof drawTable==='function'],
+     ['drawRobot',typeof drawRobot==='function'],
+     ['drawBall',typeof drawBall==='function'],
+     ['paddle',!!(S.human&&S.human.paddle)],
+     ['frame',typeof frame==='function']
+   ];
+   const bad=tests.filter(x=>!x[1]);
+   if(bad.length){
+     $('status').textContent='SELF-TEST FAIL: '+bad.map(x=>x[0]).join(',');
+     $('status').style.color='#ff6b6b';
+   }else{
+     $('status').textContent='SELF-TEST PASS • v20.1';
+     $('status').style.color='#6fe59a';
+   }
+ }catch(e){
+   $('status').textContent='SELF-TEST ERROR';
+   $('status').style.color='#ff6b6b';
+ }
+})();
+kickRenderLoop();
+setInterval(frameWatchdog,300);
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='visible'){
+   setTimeout(()=>{resize();kickRenderLoop();},50);
+ }
+});
+window.addEventListener('pageshow',()=>setTimeout(()=>{resize();kickRenderLoop();},40));
+
+</script>
+</body>
+</html>

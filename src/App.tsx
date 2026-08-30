@@ -3,8 +3,8 @@ import Navbar from '@/components/Navbar';
 import ViewCounter from '@/components/ViewCounter';
 import LandingPage from '@/pages/LandingPage';
 import CrosswordPage from '@/pages/CrosswordPage';
-import PlaceholderPage from '@/pages/PlaceholderPage';
 import PanagramPage from '@/pages/PanagramPage';
+import TableTennisPage from '@/pages/TableTennisPage';
 import ContactPage from '@/pages/ContactPage';
 import FeedbackPage from '@/pages/FeedbackPage';
 
@@ -20,15 +20,7 @@ export default function App() {
       page = <PanagramPage />;
       break;
     case 'tabletennis':
-      page = (
-        <PlaceholderPage
-          title="Table Tennis"
-          subtitle="A fast-paced reflex rally against smart AI opponents that adapt to your play style in real time."
-          img="https://images.pexels.com/photos/13793163/pexels-photo-13793163.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
-          accent="#ef4444"
-          onNavigate={navigate}
-        />
-      );
+      page = <TableTennisPage />;
       break;
     case 'contact':
       page = <ContactPage />;
