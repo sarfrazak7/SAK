@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, ArrowRight, Wand2, Brain, Zap, Target, RefreshCw, Flame } from 'lucide-react';
+import { Sparkles, ArrowRight, Wand2, Brain, Zap, Target, RefreshCw, Flame, Smartphone, Monitor } from 'lucide-react';
 import type { Route } from '@/lib/router';
 import { linkHref } from '@/lib/router';
 import ChallengeModal from '@/components/ChallengeModal';
@@ -94,20 +94,34 @@ export default function LandingPage({ onNavigate }: Props) {
             every level, every hint, and every challenge.
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <button
-              onClick={() => onNavigate('crossword')}
-              className="group flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3 text-sm font-bold text-black transition hover:scale-[1.03] hover:shadow-lg hover:shadow-cyan-500/30"
-            >
-              Play Crossword
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </button>
-            <button
-              onClick={() => onNavigate('feedback')}
-              className="rounded-xl border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white/80 backdrop-blur-sm transition hover:bg-white/10"
-            >
-              Send Feedback
-            </button>
+          <div className="mt-8 flex justify-center">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-5 backdrop-blur-sm transition hover:border-cyan-400/30">
+              <div className="pointer-events-none absolute -top-12 left-1/2 h-32 w-64 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl transition group-hover:bg-cyan-500/20" />
+              <div className="relative flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 ring-1 ring-cyan-400/30 transition group-hover:scale-110">
+                    <Smartphone className="h-5 w-5 text-cyan-300" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-bold tracking-widest text-white/40">MOBILE</p>
+                    <p className="text-sm font-semibold text-white/80">Touch to play</p>
+                  </div>
+                </div>
+                <div className="h-10 w-px bg-white/10" />
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 ring-1 ring-emerald-400/30 transition group-hover:scale-110">
+                    <Monitor className="h-5 w-5 text-emerald-300" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-bold tracking-widest text-white/40">DESKTOP</p>
+                    <p className="text-sm font-semibold text-white/80">Click to play</p>
+                  </div>
+                </div>
+              </div>
+              <p className="relative mt-3 text-center text-xs font-medium tracking-wide text-white/50">
+                Play Games on Mobile / Desktop
+              </p>
+            </div>
           </div>
         </section>
 
@@ -196,6 +210,12 @@ export default function LandingPage({ onNavigate }: Props) {
           </div>
         </section>
       </main>
+
+      <div className="pointer-events-none fixed bottom-3 left-4 z-40">
+        <p className="text-[10px] font-medium tracking-wide text-white/25">
+          &copy; {new Date().getFullYear()} GamesAI
+        </p>
+      </div>
 
       <ChallengeModal
         open={challengeOpen}
