@@ -33,17 +33,18 @@ export default function App() {
   }
 
   const showFooter = route === 'home';
+  const showNavbar = route !== 'tabletennis';
 
   return (
     <div className="min-h-screen bg-black">
-      <Navbar current={route} onNavigate={navigate} />
+      {showNavbar && <Navbar current={route} onNavigate={navigate} />}
       {page}
       {showFooter && (
         <footer className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2">
           <ViewCounter />
         </footer>
       )}
-      {!showFooter && (
+      {showNavbar && !showFooter && (
         <footer className="flex justify-center pb-6">
           <ViewCounter />
         </footer>
