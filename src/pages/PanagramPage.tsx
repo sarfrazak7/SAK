@@ -8,6 +8,7 @@ import ProTipsPopup from '@/panagram/components/ProTipsPopup';
 import WordDefinition from '@/panagram/components/WordDefinition';
 import RouletteWheel from '@/panagram/components/RouletteWheel';
 import { playSpinSound, playBallLandSound, playPassBell, playFailSound, playTickSound } from '@/panagram/lib/sounds';
+import BackToHomeButton from '@/components/BackToHomeButton';
 
 type Toast = { id: number; message: string; type: 'success' | 'error' | 'info' };
 type GamePhase = 'spinning' | 'filling' | 'guessing' | 'won' | 'lost';
@@ -372,8 +373,9 @@ export default function PanagramPage() {
   }, []);
 
   return (
-    <div className="panagram-root bg-felt-pattern relative overflow-hidden" style={{ minHeight: 'calc(100dvh - 57px)', marginTop: '57px' }}>
-      <div className="overflow-hidden flex flex-col" style={{ minHeight: 'calc(100dvh - 57px)' }}>
+    <div className="panagram-root bg-felt-pattern relative overflow-hidden" style={{ minHeight: '100dvh' }}>
+      <BackToHomeButton />
+      <div className="overflow-hidden flex flex-col" style={{ minHeight: '100dvh' }}>
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-casino-gold/10 blur-[120px] rounded-full" />
 
         {/* Toasts */}

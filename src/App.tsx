@@ -33,7 +33,7 @@ export default function App() {
   }
 
   const showFooter = route === 'home';
-  const showNavbar = route !== 'tabletennis';
+  const showNavbar = route !== 'tabletennis' && route !== 'panagram';
 
   return (
     <div className="min-h-screen bg-black">
