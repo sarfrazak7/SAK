@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: #000;
+  overscroll-behavior: none;
+}
+
+/* ── Cube float ─────────────────────────────────────────────── */
+@keyframes cubeFloat {
+  0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+  30%       { transform: translateY(-7px) rotateZ(0.3deg); }
+  70%       { transform: translateY(-4px) rotateZ(-0.2deg); }
+}
+
+@keyframes shadowPulse {
+  0%, 100% { opacity: 0.60; transform: scaleX(1)    scaleY(1); }
+  50%       { opacity: 0.28; transform: scaleX(0.78) scaleY(0.65); }
+}
+
+.cube-float {
+  animation: cubeFloat 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.cube-shadow {
+  border-radius: 50%;
+  animation: shadowPulse 6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+
+/* ── Floating AI cards ─────────────────────────────────────── */
+@keyframes aiFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+.ai-card {
+  animation: aiFloat 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ai-card:nth-child(2) { animation-delay: 0.6s; animation-duration: 4.5s; }
+.ai-card:nth-child(3) { animation-delay: 1.2s; animation-duration: 5s; }
+.ai-card:nth-child(4) { animation-delay: 1.8s; animation-duration: 4.2s; }
+.ai-card:nth-child(5) { animation-delay: 2.4s; animation-duration: 4.8s; }
+.ai-card:nth-child(6) { animation-delay: 3s;   animation-duration: 5.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-card { animation: none; }
+}
+
+/* ── Play button pulse ──────────────────────────────────────── */
+@keyframes playPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(6,182,212,0.5), 0 0 30px rgba(5,150,105,0.3), inset 0 1px 0 rgba(255,255,255,0.15); }
+  50%       { box-shadow: 0 4px 28px rgba(6,182,212,0.7), 0 0 48px rgba(5,150,105,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
+}
+
+.play-btn {
+  animation: playPulse 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-btn { animation: none; }
+}
+
+/* ── Challenge modal / flyer ─────────────────────────────────── */
+@keyframes challengeModalIn {
+  0%   { opacity: 0; transform: scale(0.92) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes challengeTitleGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(34,211,238,0.4), 0 0 40px rgba(34,211,238,0.2); }
+  50%      { text-shadow: 0 0 28px rgba(34,211,238,0.6), 0 0 56px rgba(34,211,238,0.35); }
+}
+@keyframes challengeFlyerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.3); }
+  50%      { box-shadow: 0 0 24px 4px rgba(249,115,22,0.15); }
+}
+
+.challenge-modal {
+  animation: challengeModalIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.challenge-title {
+  animation: challengeTitleGlow 2.5s ease-in-out infinite;
+}
+.challenge-flyer {
+  animation: challengeFlyerPulse 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .challenge-modal,
+  .challenge-title,
+  .challenge-flyer { animation: none; }
+}
+
+/* ── Face bar blink ─────────────────────────────────────────── */
+@keyframes faceBarBlink {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+.face-bar-blink {
+  animation: faceBarBlink 0.7s steps(1, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .face-bar-blink { animation: none; }
+}
+
+/* ── Stars backdrop (subtle) ───────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 15%  20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80%  10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55%  75%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25%  85%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90%  55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42%  38%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 68% 30%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at  8% 62%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 73%  90%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 32%  50%, rgba(255,255,255,0.3) 0%, transparent 100%);
+  z-index: 0;
+}
