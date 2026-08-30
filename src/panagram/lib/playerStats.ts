@@ -1,0 +1,21 @@
+import { supabase } from '@/lib/supabase';
+
+export { supabase };
+
+export interface PlayerStats {
+  device_id: string;
+  total_credit: number;
+  total_debit: number;
+  updated_at: string;
+}
+
+const DEVICE_ID_KEY = 'panagram_device_id';
+
+export function getDeviceId(): string {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+}

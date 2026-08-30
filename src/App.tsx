@@ -4,6 +4,7 @@ import ViewCounter from '@/components/ViewCounter';
 import LandingPage from '@/pages/LandingPage';
 import CrosswordPage from '@/pages/CrosswordPage';
 import PlaceholderPage from '@/pages/PlaceholderPage';
+import PanagramPage from '@/pages/PanagramPage';
 import ContactPage from '@/pages/ContactPage';
 import FeedbackPage from '@/pages/FeedbackPage';
 
@@ -16,15 +17,7 @@ export default function App() {
       page = <CrosswordPage />;
       break;
     case 'panagram':
-      page = (
-        <PlaceholderPage
-          title="Panagram"
-          subtitle="Rearrange letters to uncover every hidden word from a pangram. AI generates fresh letter sets every round."
-          img="https://images.pexels.com/photos/8762806/pexels-photo-8762806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
-          accent="#22c55e"
-          onNavigate={navigate}
-        />
-      );
+      page = <PanagramPage />;
       break;
     case 'tabletennis':
       page = (
