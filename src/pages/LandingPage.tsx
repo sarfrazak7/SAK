@@ -1,5 +1,7 @@
-import { Sparkles, ArrowRight, Wand2, Brain, Zap, Target, RefreshCw, Smartphone, Monitor } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, ArrowRight, Wand2, Brain, Zap, Target, RefreshCw, Flame, Smartphone, Monitor } from 'lucide-react';
 import type { Route } from '@/lib/router';
+import ChallengeModal from '@/components/ChallengeModal';
 
 interface Props {
   onNavigate: (r: Route) => void;
@@ -56,7 +58,7 @@ const GAMES = [
     route: 'panagram' as Route,
     name: 'Panagram',
     desc: 'Rearrange letters to spell every word from a hidden pangram.',
-    tag: 'COMING SOON',
+    tag: 'PLAY NOW',
     img: 'https://images.pexels.com/photos/8762806/pexels-photo-8762806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
   {
@@ -69,6 +71,8 @@ const GAMES = [
 ];
 
 export default function LandingPage({ onNavigate }: Props) {
+  const [challengeOpen, setChallengeOpen] = useState(false);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       <BackdropGlow />
@@ -141,38 +145,49 @@ export default function LandingPage({ onNavigate }: Props) {
             <p className="mt-2 text-sm text-white/45">Tap a card to jump in</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {GAMES.map((g) => (
-              <button
-                key={g.route}
-                onClick={() => onNavigate(g.route)}
-                className="group relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition hover:border-white/25 hover:scale-[1.02]"
-              >
-                <div className="relative h-44 overflow-hidden">
-                  <img
-                    src={g.img}
-                    alt={g.name}
-                    className="h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-110 group-hover:opacity-80"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c12] via-[#0c0c12]/40 to-transparent" />
-                  <span className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider ${
-                    g.tag === 'PLAY NOW'
-                      ? 'bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-400/40'
-                      : 'bg-amber-500/15 text-amber-300/80 ring-1 ring-amber-400/30'
-                  }`}>
-                    {g.tag}
-                  </span>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:items-start">
+            {GAMES.map((g) => {
+              const card = (
+                <button
+                  key={g.route}
+                  onClick={() => onNavigate(g.route)}
+                  className="group relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition hover:border-white/25 hover:scale-[1.02]"
+                >
+                  <div className="relative h-44 overflow-hidden">
+                    <img
+                      src={g.img}
+                      alt={g.name}
+                      className="h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-110 group-hover:opacity-80"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c12] via-[#0c0c12]/40 to-transparent" />
+                    <span className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider ${
+                      g.tag === 'PLAY NOW'
+                        ? 'bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-400/40'
+                        : 'bg-amber-500/15 text-amber-300/80 ring-1 ring-amber-400/30'
+                    }`}>
+                      {g.tag}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-bold text-white">{g.name}</h3>
+                    <p className="mt-1 text-sm text-white/50">{g.desc}</p>
+                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-cyan-300 transition group-hover:gap-2">
+                      Enter <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
+                </button>
+              );
+
+              if (g.route !== 'crossword') return card;
+
+              return (
+                <div key={g.route} className="flex flex-col gap-6">
+                  {card}
+                  <ChallengeFlyer onOpen={() => setChallengeOpen(true)} />
                 </div>
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-white">{g.name}</h3>
-                  <p className="mt-1 text-sm text-white/50">{g.desc}</p>
-                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-cyan-300 transition group-hover:gap-2">
-                    Enter <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -200,6 +215,12 @@ export default function LandingPage({ onNavigate }: Props) {
           &copy; {new Date().getFullYear()} ArcadeAI &middot; All rights reserved
         </p>
       </div>
+
+      <ChallengeModal
+        open={challengeOpen}
+        onClose={() => setChallengeOpen(false)}
+        onAccept={() => onNavigate('crossword')}
+      />
     </div>
   );
 }
@@ -234,6 +255,36 @@ function FloatingCard({
       </div>
       <h3 className="relative text-lg font-bold text-white">{title}</h3>
       <p className="relative mt-2 text-sm leading-relaxed text-white/55">{desc}</p>
+    </div>
+  );
+}
+
+function ChallengeFlyer({ onOpen }: { onOpen: () => void }) {
+  return (
+    <div className="challenge-flyer group relative overflow-hidden rounded-2xl border border-orange-400/30 bg-gradient-to-br from-orange-500/10 via-[#0c0c12] to-cyan-500/10 p-5 transition hover:border-orange-400/50">
+      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-500/20 blur-2xl" />
+      <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-cyan-500/15 blur-2xl" />
+      <div className="relative flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/20 ring-1 ring-orange-400/40">
+          <Flame className="h-5 w-5 text-orange-400" />
+        </div>
+        <div className="flex-1">
+          <p className="text-[10px] font-bold tracking-widest text-orange-300/80">SPEED SHOWDOWN</p>
+          <h3 className="mt-0.5 text-base font-extrabold text-white">
+            FRIENDS <span className="text-cyan-300">VS</span> FRIENDS
+          </h3>
+          <p className="mt-1 text-xs leading-relaxed text-white/50">
+            Challenge a friend to beat your finish time on the same puzzle set.
+          </p>
+          <button
+            onClick={onOpen}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 text-xs font-bold text-white transition hover:scale-105"
+          >
+            <Flame className="h-3.5 w-3.5" />
+            ACCEPT THE CHALLENGE
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
