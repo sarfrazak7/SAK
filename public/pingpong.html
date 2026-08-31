@@ -1214,13 +1214,22 @@ function lowerBodyPose(actor,pelvis,cpu){
  const A=skeletonAnchors(actor,cpu),sk=actor.skel,lo=actor.rig?.footLOffset||{x:0,z:0},ro=actor.rig?.footROffset||{x:0,z:0};
  const flex=actor.legs?.kneeFlex||.17;
  const t=cpu?1:-1;
+ const side=cpu?'cpu':'human';
 
- // Shift feet forward/back based on knee flex to drive visible leg movement
- const stepAmp=.18*flex;
- const stepSway=Math.sin(performance.now()*.004+actor.baseZ*6)*stepAmp;
+ // Left foot stays planted. Right (paddle-side) foot pushes back during shots only.
+ let rBackX=0;
+ if(!(S.serve&&S.serve.armed&&S.serve.side===side)&&S.shot){
+   if(S.shot.hitter===side){
+     const u=clamp(S.shot.t/((S.shot.pre||1)+.001),0,1);
+     rBackX=-t*.18*Math.sin(Math.PI*Math.min(u,1));
+   }else if(S.shot.receiver===side){
+     rBackX=-t*.07;
+   }
+ }
 
  const lf0=baseFootTarget(actor,cpu,'left'),rf0=baseFootTarget(actor,cpu,'right');
- const lf={x:lf0.x+lo.x-t*stepSway,y:lf0.y,z:lf0.z+lo.z},rf={x:rf0.x+ro.x+t*stepSway,y:rf0.y,z:rf0.z+ro.z};
+ const lf={x:lf0.x+lo.x,y:lf0.y,z:lf0.z+lo.z};
+ const rf={x:rf0.x+ro.x+rBackX,y:rf0.y,z:rf0.z+ro.z};
  const L=solveTwoBone3D(A.leftHip,lf,sk.thigh,sk.shin,{x:A.leftHip.x+t*.20,y:A.leftHip.y-.22,z:A.leftHip.z-.16-flex*.10});
  const R=solveTwoBone3D(A.rightHip,rf,sk.thigh,sk.shin,{x:A.rightHip.x+t*.20,y:A.rightHip.y-.22,z:A.rightHip.z+.16+flex*.10});
  return{hipL:A.leftHip,hipR:A.rightHip,kneeL:L.joint,kneeR:R.joint,footL:L.end,footR:R.end};
