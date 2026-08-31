@@ -310,7 +310,25 @@ button,input{touch-action:manipulation}
 
 <script>
 'use strict';
+(function(){
+ const V='20260831';
+ try{
+  const u=new URL(location.href);
+  if(u.searchParams.get('v')!==V){
+   u.searchParams.set('v',V);
+   location.replace(u.toString());
+   return;
+  }
+ }catch(_){}
+})();
+
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
+window.addEventListener('message',e=>{
+ if(e.data&&e.data.type==='supabase-creds'){
+  window.__SUPABASE_URL__=e.data.url||'';
+  window.__SUPABASE_ANON_KEY__=e.data.key||'';
+ }
+});
 window.addEventListener('error',e=>{
  const rd=$('renderDiag');
  const st=$('status');
@@ -728,11 +746,31 @@ function finishGame(side){
    S.matchOver=true;S.matchWinner=side;S.p=0;S.c=0;S.rally=0;
    S.server=S.gameStartServer;
    ui();
+   submitMatchScore(side);
    setTimeout(()=>announce(label+' WINS THE MATCH',
      'Final games: HUMANOID '+S.cGames+' – HUMAN '+S.hGames+' • Press RESET for a new match',5000),1650);
    return;
  }
  setTimeout(()=>startNextGame(wasPlaying),1700);
+}
+
+function submitMatchScore(winner){
+ try{
+  const url=(window.__SUPABASE_URL__||'')+'/functions/v1/submit-score';
+  const key=window.__SUPABASE_ANON_KEY__||'';
+  if(!url||!key)return;
+  const score=(winner==='human'?S.hGames:S.cGames)*1000+S.rally*10;
+  fetch(url,{
+   method:'POST',
+   headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+   body:JSON.stringify({
+    category:'table-tennis',
+    finishTime:Math.max(1,Math.round((performance.now()-(S.matchStart||performance.now()))/1000)),
+    score:score,
+    playerTag:winner==='human'?'Human':'Humanoid'
+   })
+  }).catch(function(){});
+ }catch(_){}
 }
 
 
@@ -2630,7 +2668,7 @@ function lockResetPose(){
 
 function resetAll(){
  S.playing=false;S.auto=false;S.p=S.c=0;S.hGames=S.cGames=0;S.gameNumber=1;S.gamesToWin=3;
- S.gameStartServer='human';S.server='human';S.matchOver=false;S.matchWinner='';S.setupPaddle={pitch:0,yaw:0,roll:0,locked:false};S.faceLocked=false;S.drill={active:false,stage:0,t:0,phase:'idle',enteredAt:0,watchdog:false};S.cpuServePending=false;S.cpuServeCountdown=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;S.serveToken=0;S.faceLocked=false;S.lockedStroke='forehand';S.prevBall=null;S.tactic={exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55};
+ S.gameStartServer='human';S.server='human';S.matchOver=false;S.matchWinner='';S.matchStart=null;S.setupPaddle={pitch:0,yaw:0,roll:0,locked:false};S.faceLocked=false;S.drill={active:false,stage:0,t:0,phase:'idle',enteredAt:0,watchdog:false};S.cpuServePending=false;S.cpuServeCountdown=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;S.serveToken=0;S.faceLocked=false;S.lockedStroke='forehand';S.prevBall=null;S.tactic={exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55};
  S.rally=S.best=0;S.shot=null;S.phase='idle';S.spinPhase=0;
  S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
  S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:-.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
@@ -2674,6 +2712,7 @@ $('playBtn').onclick=()=>{
  ensureAudio();if(S.matchOver)return;ensureSkeleton();
  stopAutoDemo();
  S.playing=true;S.auto=false;S.faceLocked=false;S.setupPaddle.locked=false;
+ if(!S.matchStart)S.matchStart=performance.now();
  if(S.resetIntro)S.resetIntro.active=false;
  $('status').textContent='3D BODY CONTROL READY';$('status').style.color='#6fe59a';
  $('serveHint').textContent='3D CONTROL: tap HEAD / either HAND / either FOOT and drag • drag EMPTY SPACE to rotate body 360° or bend/lift';
