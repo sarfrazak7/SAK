@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
 const GAME_VERSION = '20260831-5';
 
 export default function TableTennisPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const cacheBust = useMemo(() => Date.now(), []);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -25,7 +26,7 @@ export default function TableTennisPage() {
     <div style={{ position: 'fixed', inset: 0, background: '#0b1017' }}>
       <iframe
         ref={iframeRef}
-        src={`/pingpong.html?v=${GAME_VERSION}`}
+        src={`/pingpong.html?v=${GAME_VERSION}&t=${cacheBust}`}
         title="Table Tennis"
         style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
         allow="autoplay; fullscreen"
