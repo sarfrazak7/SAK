@@ -1039,7 +1039,7 @@ function drawPaddle3D(hand,cpu,angles){
 
 function computeArmElbow(actor,cpu){
  const x=actor.baseX,z=actor.baseZ;
- const sh={x:x+(cpu?.02:-.02),y:1.46,z:z+(cpu?-.18:.18)};
+ const sh={x:x+(cpu?.02:-.02),y:1.46,z:z+(cpu?.18:-.18)};
  const wrist=actor.hand;
 
  const upperLen=.33,foreLen=.34;
@@ -2362,7 +2362,7 @@ function ensureHumanRigState(){
      bodyLift:0,
      bodyBend:0,
      headOffset:{x:0,y:0,z:0},
-     leftHand:{x:S.human.baseX-.02,y:.92,z:-.28},
+     leftHand:{x:S.human.baseX-.02,y:.92,z:.28},
      footLOffset:{x:0,z:0},
      footROffset:{x:0,z:0}
    };
@@ -2566,7 +2566,7 @@ function skeletonAnchors(actor,cpu){
    leftShoulder ={x:shoulderCenter.x+l.x,y:shoulderCenter.y,z:shoulderCenter.z+l.z};
  }
 
- const rh=rotXZ(0,cpu?-hw:hw,yaw),lh=rotXZ(0,cpu?hw:-hw,yaw);
+ const rh=rotXZ(0,cpu?hw:-hw,yaw),lh=rotXZ(0,cpu?-hw:hw,yaw);
  return{
    J,pelvis,neck,shoulderCenter,
    rightShoulder,leftShoulder,
