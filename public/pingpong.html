@@ -1212,11 +1212,17 @@ function solveLeg2D(hip,foot,kneeFlex,sideSign){
 function lowerBodyPose(actor,pelvis,cpu){
  ensureSkeleton();
  const A=skeletonAnchors(actor,cpu),sk=actor.skel,lo=actor.rig?.footLOffset||{x:0,z:0},ro=actor.rig?.footROffset||{x:0,z:0};
- const lf0=baseFootTarget(actor,cpu,'left'),rf0=baseFootTarget(actor,cpu,'right');
- const lf={x:lf0.x+lo.x,y:lf0.y,z:lf0.z+lo.z},rf={x:rf0.x+ro.x,y:rf0.y,z:rf0.z+ro.z};
+ const flex=actor.legs?.kneeFlex||.17;
  const t=cpu?1:-1;
- const L=solveTwoBone3D(A.leftHip,lf,sk.thigh,sk.shin,{x:A.leftHip.x+t*.20,y:A.leftHip.y-.22,z:A.leftHip.z-.16});
- const R=solveTwoBone3D(A.rightHip,rf,sk.thigh,sk.shin,{x:A.rightHip.x+t*.20,y:A.rightHip.y-.22,z:A.rightHip.z+.16});
+
+ // Shift feet forward/back based on knee flex to drive visible leg movement
+ const stepAmp=.18*flex;
+ const stepSway=Math.sin(performance.now()*.004+actor.baseZ*6)*stepAmp;
+
+ const lf0=baseFootTarget(actor,cpu,'left'),rf0=baseFootTarget(actor,cpu,'right');
+ const lf={x:lf0.x+lo.x-t*stepSway,y:lf0.y,z:lf0.z+lo.z},rf={x:rf0.x+ro.x+t*stepSway,y:rf0.y,z:rf0.z+ro.z};
+ const L=solveTwoBone3D(A.leftHip,lf,sk.thigh,sk.shin,{x:A.leftHip.x+t*.20,y:A.leftHip.y-.22,z:A.leftHip.z-.16-flex*.10});
+ const R=solveTwoBone3D(A.rightHip,rf,sk.thigh,sk.shin,{x:A.rightHip.x+t*.20,y:A.rightHip.y-.22,z:A.rightHip.z+.16+flex*.10});
  return{hipL:A.leftHip,hipR:A.rightHip,kneeL:L.joint,kneeR:R.joint,footL:L.end,footR:R.end};
 }
 
@@ -2039,13 +2045,35 @@ function drawRobot(a,cpu){
  }else if(!cpu){
    rightTarget=clampTargetToReach(A.rightShoulder,a.rig.leftHand,sk.upperArm+sk.foreArm-.003);
    leftTarget=clampTargetToReach(A.leftShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
+   // Animate human non-paddle arm as counterbalance during rallies/serves
+   if(S.shot&&S.shot.hitter==='human'&&!S.manualPaddle.drag){
+     const u=clamp(S.shot.t/(S.shot.pre||1),0,1);
+     const t={x:a.baseX+.20+.20*Math.sin(Math.PI*u),y:1.06+.14*Math.sin(Math.PI*u),z:a.baseZ-.22+.14*Math.sin(Math.PI*u)};
+     a.rig.leftHand=clampTargetToReach(A.rightShoulder,t,sk.upperArm+sk.foreArm-.003);
+     rightTarget=clampTargetToReach(A.rightShoulder,a.rig.leftHand,sk.upperArm+sk.foreArm-.003);
+   }
  }else{
+   // CPU paddle arm from leftShoulder, non-paddle from rightShoulder (both right-handed)
    rightTarget=clampTargetToReach(A.leftShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
-   leftTarget=straightArmTarget(a,true,'left');
+   const towardCpu=1;
+   let offArmX=a.baseX-towardCpu*.30,offArmY=1.10,offArmZ=a.baseZ+.22;
+   // Non-paddle arm swings as counterbalance during rallies and serves
+   if(S.shot&&S.shot.hitter==='cpu'){
+     const u=clamp(S.shot.t/(S.shot.pre||1),0,1);
+     offArmX=a.baseX-towardCpu*(.20+.20*Math.sin(Math.PI*u));
+     offArmY=1.06+.14*Math.sin(Math.PI*u);
+     offArmZ=a.baseZ+.22-.14*Math.sin(Math.PI*u);
+   }else if(S.serve&&S.serve.armed&&S.serve.side==='cpu'){
+     if(S.serve.backswing){offArmX=a.baseX-towardCpu*.42;offArmY=1.22}
+     else if(S.serve.forward){offArmX=a.baseX-towardCpu*.12;offArmY=.96}
+   }
+   leftTarget=clampTargetToReach(A.rightShoulder,{x:offArmX,y:offArmY,z:offArmZ},sk.upperArm+sk.foreArm-.003);
  }
  const sgn=cpu?1:-1;
- const RA=solveTwoBone3D(cpu?A.leftShoulder:A.rightShoulder,rightTarget,sk.upperArm,sk.foreArm,{x:(cpu?A.leftShoulder:A.rightShoulder).x+sgn*.12,y:(cpu?A.leftShoulder:A.rightShoulder).y-.14,z:(cpu?A.leftShoulder:A.rightShoulder).z+(cpu?.32:-.32)});
- const LA=solveTwoBone3D(cpu?A.rightShoulder:A.leftShoulder,leftTarget,sk.upperArm,sk.foreArm,{x:(cpu?A.rightShoulder:A.leftShoulder).x+sgn*.12,y:(cpu?A.rightShoulder:A.leftShoulder).y-.14,z:(cpu?A.rightShoulder:A.leftShoulder).z+(cpu?-.32:.32)});
+ const paddleSh=cpu?A.leftShoulder:A.rightShoulder;
+ const offSh=cpu?A.rightShoulder:A.leftShoulder;
+ const RA=solveTwoBone3D(paddleSh,rightTarget,sk.upperArm,sk.foreArm,{x:paddleSh.x+sgn*.12,y:paddleSh.y-.14,z:paddleSh.z+(cpu?.32:-.32)});
+ const LA=solveTwoBone3D(offSh,leftTarget,sk.upperArm,sk.foreArm,{x:offSh.x+sgn*.12,y:offSh.y-.14,z:offSh.z+(cpu?-.32:.32)});
 
  if(cpu){
    drawConnectedLimb(L.hipR,L.kneeR,17,14,'#343b43','#68727c');
@@ -2054,26 +2082,22 @@ function drawRobot(a,cpu){
    drawRobotAthleticTorso(J,A);
    drawConnectedLimb(L.kneeR,L.footR,14,11,'#59636d','#8f99a2');
    drawConnectedLimb(L.kneeL,L.footL,14,11,'#59636d','#8f99a2');
-   // Permanent CPU skeleton:
-   // shoulder girdle -> socket -> upper arm -> elbow -> forearm -> hand.
-   const cpuRightRoot={...A.rightShoulder};
-   const cpuLeftRoot ={...A.leftShoulder};
 
-   drawConnectedLimb(cpuRightRoot,RA.joint,17,13,'#20262c','#77818a');
+   // CPU paddle arm from leftShoulder, non-paddle from rightShoulder
+   drawConnectedLimb(paddleSh,RA.joint,17,13,'#20262c','#77818a');
    drawConnectedLimb(RA.joint,RA.end,11,9,'#8b949d','#c1c7cc');
-   drawConnectedLimb(cpuLeftRoot,LA.joint,17,13,'#20262c','#77818a');
+   drawConnectedLimb(offSh,LA.joint,17,13,'#20262c','#77818a');
    drawConnectedLimb(LA.joint,LA.end,11,9,'#8b949d','#c1c7cc');
 
-   // Socket shell overlaps the torso shoulder beam and the upper-arm capsule.
-   ellipseScreen(project(cpuRightRoot),14,14,'#59636d','#d7dde2',1.5);
-   ellipseScreen(project(cpuLeftRoot),14,14,'#59636d','#d7dde2',1.5);
+   ellipseScreen(project(paddleSh),14,14,'#59636d','#d7dde2',1.5);
+   ellipseScreen(project(offSh),14,14,'#59636d','#d7dde2',1.5);
 
    a._shoulderSocketQA={
      shoulderCenter:{...A.shoulderCenter},
-     rightSocket:{...cpuRightRoot},rightArmRoot:{...cpuRightRoot},
-     leftSocket:{...cpuLeftRoot},leftArmRoot:{...cpuLeftRoot},
-     rightElbow:{...RA.joint},leftElbow:{...LA.joint},
-     rightHand:{...RA.end},leftHand:{...LA.end}
+     rightSocket:{...offSh},rightArmRoot:{...offSh},
+     leftSocket:{...paddleSh},leftArmRoot:{...paddleSh},
+     rightElbow:{...LA.joint},leftElbow:{...RA.joint},
+     rightHand:{...LA.end},leftHand:{...RA.end}
    };
  }else{
    const skin='#e0b28f';
