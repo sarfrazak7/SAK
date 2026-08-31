@@ -55,7 +55,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;col
 #tip .tipItem:last-child{border-bottom:0}
 #tip b{color:#dff2ff}
 #playBtn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(108px + var(--safe-bottom));width:92px;height:36px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-size:16px;font-weight:800;background:#35637f}
-#slimBtn{position:absolute;left:14px;top:calc(44px + var(--safe-top));width:62px;height:26px;pointer-events:auto;border:1px solid #8296a8;border-radius:7px;color:#fff;font-weight:700;font-size:8px;background:#1a2939}
 #speedWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-bottom));width:min(520px,48vw);pointer-events:auto}
 #speedLabel{display:block;text-align:center;font-size:9px;margin-bottom:2px}
 #speed{width:100%;appearance:none;height:14px;border-radius:8px;border:1px solid #d9e0e7;background:linear-gradient(90deg,#78b8ff,#e6ef7b,#ff6a4d)}
@@ -282,7 +281,6 @@ button,input{touch-action:manipulation}
     </div>
   </div>
 
-  <button id="slimBtn">SLIM: ON</button>
   <button id="autoBtn">AUTO MODE: OFF</button>
   <button id="audioBtn" aria-label="audio"></button>
   <button id="tipBtn" aria-label="pro tip"></button>
@@ -370,7 +368,7 @@ const profiles={
 };
 
 const S={
-  playing:false,auto:false,audio:true,server:'human',gameStartServer:'human',slim:true,
+  playing:false,auto:false,audio:true,server:'human',gameStartServer:'human',
   p:0,c:0,hGames:0,cGames:0,gameNumber:1,gamesToWin:3,matchOver:false,matchWinner:'',
   pointIndex:0,rallyWinner:'human',servicePair:0,servicePoint:0,pointLocked:false,serveToken:0,cpuServeCountdown:0,cpuServePending:false,robotScan:{phase:0,targetZ:0,targetDepth:.72,active:false},drill:{active:false,stage:0,t:0,phase:'idle'},rallyId:0,resolvedRallyId:-1,faceLocked:false,lockedStroke:'forehand',prevBall:null,setupPaddle:{pitch:0,yaw:0,roll:0,locked:false},
   tactic:{exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55},
@@ -424,7 +422,6 @@ function ui(){
  $('matchText').textContent=S.matchOver?(S.matchWinner.toUpperCase()+' WON MATCH'):'FIRST TO 3 GAMES';
  $('playBtn').textContent=(S.drill&&S.drill.active)?'WARM-UP':(S.playing?'LIVE':'PLAY');$('autoBtn').textContent='AUTO MODE: '+(S.auto?'ON':'OFF');
  $('autoBtn').style.background=S.auto?'linear-gradient(#66ed94,#149148)':'linear-gradient(#56df89,#1b884d)';
- if($('slimBtn')){$('slimBtn').textContent='SLIM: '+(S.slim?'ON':'OFF');$('slimBtn').style.background=S.slim?'#1a2939':'#3a2020';$('slimBtn').style.borderColor=S.slim?'#8296a8':'#aa5555'}
  if(S.auto&&S.autoDemo?.active){
    $('serveHint').textContent=S.autoDemo.transition
      ?'AUTO • 2 SEC TRANSITION'
@@ -2050,9 +2047,6 @@ function drawRobot(a,cpu){
  const RA=solveTwoBone3D(cpu?A.leftShoulder:A.rightShoulder,rightTarget,sk.upperArm,sk.foreArm,{x:(cpu?A.leftShoulder:A.rightShoulder).x+sgn*.12,y:(cpu?A.leftShoulder:A.rightShoulder).y-.14,z:(cpu?A.leftShoulder:A.rightShoulder).z+(cpu?.32:-.32)});
  const LA=solveTwoBone3D(cpu?A.rightShoulder:A.leftShoulder,leftTarget,sk.upperArm,sk.foreArm,{x:(cpu?A.rightShoulder:A.leftShoulder).x+sgn*.12,y:(cpu?A.rightShoulder:A.leftShoulder).y-.14,z:(cpu?A.rightShoulder:A.leftShoulder).z+(cpu?-.32:.32)});
 
- const _slim=S.slim!==false;
- const _cx=_slim?project(a.baseX>0?{x:2.12,y:0,z:0}:{x:-2.12,y:0,z:0}).x:0;
- if(_slim){ctx.save();ctx.translate(_cx,0);ctx.scale(.72,1);ctx.translate(-_cx,0)}
  if(cpu){
    drawConnectedLimb(L.hipR,L.kneeR,17,14,'#343b43','#68727c');
    drawConnectedLimb(L.hipL,L.kneeL,17,14,'#343b43','#68727c');
@@ -2100,9 +2094,7 @@ function drawRobot(a,cpu){
  drawShoe(L.footL,cpu);drawShoe(L.footR,cpu);
  drawFace(head,cpu,{x:0,y:1,z:0});
  if(cpu)drawRobotScan(head);
- if(_slim)ctx.restore();
- // paddle remains on designated right/paddle arm, now constrained to fixed reach
- drawPaddle3D(cpu?RA.end:LA.end,cpu,a.paddle);
+ drawPaddle3D(a.hand,cpu,a.paddle);
  if(!cpu)drawHumanPaddle3DArrow();
 }
 
@@ -2518,7 +2510,7 @@ function solveTwoBone3D(root,target,L1,L2,pole){
 }
 function ensureSkeleton(){
  ensureHumanRigState();
- const proto={upperArm:.30,foreArm:.29,thigh:.43,shin:.43,neck:.13,shoulderWidth:.34,hipWidth:.28};
+ const proto={upperArm:.30,foreArm:.29,thigh:.43,shin:.43,neck:.13,shoulderWidth:.272,hipWidth:.224};
  if(!S.human.skel)S.human.skel={...proto};
  if(!S.cpu.skel)S.cpu.skel={...proto};
 }
@@ -2677,7 +2669,6 @@ $('autoBtn').onclick=()=>{
 };
 $('resetBtn').onclick=()=>{stopAutoDemo();press3DButton('resetBtn',180);setTimeout(resetAll,70)};
 $('audioBtn').onclick=()=>{S.audio=!S.audio;if(S.audio)ensureAudio();ui()};
-$('slimBtn').onclick=()=>{S.slim=S.slim===false;const b=$('slimBtn');b.textContent='SLIM: '+(S.slim?'ON':'OFF');b.style.background=S.slim?'#1a2939':'#3a2020';b.style.borderColor=S.slim?'#8296a8':'#aa5555'};
 $('tipBtn').onclick=()=>{
  const panel=$('tip');
  const isOpen=getComputedStyle(panel).display==='block';
