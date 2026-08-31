@@ -1039,7 +1039,7 @@ function drawPaddle3D(hand,cpu,angles){
 
 function computeArmElbow(actor,cpu){
  const x=actor.baseX,z=actor.baseZ;
- const sh={x:x+(cpu?.02:-.02),y:1.46,z:z+(cpu?.18:-.18)};
+ const sh={x:x+(cpu?.02:-.02),y:1.46,z:z+(cpu?-.18:.18)};
  const wrist=actor.hand;
 
  const upperLen=.33,foreLen=.34;
@@ -2040,15 +2040,15 @@ function drawRobot(a,cpu){
    rightTarget=straightArmTarget(a,cpu,'right');
    leftTarget=straightArmTarget(a,cpu,'left');
  }else if(!cpu){
-   rightTarget=clampTargetToReach(A.rightShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
-   leftTarget=clampTargetToReach(A.leftShoulder,a.rig.leftHand,sk.upperArm+sk.foreArm-.003);
+   rightTarget=clampTargetToReach(A.rightShoulder,a.rig.leftHand,sk.upperArm+sk.foreArm-.003);
+   leftTarget=clampTargetToReach(A.leftShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
  }else{
-   rightTarget=clampTargetToReach(A.rightShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
+   rightTarget=clampTargetToReach(A.leftShoulder,a.hand,sk.upperArm+sk.foreArm-.003);
    leftTarget=straightArmTarget(a,true,'left');
  }
  const sgn=cpu?1:-1;
- const RA=solveTwoBone3D(A.rightShoulder,rightTarget,sk.upperArm,sk.foreArm,{x:A.rightShoulder.x+sgn*.12,y:A.rightShoulder.y-.14,z:A.rightShoulder.z+(cpu?-.32:.32)});
- const LA=solveTwoBone3D(A.leftShoulder,leftTarget,sk.upperArm,sk.foreArm,{x:A.leftShoulder.x+sgn*.12,y:A.leftShoulder.y-.14,z:A.leftShoulder.z+(cpu?.32:-.32)});
+ const RA=solveTwoBone3D(cpu?A.leftShoulder:A.rightShoulder,rightTarget,sk.upperArm,sk.foreArm,{x:(cpu?A.leftShoulder:A.rightShoulder).x+sgn*.12,y:(cpu?A.leftShoulder:A.rightShoulder).y-.14,z:(cpu?A.leftShoulder:A.rightShoulder).z+(cpu?.32:-.32)});
+ const LA=solveTwoBone3D(cpu?A.rightShoulder:A.leftShoulder,leftTarget,sk.upperArm,sk.foreArm,{x:(cpu?A.rightShoulder:A.leftShoulder).x+sgn*.12,y:(cpu?A.rightShoulder:A.leftShoulder).y-.14,z:(cpu?A.rightShoulder:A.leftShoulder).z+(cpu?-.32:.32)});
 
  const _slim=S.slim!==false;
  const _cx=_slim?project(a.baseX>0?{x:2.12,y:0,z:0}:{x:-2.12,y:0,z:0}).x:0;
@@ -2102,7 +2102,7 @@ function drawRobot(a,cpu){
  if(cpu)drawRobotScan(head);
  if(_slim)ctx.restore();
  // paddle remains on designated right/paddle arm, now constrained to fixed reach
- drawPaddle3D(RA.end,cpu,a.paddle);
+ drawPaddle3D(cpu?RA.end:LA.end,cpu,a.paddle);
  if(!cpu)drawHumanPaddle3DArrow();
 }
 
@@ -2398,9 +2398,9 @@ function updateResetPresentation(dt){
    a.legs.kneeFlex=lerp(a.legs.kneeFlex,.08,Math.min(1,dt*10));a.legs.targetFlex=.08;
    a.headTrack.yaw=0;a.headTrack.pitch=0;
  }
- S.human.hand=straightArmTarget(S.human,false,'right');
- S.human.rig.leftHand=straightArmTarget(S.human,false,'left');
- S.cpu.hand=straightArmTarget(S.cpu,true,'right');
+ S.human.hand=straightArmTarget(S.human,false,'left');
+ S.human.rig.leftHand=straightArmTarget(S.human,false,'right');
+ S.cpu.hand=straightArmTarget(S.cpu,true,'left');
 }
 
 function humanRigGeometry(){
@@ -2560,10 +2560,12 @@ function skeletonAnchors(actor,cpu){
    };
  }else{
    shoulderCenter={x:neck.x,y:neck.y-.10,z:neck.z};
-   const sw=actor.skel.shoulderWidth/2;
-   const r=rotXZ(0, sw,yaw),l=rotXZ(0,-sw,yaw);
-   rightShoulder={x:shoulderCenter.x+r.x,y:shoulderCenter.y,z:shoulderCenter.z+r.z};
-   leftShoulder ={x:shoulderCenter.x+l.x,y:shoulderCenter.y,z:shoulderCenter.z+l.z};
+   const halfWidth=actor.skel.shoulderWidth/2;
+   const cb=cameraBasis();
+   const lateralLen=Math.hypot(cb.r.x,cb.r.z)||1;
+   const lx=cb.r.x/lateralLen,lz=cb.r.z/lateralLen;
+   rightShoulder={x:shoulderCenter.x+lx*halfWidth,y:shoulderCenter.y,z:shoulderCenter.z+lz*halfWidth};
+   leftShoulder ={x:shoulderCenter.x-lx*halfWidth,y:shoulderCenter.y,z:shoulderCenter.z-lz*halfWidth};
  }
 
  const rh=rotXZ(0,cpu?hw:-hw,yaw),lh=rotXZ(0,cpu?-hw:hw,yaw);
@@ -2594,9 +2596,9 @@ function lockResetPose(){
    a.spine.lean=.01;a.spine.targetLean=.01;a.spine.twist=0;a.spine.targetTwist=0;
    a.legs.kneeFlex=.08;a.legs.targetFlex=.08;a.headTrack.yaw=0;a.headTrack.pitch=0;
  }
- S.human.hand=straightArmTarget(S.human,false,'right');
- S.human.rig.leftHand=straightArmTarget(S.human,false,'left');
- S.cpu.hand=straightArmTarget(S.cpu,true,'right');
+ S.human.hand=straightArmTarget(S.human,false,'left');
+ S.human.rig.leftHand=straightArmTarget(S.human,false,'right');
+ S.cpu.hand=straightArmTarget(S.cpu,true,'left');
  S.resetIntro={active:true,t:0,phase:'frontLocked'};
 }
 
@@ -2604,8 +2606,8 @@ function resetAll(){
  S.playing=false;S.auto=false;S.p=S.c=0;S.hGames=S.cGames=0;S.gameNumber=1;S.gamesToWin=3;
  S.gameStartServer='human';S.server='human';S.matchOver=false;S.matchWinner='';S.setupPaddle={pitch:0,yaw:0,roll:0,locked:false};S.faceLocked=false;S.drill={active:false,stage:0,t:0,phase:'idle',enteredAt:0,watchdog:false};S.cpuServePending=false;S.cpuServeCountdown=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;S.serveToken=0;S.faceLocked=false;S.lockedStroke='forehand';S.prevBall=null;S.tactic={exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55};
  S.rally=S.best=0;S.shot=null;S.phase='idle';S.spinPhase=0;
- S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
- S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
+ S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
+ S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:-.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
  ensureHumanRigState();
  S.cpu.rig={bodyYaw:0,bodyLift:0,bodyBend:0,headOffset:{x:0,y:0,z:0}};
  resetRigDefaults();
