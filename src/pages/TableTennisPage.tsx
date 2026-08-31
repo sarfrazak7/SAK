@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
-const GAME_VERSION = '20260831';
+const GAME_VERSION = '20260831-4';
 
 export default function TableTennisPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);

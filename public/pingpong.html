@@ -311,7 +311,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260831';
+ const V='20260831-4';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -393,9 +393,9 @@ const S={
   rally:0,best:0,speed:.5,stroke:'forehand',
   last:performance.now(),audioCtx:null,shot:null,phase:'idle',rallyLimit:10,spinPhase:0,
   ball:{x:1.72,y:1.10,z:0,r:.026},
-  human:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0},
-  cpu:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}},
-  serve:{armed:false,side:'human',drag:false,maxBackX:2.06,backswing:false,forward:false,last:null}, manualPaddle:{drag:false,last:null,active:false}, humanRally:{armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,
+  human:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:mobileHomeX(),baseX:mobileHomeX(),baseZ:0,hand:{x:mobileHomeX()-.44,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0},
+  cpu:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-mobileHomeX(),baseX:-mobileHomeX(),baseZ:0,hand:{x:-(mobileHomeX()-.44),y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}},
+  serve:{armed:false,side:'human',drag:false,maxBackX:mobileHomeX()-.06,backswing:false,forward:false,last:null}, manualPaddle:{drag:false,last:null,active:false}, humanRally:{armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,
   lastGesture:{dx:0,dy:0,dz:0},target:null,window:0,holdTime:0,assistStrength:.82,
   gestureBase:null,pointerStart:null,totalDX:0,totalDY:0,maxBackDrag:0,maxForwardDrag:0,contactLatched:false,contactBall:null,contactElapsed:0,contactDuration:.72,contactGrace:0}
 };
@@ -815,13 +815,20 @@ function bounceSound(){tone(500,.032,.055,'triangle')}
 
 /* Higher spectator camera. Table is rendered undercarriage first, tabletop last. */
 const CAM={pos:{x:0,y:4.40,z:6.00},target:{x:0,y:.70,z:0},focal:1.38};
+function isMobileLandscape(){return innerWidth>innerHeight&&Math.min(innerWidth,innerHeight)<=500;}
+function mobileCam(){
+ if(!isMobileLandscape())return null;
+ return{pos:{x:0,y:3.35,z:4.55},target:{x:0,y:.78,z:0},focal:2.12};
+}
+function mobileHomeX(){return isMobileLandscape()?2.45:2.12;}
 function vsub(a,b){return{x:a.x-b.x,y:a.y-b.y,z:a.z-b.z}}
 function vdot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
 function vcross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}
 function vnorm(a){const n=Math.hypot(a.x,a.y,a.z)||1;return{x:a.x/n,y:a.y/n,z:a.z/n}}
-function cameraBasis(){const f=vnorm(vsub(CAM.target,CAM.pos)),up={x:0,y:1,z:0},r=vnorm(vcross(f,up)),u=vcross(r,f);return{f,r,u}}
+function cameraBasis(){const cm=mobileCam()||CAM;const f=vnorm(vsub(cm.target,cm.pos)),up={x:0,y:1,z:0},r=vnorm(vcross(f,up)),u=vcross(r,f);return{f,r,u}}
 function project(p){
- const B=cameraBasis(),q=vsub(p,CAM.pos),depth=vdot(q,B.f),sx=vdot(q,B.r),sy=vdot(q,B.u),f=Math.min(innerWidth,innerHeight)*CAM.focal,s=f/Math.max(.25,depth);
+ const cm=mobileCam()||CAM;
+ const B=cameraBasis(),q=vsub(p,cm.pos),depth=vdot(q,B.f),sx=vdot(q,B.r),sy=vdot(q,B.u),f=Math.min(innerWidth,innerHeight)*cm.focal,s=f/Math.max(.25,depth);
  return{x:innerWidth/2+sx*s,y:innerHeight*.485-sy*s,s};
 }
 function serveVocal(side){
@@ -839,7 +846,7 @@ function poly(P,fill,stroke='#fff',lw=2){P=P.map(project);ctx.fillStyle=fill;ctx
 function circ(p,r,c){const P=project(p);ctx.fillStyle=c;ctx.beginPath();ctx.arc(P.x,P.y,Math.max(2,r*P.s),0,Math.PI*2);ctx.fill()}
 
 function drawTable(){
- const y=.82,hx=1.37,hz=.7625,e=.745;
+ const y=.82,hx=isMobileLandscape()?1.78:1.37,hz=isMobileLandscape()?.88:.7625,e=.745;
  /* UNDERCARRIAGE FIRST: prevents frame from covering the playing surface. */
  for(const [x,z] of [[-.92,-.52],[-.92,.52],[.92,-.52],[.92,.52]])line({x,y:e,z},{x,y:.06,z},'#3b4349',9);
  line({x:-.92,y:.26,z:-.52},{x:.92,y:.26,z:-.52},'#454d53',6);
@@ -875,8 +882,8 @@ function baseTarget(actor,recvPoint,stroke,dt){
  actor.baseX=lerp(actor.baseX,tgt.x,a);
  actor.baseZ=lerp(actor.baseZ,tgt.z,a);
 
- if(actor.homeX>0)actor.baseX=clamp(actor.baseX,1.80,2.50);
- else actor.baseX=clamp(actor.baseX,-2.50,-1.80);
+ if(actor.homeX>0)actor.baseX=clamp(actor.baseX,isMobileLandscape()?2.28:1.80,isMobileLandscape()?2.70:2.50);
+ else actor.baseX=clamp(actor.baseX,isMobileLandscape()?-2.70:-2.50,isMobileLandscape()?-2.28:-1.80);
 
  actor.baseZ=clamp(actor.baseZ,-.66,.66);
  actor.move=Math.hypot(actor.baseX-ox,actor.baseZ-oz)/Math.max(dt,.001);
@@ -1451,6 +1458,7 @@ function drawFace(head,cpu,bodyTangent){
 }
 
 function drawTorsoShell(J,cpu){
+ const _sc=isMobileLandscape()?.72:1;
  const pelvis=J[0],mid=J[3],neck=J[6];
  const P=project(pelvis),M=project(mid),N=project(neck);
 
@@ -1657,6 +1665,7 @@ function drawRobotScan(head){
 
 
 function ellipseScreen(center,rx,ry,fill,stroke=null,w=1){
+ const _sc=isMobileLandscape()?.72:1;rx*=_sc;ry*=_sc;
  ctx.beginPath();
  ctx.ellipse(center.x,center.y,rx,ry,0,0,Math.PI*2);
  ctx.fillStyle=fill;ctx.fill();
@@ -1844,6 +1853,8 @@ function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
 }
 
 function drawConnectedLimb(a,b,rA,rB,fill,stroke='rgba(255,255,255,.16)'){
+ const _sc=isMobileLandscape()?.72:1;
+ rA*=_sc;rB*=_sc;
  const A=project(a),B=project(b);
  fillScreenPoly(capsulePoly(a,b,rA,rB),fill,stroke,1);
 
@@ -2670,8 +2681,8 @@ function resetAll(){
  S.playing=false;S.auto=false;S.p=S.c=0;S.hGames=S.cGames=0;S.gameNumber=1;S.gamesToWin=3;
  S.gameStartServer='human';S.server='human';S.matchOver=false;S.matchWinner='';S.matchStart=null;S.setupPaddle={pitch:0,yaw:0,roll:0,locked:false};S.faceLocked=false;S.drill={active:false,stage:0,t:0,phase:'idle',enteredAt:0,watchdog:false};S.cpuServePending=false;S.cpuServeCountdown=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;S.serveToken=0;S.faceLocked=false;S.lockedStroke='forehand';S.prevBall=null;S.tactic={exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55};
  S.rally=S.best=0;S.shot=null;S.phase='idle';S.spinPhase=0;
- S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:2.12,baseX:2.12,baseZ:0,hand:{x:1.68,y:1.12,z:.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
- S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-2.12,baseX:-2.12,baseZ:0,hand:{x:-1.68,y:1.12,z:-.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
+ const _hx=mobileHomeX();S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:_hx,baseX:_hx,baseZ:0,hand:{x:_hx-.44,y:1.12,z:.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
+ S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-_hx,baseX:-_hx,baseZ:0,hand:{x:-(_hx-.44),y:1.12,z:-.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
  ensureHumanRigState();
  S.cpu.rig={bodyYaw:0,bodyLift:0,bodyBend:0,headOffset:{x:0,y:0,z:0}};
  resetRigDefaults();
@@ -2696,9 +2707,11 @@ function drawBall(){
 function draw(){
  ctx.clearRect(0,0,innerWidth,innerHeight);const g=ctx.createLinearGradient(0,0,0,innerHeight);g.addColorStop(0,'#0d1520');g.addColorStop(1,'#11161b');ctx.fillStyle=g;ctx.fillRect(0,0,innerWidth,innerHeight);
  poly([{x:-3,y:0,z:-2.4},{x:3,y:0,z:-2.4},{x:3,y:0,z:2.4},{x:-3,y:0,z:2.4}],'#181e24','#181e24',1);
+ if(isMobileLandscape()){ctx.save();ctx.translate(innerWidth/2,innerHeight/2);ctx.scale(.90,.90);ctx.translate(-innerWidth/2,-innerHeight/2);}
  drawTable();
  try{drawRobot(S.cpu,true)}catch(e){console.error('CPU ROBOT',e)}
  try{drawRobot(S.human,false)}catch(e){console.error('HUMAN ROBOT',e)}
+ if(isMobileLandscape())ctx.restore();
  try{drawBall()}catch(e){console.error('BALL',e)}
  if($('ballSpeed'))$('ballSpeed').textContent=S.shot?(2.8/speedFactor()).toFixed(1):'0.0';
  if(S.auto&&S.autoDemo?.active){
@@ -3067,9 +3080,10 @@ function moveHumanRallyGesture(x,y){
  //
  // world Z controls visible left/right most directly in this camera.
  // world X adds only a smaller depth component.
- const lateral=clamp(totalDX*.00155,-.22,.22);
- const depth=clamp(totalDX*.00055,-.08,.08);
- const vertical=clamp(-totalDY*.00135,-.18,.18);
+ const _sens=isMobileLandscape()?2.6:1;
+ const lateral=clamp(totalDX*.00155*_sens,-.22,.22);
+ const depth=clamp(totalDX*.00055*_sens,-.08,.08);
+ const vertical=clamp(-totalDY*.00135*_sens,-.18,.18);
 
  S.human.hand.z=clamp(desired.z+lateral,-.78,.78);
  S.human.hand.x=clamp(desired.x-depth,1.05,2.52);
@@ -3320,19 +3334,20 @@ function moveGesture(x,y){
  const side=S.serve.side;
  const actor=side==='human'?S.human:S.cpu;
  const p=S.serve.last,dx=x-p.x,dy=y-p.y;S.serve.lastMotion=Math.hypot(dx,dy);
+ const _ss=isMobileLandscape()?2.2:1;
  if(side==='human'){
-   actor.hand.x=clamp(actor.hand.x+dx*.0042,1.34,2.48);
+   actor.hand.x=clamp(actor.hand.x+dx*.0042*_ss,1.34,2.48);
    S.serve.maxBackX=Math.max(S.serve.maxBackX,actor.hand.x);
    if(S.serve.maxBackX>2.16)S.serve.backswing=true;
    if(S.serve.backswing&&actor.hand.x<S.serve.maxBackX-.16)S.serve.forward=true;
  }else{
-   actor.hand.x=clamp(actor.hand.x-dx*.0042,-2.48,-1.34);
+   actor.hand.x=clamp(actor.hand.x-dx*.0042*_ss,-2.48,-1.34);
    S.serve.maxBackX=Math.min(S.serve.maxBackX,actor.hand.x);
    if(S.serve.maxBackX<-2.16)S.serve.backswing=true;
    if(S.serve.backswing&&actor.hand.x>S.serve.maxBackX+.16)S.serve.forward=true;
  }
- actor.hand.y=clamp(actor.hand.y-dy*.0035,.90,1.50);
- actor.hand.z=clamp(actor.hand.z+dy*.0018,-.50,.50);
+ actor.hand.y=clamp(actor.hand.y-dy*.0035*_ss,.90,1.50);
+ actor.hand.z=clamp(actor.hand.z+dy*.0018*_ss,-.50,.50);
  S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.08,z:actor.hand.z,r:.026};
  S.serve.last={x,y,t:performance.now()};
  ui();
