@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-29';
+ const V='20260902-30';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -3255,7 +3255,7 @@ function buildFreeHumanShot(stroke,contact){
 
  // Backward drag also pushes cross-court placement farther toward a side edge.
  const edgeBias=clamp(intent.backNorm*.34 + intent.speedNorm*.12,0,.48);
- const dragSign=Math.sign(lateralComponent || (S.humanRally.lastGesture?.dz||0))||1;
+ const dragSign=Math.sign(intent.z || (S.humanRally.lastGesture?.dz||0))||1;
  if(Math.abs(bounceZ)<.18 && edgeBias>.10){
    bounceZ=dragSign*(.18+edgeBias);
  }
