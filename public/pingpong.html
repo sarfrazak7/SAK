@@ -33,36 +33,39 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;col
 @keyframes blink{0%,45%{opacity:1}46%,100%{opacity:.15}}
 #tip{
  position:absolute;
- right:10px;
- top:52px;
- bottom:10px;
+ right:14px;
+ top:58px;
+ bottom:auto;
+ max-height:calc(100vh - 120px);
  width:min(400px,42vw);
- padding:14px 16px;
+ padding:18px 20px;
  display:none;
  overflow-y:auto;
  overflow-x:hidden;
- z-index:35;
- color:#eef7ff;
- background:rgba(6,14,24,.70);
- border:1px solid rgba(200,230,255,.38);
- border-radius:16px;
- backdrop-filter:blur(10px);
- -webkit-backdrop-filter:blur(10px);
- box-shadow:0 12px 32px rgba(0,0,0,.30);
+ z-index:40;
+ color:#f2f6fa;
+ background:rgba(12,20,32,.42);
+ border:1px solid rgba(255,216,106,.28);
+ border-radius:18px;
+ backdrop-filter:blur(16px) saturate(1.2);
+ -webkit-backdrop-filter:blur(16px) saturate(1.2);
+ box-shadow:0 16px 48px rgba(0,0,0,.36),0 0 0 1px rgba(255,216,106,.08),inset 0 1px 0 rgba(255,255,255,.06);
  font-size:clamp(11px,1.1vw,14px);
- line-height:1.42;
+ line-height:1.48;
  pointer-events:auto;
+ animation:tipFloat .5s cubic-bezier(.22,1,.36,1);
 }
-#tip .tipTitle{position:sticky;top:-14px;margin:-14px -16px 6px;padding:12px 16px 9px;background:rgba(6,14,24,.84);font-weight:900;color:#fff}
-#tip .tipItem{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+@keyframes tipFloat{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+#tip .tipTitle{position:sticky;top:-18px;margin:-18px -20px 8px;padding:14px 20px 10px;background:linear-gradient(135deg,rgba(255,216,106,.18),rgba(255,184,40,.08));font-weight:900;color:#ffd86a;font-size:15px;letter-spacing:.04em;text-shadow:0 0 18px rgba(255,216,106,.35);border-bottom:1px solid rgba(255,216,106,.18)}
+#tip .tipItem{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 #tip .tipItem:last-child{border-bottom:0}
-#tip b{color:#dff2ff}
+#tip b{color:#ffe9a0}
 #playBtn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(108px + var(--safe-bottom));width:92px;height:36px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-size:16px;font-weight:800;background:#35637f}
 #speedWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-bottom));width:min(520px,48vw);pointer-events:auto}
 #speedLabel{display:block;text-align:center;font-size:9px;margin-bottom:2px}
 #speed{width:100%;appearance:none;height:14px;border-radius:8px;border:1px solid #d9e0e7;background:linear-gradient(90deg,#78b8ff,#e6ef7b,#ff6a4d)}
 #speed::-webkit-slider-thumb{appearance:none;width:19px;height:19px;border-radius:50%;background:#fff;border:2px solid #1a232c}
-.serveSideBtn,#resetBtn{position:absolute;bottom:calc(60px + var(--safe-bottom));width:106px;height:40px;pointer-events:auto;border-radius:9px;border:1px solid #8296a8;color:#fff;font-weight:800;font-size:10px}
+.serveSideBtn,#resetBtn{position:absolute;bottom:calc(60px + var(--safe-bottom));width:106px;height:40px;pointer-events:auto;touch-action:none;border-radius:9px;border:1px solid #8296a8;color:#fff;font-weight:800;font-size:10px}
 #resetBtn{right:14px;background:#613535}
 #serveArrow{font-size:15px;color:#ffd55a;margin-right:5px;display:inline-block}
 .serveSideBtn.armed .serveArrow{animation:serveBlink .44s steps(1,end) infinite}
@@ -72,6 +75,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;col
 .stroke{min-width:52px;padding:5px 7px;border-radius:7px;border:1px solid #62798d;background:#162331;color:#eef3f7;font-weight:800;font-size:9px}
 .stroke.active{background:#1b9b51;border-color:#7ef5a7;animation:pulse .55s ease-in-out infinite alternate;box-shadow:0 0 10px rgba(62,235,116,.5)}
 @keyframes pulse{from{filter:brightness(.8)}to{filter:brightness(1.35)}}
+@keyframes netPulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:.4;transform:translate(-50%,-50%) scale(1.08)}}
 /* telemetry panel removed for more play space */
 #rotateGuard{display:none;position:fixed;z-index:999;inset:0;background:#0b1017;color:white;place-items:center;text-align:center;font-size:19px;font-weight:800;padding:24px}
 body.mobile-device.portrait #rotateGuard{display:grid}
@@ -107,14 +111,14 @@ body.mobile-device.portrait #rotateGuard{display:grid}
 
 .serveSideBtn{
   position:absolute;bottom:calc(92px + var(--safe-bottom));
-  width:136px;height:42px;pointer-events:auto;border-radius:10px;
-  border:1px solid #8296a8;color:#fff;font-weight:800;font-size:10px;
+  width:102px;height:32px;pointer-events:auto;border-radius:10px;
+  border:1px solid #8296a8;color:#fff;font-weight:800;font-size:12px;
   background:linear-gradient(#29465e,#183247);
 }
 #cpuServeBtn{left:31%}
 #humanServeBtn{right:31%}
-.serveSideBtn:disabled{opacity:.42;filter:grayscale(.5)}
-.serveArrow{font-size:16px;color:#ffd55a;display:inline-block;margin:0 4px}
+.serveSideBtn:disabled{opacity:.42;filter:grayscale(.5);cursor:not-allowed}.serveSideBtn.selected{opacity:.46;filter:grayscale(.65);box-shadow:none}
+.serveArrow{font-size:24px;color:#ffd55a;display:inline-block;margin:0 4px}
 .serveSideBtn.armed .serveArrow{animation:serveBlink .42s steps(1,end) infinite}
 
 :root{--human:#2f7cff;--cpu:#ff4f55;--hud:#08111b;--hudBorder:#33404d}
@@ -141,9 +145,9 @@ button,input{touch-action:manipulation}
  #audioBtn{right:50px}
  #tipBtn{right:8px}
  #playBtn{bottom:146px;width:82px;height:34px;font-size:14px}
- .serveSideBtn{bottom:94px;width:112px;height:38px;font-size:9px}
- #cpuServeBtn{left:2%}
- #humanServeBtn{right:2%}
+ .serveSideBtn{bottom:94px;width:84px;height:29px;font-size:11px}
+ #cpuServeBtn{left:2%;bottom:58px !important}
+ #humanServeBtn{right:2%;bottom:58px !important}
  #speedWrap{bottom:54px;width:min(360px,48vw)}
  #resetBtn{right:8px;bottom:50px;width:82px;height:36px;font-size:9px}
  #serveHint{bottom:25px;font-size:7px;max-width:78vw;overflow:hidden;text-overflow:ellipsis}
@@ -169,9 +173,9 @@ button,input{touch-action:manipulation}
  #score{width:min(340px,52vw)!important}
  #autoBtn{top:63px;width:108px;height:26px}
  #playBtn{bottom:137px;width:74px;height:32px;font-size:13px}
- .serveSideBtn{bottom:89px;width:104px;height:36px}
- #cpuServeBtn{left:1.5%}
- #humanServeBtn{right:1.5%}
+ .serveSideBtn{bottom:89px;width:78px;height:27px}
+ #cpuServeBtn{left:1.5%;bottom:49px !important}
+ #humanServeBtn{right:1.5%;bottom:49px !important}
  #speedWrap{bottom:49px;width:42vw}
  #resetBtn{bottom:46px;width:72px;height:34px}
  #serveHint{bottom:22px}
@@ -187,7 +191,7 @@ button,input{touch-action:manipulation}
  #audioBtn,#tipBtn{top:4px;width:30px;height:30px}
  #audioBtn{right:42px}
  #playBtn{bottom:126px;height:30px}
- .serveSideBtn{bottom:82px;height:34px}
+ .serveSideBtn{bottom:82px;height:26px}
  #speedWrap{bottom:44px}
  #resetBtn{bottom:42px;height:32px}
  #serveHint{bottom:19px}
@@ -211,7 +215,7 @@ button,input{touch-action:manipulation}
  #autoBtn{top:43px!important;width:100px!important;height:22px!important;font-size:8px!important}
  #audioBtn,#tipBtn{top:3px!important;width:28px!important;height:28px!important}
  #playBtn{bottom:106px!important;width:68px!important;height:28px!important;font-size:12px!important}
- .serveSideBtn{bottom:70px!important;width:98px!important;height:30px!important;font-size:8px!important}
+ .serveSideBtn{bottom:70px!important;width:74px!important;height:23px!important;font-size:9px!important}
  #speedWrap{bottom:37px!important;width:44vw!important}
  #speedLabel{font-size:7px!important}
  #speed{height:10px!important}
@@ -226,43 +230,41 @@ button,input{touch-action:manipulation}
 /* v59 compact-fit HUD */
 #serveHint{display:none!important}
 #score{padding-bottom:7px!important}
-#playBtn{bottom:112px!important}
-.serveSideBtn{bottom:61px!important}
-#speedWrap{bottom:29px!important}
-#resetBtn{bottom:27px!important}
-#strokeBar{bottom:2px!important}
+.serveSideBtn{bottom:calc(29px + var(--safe-bottom))!important}
+#speedWrap{bottom:calc(20px + var(--safe-bottom))!important}
+#strokeBar{bottom:14px!important}
 
 @media (max-width:900px){
- #playBtn{bottom:104px!important}
- .serveSideBtn{bottom:57px!important}
- #speedWrap{bottom:26px!important}
- #resetBtn{bottom:24px!important}
- #strokeBar{bottom:1px!important}
+ .serveSideBtn{bottom:calc(26px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(18px + var(--safe-bottom))!important}
+ #strokeBar{bottom:14px!important}
 }
 @media (max-height:430px) and (orientation:landscape){
- #playBtn{bottom:91px!important}
- .serveSideBtn{bottom:51px!important}
- #speedWrap{bottom:22px!important}
- #resetBtn{bottom:20px!important}
- #strokeBar{bottom:0!important}
+ .serveSideBtn{bottom:calc(22px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(15px + var(--safe-bottom))!important}
+ #strokeBar{bottom:12px!important}
 }
 @media (orientation:landscape) and (max-height:360px){
- #playBtn{bottom:83px!important}
- .serveSideBtn{bottom:46px!important}
- #speedWrap{bottom:18px!important}
- #resetBtn{bottom:17px!important}
- #strokeBar{bottom:0!important}
+ .serveSideBtn{bottom:calc(18px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(12px + var(--safe-bottom))!important}
+ #strokeBar{bottom:10px!important}
 }
 
-/* v60: PLAY + RESET side by side, centered, same size */
-#playResetWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(112px + var(--safe-bottom));display:flex;gap:10px;pointer-events:auto;z-index:10}
-#playResetWrap #playBtn,#playResetWrap #resetBtn{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;width:92px!important;height:36px!important;font-size:14px!important;border:0;border-radius:9px;color:#fff;font-weight:800;box-shadow:0 6px 0 rgba(0,0,0,.42),0 9px 14px rgba(0,0,0,.30),inset 0 2px 0 rgba(255,255,255,.18);transition:transform .08s ease,box-shadow .08s ease,filter .08s ease}
+/* v61: reachable bottom controls */
+#playResetWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-bottom));display:flex;align-items:center;gap:12px;pointer-events:auto;z-index:50}
+#playResetWrap #playBtn,#playResetWrap #resetBtn{position:relative!important;display:block!important;visibility:visible!important;opacity:1!important;flex:0 0 auto;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;width:69px!important;height:27px!important;font-size:11px!important;border:0;border-radius:9px;color:#fff;font-weight:800;box-shadow:0 6px 0 rgba(0,0,0,.42),0 9px 14px rgba(0,0,0,.30),inset 0 2px 0 rgba(255,255,255,.18);transition:transform .08s ease,box-shadow .08s ease,filter .08s ease}
 #playResetWrap #playBtn{background:#35637f}
 #playResetWrap #resetBtn{background:linear-gradient(#7c4848,#5c3030);border:1px solid #8296a8}
 #playResetWrap #playBtn:active,#playResetWrap #resetBtn:active{transform:translateY(4px) scale(.985)!important;box-shadow:0 1px 0 rgba(0,0,0,.48),0 3px 5px rgba(0,0,0,.20),inset 0 3px 8px rgba(0,0,0,.24)!important;filter:brightness(.92)}
-@media(max-width:900px){#playResetWrap{bottom:calc(104px + var(--safe-bottom))}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:82px!important;height:34px!important;font-size:13px!important}}
-@media(max-height:430px) and (orientation:landscape){#playResetWrap{bottom:calc(91px + var(--safe-bottom))}#playResetWrap #playBtn,#playResetWrap #resetBtn{height:30px!important;font-size:12px!important}}
-@media(orientation:landscape) and (max-height:360px){#playResetWrap{bottom:calc(83px + var(--safe-bottom))}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:68px!important;height:28px!important;font-size:12px!important}}
+.serveSideBtn{display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;overflow:visible}
+.serveArrow{flex:0 0 auto;margin:0;font-size:18px}
+#playResetWrap{bottom:calc(78px + var(--safe-bottom))!important}
+@media(max-width:900px){#playResetWrap{bottom:calc(72px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:62px!important;height:26px!important;font-size:10px!important}.serveSideBtn{width:105px;height:29px;font-size:11px}.serveArrow{font-size:17px}}
+@media(max-height:430px) and (orientation:landscape){#playResetWrap{bottom:calc(68px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{height:23px!important;font-size:9px!important}.serveSideBtn{width:98px;height:27px;font-size:11px}.serveArrow{font-size:16px}}
+@media(orientation:landscape) and (max-height:360px){#playResetWrap{bottom:calc(64px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:51px!important;height:21px!important;font-size:9px!important}.serveSideBtn{width:92px;height:23px;font-size:9px}.serveArrow{font-size:14px}}
+@media(max-width:900px){#strokeBar{bottom:18px!important}}
+@media(max-height:430px) and (orientation:landscape){#strokeBar{bottom:16px!important}}
+@media(orientation:landscape) and (max-height:360px){#strokeBar{bottom:14px!important}}
 
 </style>
 </head>
@@ -273,6 +275,11 @@ button,input{touch-action:manipulation}
 <div id="announcement" style="display:none;position:fixed;z-index:50;left:50%;top:43%;transform:translate(-50%,-50%);
  min-width:300px;padding:18px 24px;border-radius:16px;background:rgba(4,10,16,.94);border:2px solid #ffd86a;
  box-shadow:0 0 28px rgba(255,216,106,.28);text-align:center;color:white;font:800 22px Arial;pointer-events:none"></div>
+<div id="netFlash" style="display:none;position:fixed;z-index:60;left:50%;top:40%;transform:translate(-50%,-50%);
+ padding:24px 48px;border-radius:20px;background:rgba(180,40,40,.22);border:3px solid #ff5050;
+ box-shadow:0 0 40px rgba(255,80,80,.45),inset 0 0 30px rgba(255,80,80,.18);
+ text-align:center;color:#ff5555;font:900 38px Arial;letter-spacing:.12em;text-shadow:0 0 22px rgba(255,80,80,.7);
+ pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)"></div>
 <div id="hud">
   <div id="build" style="display:none">BUILD v59 • CPU SHOULDER 0.50 + COMPACT HUD • RIGHT-HANDED PLAYERS</div>
   <div id="status" style="display:none">BOOTING v14</div>
@@ -304,8 +311,8 @@ button,input{touch-action:manipulation}
   <button id="playBtn">PLAY</button>
   <button id="resetBtn">RESET</button>
   </div>
-  <button id="cpuServeBtn" class="serveSideBtn"><span class="serveArrow">➡</span> HUMANOID SERVE</button>
-  <button id="humanServeBtn" class="serveSideBtn"><span class="serveArrow">⬅</span> HUMAN SERVE</button>
+  <button id="cpuServeBtn" class="serveSideBtn"><span class="serveArrow">➡</span> HUMANOID</button>
+  <button id="humanServeBtn" class="serveSideBtn"><span class="serveArrow">⬅</span> HUMAN</button>
 
   <div id="speedWrap">
     <span id="speedLabel">BALL SPEED 50% • SLOW ← → FAST</span>
@@ -326,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260831-5';
+ const V='20260902-23';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -407,7 +414,7 @@ const S={
   tactic:{exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55},
   rally:0,best:0,speed:.5,stroke:'forehand',
   last:performance.now(),audioCtx:null,shot:null,phase:'idle',rallyLimit:10,spinPhase:0,
-  ball:{x:1.72,y:1.10,z:0,r:.026},
+  ball:{x:mobileHomeX(),y:1.10,z:0,r:.026},
   human:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:mobileHomeX(),baseX:mobileHomeX(),baseZ:0,hand:{x:mobileHomeX()-.44,y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0},
   cpu:{spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-mobileHomeX(),baseX:-mobileHomeX(),baseZ:0,hand:{x:-(mobileHomeX()-.44),y:1.12,z:0},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}},
   serve:{armed:false,side:'human',drag:false,maxBackX:mobileHomeX()-.06,backswing:false,forward:false,last:null}, manualPaddle:{drag:false,last:null,active:false}, humanRally:{armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,
@@ -441,12 +448,14 @@ function ui(){
  $('serverText').textContent=S.server==='human'?'HUMAN':'HUMANOID';
  const hb=$('humanServeBtn'),cb=$('cpuServeBtn');
  if(hb&&cb){
-   hb.disabled=(S.drill&&S.drill.active)||S.server!=='human';
-   cb.disabled=(S.drill&&S.drill.active)||S.server!=='cpu'||S.cpuServePending;
-   hb.classList.toggle('armed',S.playing&&S.server==='human');
-   cb.classList.toggle('armed',S.playing&&S.server==='cpu');
-   hb.innerHTML='<span class="serveArrow">⬅</span> HUMAN SERVE';
-   cb.innerHTML='<span class="serveArrow">➡</span> '+(S.cpuServePending?('SERVE IN '+S.cpuServeCountdown):'HUMANOID SERVE');
+   hb.disabled=(S.drill&&S.drill.active)||S.server!=='human'||(S.serve.armed&&S.serve.side==='human');
+   cb.disabled=(S.drill&&S.drill.active)||S.server!=='cpu'||S.cpuServePending||(S.serve.armed&&S.serve.side==='cpu');
+   hb.classList.toggle('armed',S.playing&&S.server==='human'&&!S.serve.armed);
+   cb.classList.toggle('armed',S.playing&&S.server==='cpu'&&!S.serve.armed);
+   hb.classList.toggle('selected',S.serve.armed&&S.serve.side==='human');
+   cb.classList.toggle('selected',S.serve.armed&&S.serve.side==='cpu');
+   hb.innerHTML='<span class="serveArrow">⬅</span> HUMAN';
+   cb.innerHTML='<span class="serveArrow">➡</span> '+(S.cpuServePending?('SERVE IN '+S.cpuServeCountdown):'HUMANOID');
  }
  if($('servesLeft')){
    $('servesLeft').textContent=(S.p>=10&&S.c>=10)?'1':String(2-S.servicePoint);
@@ -524,7 +533,7 @@ function movementTargetForShot(actor,recvPoint,stroke){
  const speedAgg=clamp(S.speed,0,1);
  const shotAgg=stroke==='smash'?1:stroke==='topspin'?.78:stroke==='slice'?.55:.62;
 
- let forward=shortBall*(.12+.24*speedAgg+.08*shotAgg);
+ let forward=shortBall*(.18+.30*speedAgg+.12*shotAgg);
  let retreat=deepBall*(.12+.24*speedAgg+.06*shotAgg);
 
  if(stroke==='smash')forward+=.12+.10*speedAgg;
@@ -541,8 +550,9 @@ function movementTargetForShot(actor,recvPoint,stroke){
  );
 
  // hard no-step zone outside table
- if(side==='human')x=clamp(x,1.80,2.50);
- else x=clamp(x,-2.50,-1.80);
+ const _mh=mobileHomeX();
+ if(side==='human')x=clamp(x,_mh-0.16,_mh+0.08);
+ else x=clamp(x,-(_mh+0.08),-(_mh-0.16));
 
  return{x,z};
 }
@@ -568,7 +578,7 @@ function lockHumanPaddleFace(){
 }
 
 function clearPointInteractionState(){
- S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?2.06:-2.06,backswing:false,forward:false,last:null};
+ const _mh0=mobileHomeX();S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?_mh0+0.06:-(_mh0+0.06),backswing:false,forward:false,last:null};
  S.manualPaddle={drag:false,last:null,active:false};
  S.humanRally.armed=false;
  S.humanRally.drag=false;
@@ -728,6 +738,16 @@ function announce(text,sub='',ms=1450){
  clearTimeout(announce._timer);
  announce._timer=setTimeout(()=>box.style.display='none',ms);
 }
+function flashNet(){
+ const el=$('netFlash');if(!el)return;
+ el.textContent='NET';
+ el.style.display='block';
+ el.style.animation='none';
+ void el.offsetWidth;
+ el.style.animation='netPulse .25s ease-in-out 4';
+ clearTimeout(flashNet._t);
+ flashNet._t=setTimeout(()=>{el.style.display='none';el.style.animation='none'},1000);
+}
 
 function gameWonBy(side){
  return (side==='human'?S.p:S.c)>=11 && Math.abs(S.p-S.c)>=2;
@@ -833,9 +853,18 @@ const CAM={pos:{x:0,y:4.40,z:6.00},target:{x:0,y:.70,z:0},focal:1.38};
 function isMobileLandscape(){return innerWidth>innerHeight&&Math.min(innerWidth,innerHeight)<=500;}
 function mobileCam(){
  if(!isMobileLandscape())return null;
- return{pos:{x:0,y:3.35,z:4.55},target:{x:0,y:.78,z:0},focal:2.12};
+ return{pos:{x:0,y:3.15,z:4.30},target:{x:0,y:.72,z:0},focal:1.50};
 }
-function mobileHomeX(){return isMobileLandscape()?2.45:2.12;}
+const PLAYER_SCALE=0.528;
+const PLAYER_HEIGHT_SCALE=2.063;
+function tableHX(){return isMobileLandscape()?1.78:1.37;}
+function mobileHomeX(){return isMobileLandscape()?2.55:2.22;}
+let _scaleAnchors={human:null,cpu:null};
+function applyPlayerScale(sp,cpu){
+ const foot=cpu?_scaleAnchors.cpu:_scaleAnchors.human;
+ if(!foot)return sp;
+ return{x:(sp.x-foot.x)*PLAYER_SCALE+foot.x,y:(sp.y-foot.y)*PLAYER_SCALE*PLAYER_HEIGHT_SCALE+foot.y,s:sp.s};
+}
 function vsub(a,b){return{x:a.x-b.x,y:a.y-b.y,z:a.z-b.z}}
 function vdot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
 function vcross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}
@@ -897,8 +926,9 @@ function baseTarget(actor,recvPoint,stroke,dt){
  actor.baseX=lerp(actor.baseX,tgt.x,a);
  actor.baseZ=lerp(actor.baseZ,tgt.z,a);
 
- if(actor.homeX>0)actor.baseX=clamp(actor.baseX,isMobileLandscape()?2.28:1.80,isMobileLandscape()?2.70:2.50);
- else actor.baseX=clamp(actor.baseX,isMobileLandscape()?-2.70:-2.50,isMobileLandscape()?-2.28:-1.80);
+ const _h=Math.abs(actor.homeX);
+ if(actor.homeX>0)actor.baseX=clamp(actor.baseX,_h-0.13,_h+0.13);
+ else actor.baseX=clamp(actor.baseX,-(_h+0.13),-(_h-0.13));
 
  actor.baseZ=clamp(actor.baseZ,-.66,.66);
  actor.move=Math.hypot(actor.baseX-ox,actor.baseZ-oz)/Math.max(dt,.001);
@@ -1004,8 +1034,8 @@ function paddleBasis(cpu,angles){
 
 function paddleBladeCenter(hand,cpu,angles){
  const B=paddleBasis(cpu,angles);
- const along=cpu?.13:-.13;
- return vadd(hand,vadd(vscale(B.normal,along),vscale(B.vertical,.13)));
+ const along=(cpu?.13:-.13)*PADDLE_SCALE;
+ return vadd(hand,vadd(vscale(B.normal,along),vscale(B.vertical,.13*PADDLE_SCALE)));
 }
 
 function worldToPaddleLocal(world,hand,cpu,angles){
@@ -1019,16 +1049,16 @@ function ballTouchesPaddle(ball,hand,cpu,angles){
  const q=worldToPaddleLocal(ball,hand,cpu,angles);
  const ballR=ball.r||.026;
  const planeTol=ballR+.008;
- const ry=.125+ballR*.55;
- const rz=.085+ballR*.55;
+ const ry=.125*PADDLE_SCALE+ballR*.55;
+ const rz=.085*PADDLE_SCALE+ballR*.55;
  const ellipse=(q.y*q.y)/(ry*ry)+(q.z*q.z)/(rz*rz);
  return{hit:Math.abs(q.x)<=planeTol&&ellipse<=1,plane:Math.abs(q.x),ellipse,local:q};
 }
 
 function desiredHandForBladeContact(ball,cpu,angles){
  const B=paddleBasis(cpu,angles);
- const along=cpu?.13:-.13;
- const offset=vadd(vscale(B.normal,along),vscale(B.vertical,.13));
+ const along=(cpu?.13:-.13)*PADDLE_SCALE;
+ const offset=vadd(vscale(B.normal,along),vscale(B.vertical,.13*PADDLE_SCALE));
  return{x:ball.x-offset.x,y:ball.y-offset.y,z:ball.z-offset.z};
 }
 
@@ -1072,25 +1102,26 @@ function drawHumanPaddle3DArrow(){
 }
 
 function humanPaddleArrowHit(x,y){
- const G=humanPaddleArrowGeometry(),A=project(G.a),B=project(G.b);
+ const G=humanPaddleArrowGeometry(),A=applyPlayerScale(project(G.a),false),B=applyPlayerScale(project(G.b),false);
  // Narrow 10 px interaction corridor around the visible arrow.
  return pointSegmentDistance(x,y,A.x,A.y,B.x,B.y)<=10;
 }
 
+const PADDLE_SCALE=1.10;
 function drawPaddle3D(hand,cpu,angles){
  angles=angles||{pitch:0,yaw:0,roll:0};
  const B=paddleBasis(cpu,angles);
- const handleEnd=vadd(hand,vadd(vscale(B.normal,cpu?.075:-.075),vscale(B.vertical,.045)));
+ const handleEnd=vadd(hand,vadd(vscale(B.normal,(cpu?.075:-.075)*PADDLE_SCALE),vscale(B.vertical,.045*PADDLE_SCALE)));
  line(hand,handleEnd,'#2e353b',6);
 
  const center=paddleBladeCenter(hand,cpu,angles);
  const pts=[];
  for(let i=0;i<22;i++){
    const t=i*Math.PI*2/22;
-   pts.push(vadd(center,vadd(vscale(B.vertical,.125*Math.sin(t)),vscale(B.horizontal,.085*Math.cos(t)))));
+   pts.push(vadd(center,vadd(vscale(B.vertical,.125*PADDLE_SCALE*Math.sin(t)),vscale(B.horizontal,.085*PADDLE_SCALE*Math.cos(t)))));
  }
  poly(pts,cpu?'#3c8ca0':'#c94d56','#fff',2);
- line(vadd(center,vscale(B.vertical,-.075)),vadd(center,vscale(B.vertical,.075)),'rgba(255,255,255,.78)',1);
+ line(vadd(center,vscale(B.vertical,-.075*PADDLE_SCALE)),vadd(center,vscale(B.vertical,.075*PADDLE_SCALE)),'rgba(255,255,255,.78)',1);
 }
 
 
@@ -1135,9 +1166,9 @@ function pointSegmentDistance(px,py,ax,ay,bx,by){
 
 function humanControlZoneHit(clientX,clientY){
  const arm=computeArmElbow(S.human,false);
- const E=project(arm.elbow);
- const W=project(arm.wrist);
- const C=project(paddleBladeCenter(S.human.hand,false,S.human.paddle));
+ const E=applyPlayerScale(project(arm.elbow),false);
+ const W=applyPlayerScale(project(arm.wrist),false);
+ const C=applyPlayerScale(project(paddleBladeCenter(S.human.hand,false,S.human.paddle)),false);
 
  // Local screen-space capsule:
  // elbow radius ~55 px, wrist corridor ~48 px, paddle radius ~82 px.
@@ -1146,17 +1177,17 @@ function humanControlZoneHit(clientX,clientY){
  const dForearm=pointSegmentDistance(clientX,clientY,E.x,E.y,W.x,W.y);
  const dWristBlade=pointSegmentDistance(clientX,clientY,W.x,W.y,C.x,C.y);
 
- return dElbow<=55 || dPaddle<=82 || dForearm<=48 || dWristBlade<=58;
+ return dElbow<=60 || dPaddle<=90 || dForearm<=52 || dWristBlade<=64;
 }
 function playerControlZoneHit(side,clientX,clientY){
  if(side==='human')return humanControlZoneHit(clientX,clientY);
  const arm=computeArmElbow(S.cpu,true);
- const E=project(arm.elbow),W=project(arm.wrist);
- const C=project(paddleBladeCenter(S.cpu.hand,true,S.cpu.paddle));
- return Math.hypot(clientX-E.x,clientY-E.y)<=55 ||
-        Math.hypot(clientX-C.x,clientY-C.y)<=82 ||
-        pointSegmentDistance(clientX,clientY,E.x,E.y,W.x,W.y)<=48 ||
-        pointSegmentDistance(clientX,clientY,W.x,W.y,C.x,C.y)<=58;
+ const E=applyPlayerScale(project(arm.elbow),true),W=applyPlayerScale(project(arm.wrist),true);
+ const C=applyPlayerScale(project(paddleBladeCenter(S.cpu.hand,true,S.cpu.paddle)),true);
+ return Math.hypot(clientX-E.x,clientY-E.y)<=60 ||
+        Math.hypot(clientX-C.x,clientY-C.y)<=90 ||
+        pointSegmentDistance(clientX,clientY,E.x,E.y,W.x,W.y)<=52 ||
+        pointSegmentDistance(clientX,clientY,W.x,W.y,C.x,C.y)<=64;
 }
 
 
@@ -1473,7 +1504,7 @@ function drawFace(head,cpu,bodyTangent){
 }
 
 function drawTorsoShell(J,cpu){
- const _sc=isMobileLandscape()?.72:1;
+ const _sc=1;
  const pelvis=J[0],mid=J[3],neck=J[6];
  const P=project(pelvis),M=project(mid),N=project(neck);
 
@@ -1680,7 +1711,7 @@ function drawRobotScan(head){
 
 
 function ellipseScreen(center,rx,ry,fill,stroke=null,w=1){
- const _sc=isMobileLandscape()?.72:1;rx*=_sc;ry*=_sc;
+ const _sc=1;rx*=_sc;ry*=_sc;
  ctx.beginPath();
  ctx.ellipse(center.x,center.y,rx,ry,0,0,Math.PI*2);
  ctx.fillStyle=fill;ctx.fill();
@@ -1691,12 +1722,12 @@ function drawHumanAthleticTorso(J){
  const pelvis=project(J[0]),mid=project(J[3]),neck=project(J[6]);
 
  ctx.beginPath();
- ctx.moveTo(neck.x-34,neck.y+2);
- ctx.quadraticCurveTo(neck.x-48,neck.y+12,mid.x-35,mid.y-4);
- ctx.quadraticCurveTo(mid.x-32,mid.y+22,pelvis.x-27,pelvis.y+12);
- ctx.quadraticCurveTo(pelvis.x,pelvis.y+18,pelvis.x+27,pelvis.y+12);
- ctx.quadraticCurveTo(mid.x+32,mid.y+22,neck.x+48,neck.y+12);
- ctx.quadraticCurveTo(neck.x+34,neck.y+2,neck.x+24,neck.y-1);
+ ctx.moveTo(neck.x-25,neck.y+2);
+ ctx.quadraticCurveTo(neck.x-36,neck.y+12,mid.x-27,mid.y-4);
+ ctx.quadraticCurveTo(mid.x-25,mid.y+22,pelvis.x-21,pelvis.y+12);
+ ctx.quadraticCurveTo(pelvis.x,pelvis.y+16,pelvis.x+21,pelvis.y+12);
+ ctx.quadraticCurveTo(mid.x+25,mid.y+22,neck.x+36,neck.y+12);
+ ctx.quadraticCurveTo(neck.x+25,neck.y+2,neck.x+18,neck.y-1);
  ctx.closePath();
 
  ctx.fillStyle='#f5f6f7';
@@ -1746,8 +1777,8 @@ function drawHumanShorts(pelvis,hipL,hipR,kneeL,kneeR){
 
  // Pelvis/seat bridge overlaps both thigh sleeves deeply.
  ctx.beginPath();
- ctx.moveTo(P.x-38,P.y-6);
- ctx.quadraticCurveTo(P.x-41,P.y+14,L.x-21,L.y+8);
+ ctx.moveTo(P.x-29,P.y-6);
+ ctx.quadraticCurveTo(P.x-32,P.y+14,L.x-16,L.y+8);
  ctx.lineTo(LE.x-15,LE.y+4);
  ctx.lineTo(LE.x+14,LE.y+5);
  ctx.quadraticCurveTo(LE.x+10,LE.y-4,P.x-8,P.y+37);
@@ -1755,7 +1786,7 @@ function drawHumanShorts(pelvis,hipL,hipR,kneeL,kneeR){
  ctx.quadraticCurveTo(RE.x-10,RE.y-4,RE.x-14,RE.y+5);
  ctx.lineTo(RE.x+15,RE.y+4);
  ctx.lineTo(R.x+21,R.y+8);
- ctx.quadraticCurveTo(P.x+41,P.y+14,P.x+38,P.y-6);
+ ctx.quadraticCurveTo(P.x+32,P.y+14,P.x+29,P.y-6);
  ctx.closePath();
 
  ctx.fillStyle='#f7f8f9';
@@ -1766,7 +1797,7 @@ function drawHumanShorts(pelvis,hipL,hipR,kneeL,kneeR){
 
  // Wide waistband ensures outside-right-hip and inside-left-thigh overlap.
  ctx.beginPath();
- ctx.roundRect(P.x-38,P.y-7,76,13,6);
+ ctx.roundRect(P.x-28,P.y-7,56,13,6);
  ctx.fillStyle='#f7f8f9';
  ctx.fill();
  ctx.strokeStyle='#9fa9b3';
@@ -1788,9 +1819,9 @@ function drawRobotAthleticTorso(J,A){
  ctx.beginPath();
  ctx.moveTo(LS.x,LS.y);
  ctx.lineTo(RS.x,RS.y);
- ctx.quadraticCurveTo(mid.x+41,mid.y-2,pelvis.x+30,pelvis.y+12);
- ctx.quadraticCurveTo(pelvis.x,pelvis.y+18,pelvis.x-30,pelvis.y+12);
- ctx.quadraticCurveTo(mid.x-41,mid.y-2,LS.x,LS.y);
+ ctx.quadraticCurveTo(mid.x+31,mid.y-2,pelvis.x+22,pelvis.y+12);
+ ctx.quadraticCurveTo(pelvis.x,pelvis.y+18,pelvis.x-22,pelvis.y+12);
+ ctx.quadraticCurveTo(mid.x-31,mid.y-2,LS.x,LS.y);
  ctx.closePath();
  ctx.fillStyle='#151a20';ctx.fill();
  ctx.strokeStyle='#6e7781';ctx.lineWidth=1.5;ctx.stroke();
@@ -1798,7 +1829,7 @@ function drawRobotAthleticTorso(J,A){
  // Solid shoulder beam connects both socket centers through the upper torso.
  ctx.save();
  ctx.lineCap='round';
- ctx.strokeStyle='#343c44';ctx.lineWidth=18;
+ ctx.strokeStyle='#343c44';ctx.lineWidth=14;
  ctx.beginPath();ctx.moveTo(LS.x,LS.y);ctx.lineTo(RS.x,RS.y);ctx.stroke();
  ctx.strokeStyle='#89939d';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(LS.x,LS.y);ctx.lineTo(RS.x,RS.y);ctx.stroke();
@@ -1816,8 +1847,8 @@ function drawRobotAthleticTorso(J,A){
 
  ctx.fillStyle='#8f1f28';
  ctx.beginPath();
- ctx.moveTo(mid.x-31,mid.y-2);ctx.lineTo(pelvis.x-26,pelvis.y+10);
- ctx.lineTo(pelvis.x-17,pelvis.y+11);ctx.lineTo(mid.x-22,mid.y);ctx.closePath();ctx.fill();
+ ctx.moveTo(mid.x-24,mid.y-2);ctx.lineTo(pelvis.x-20,pelvis.y+10);
+ ctx.lineTo(pelvis.x-13,pelvis.y+11);ctx.lineTo(mid.x-17,mid.y);ctx.closePath();ctx.fill();
 }
 
 function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
@@ -1834,8 +1865,8 @@ function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
  const LE=project(leftEnd),RE=project(rightEnd);
 
  ctx.beginPath();
- ctx.moveTo(P.x-39,P.y-6);
- ctx.quadraticCurveTo(P.x-42,P.y+14,L.x-22,L.y+8);
+ ctx.moveTo(P.x-30,P.y-6);
+ ctx.quadraticCurveTo(P.x-33,P.y+14,L.x-17,L.y+8);
  ctx.lineTo(LE.x-16,LE.y+4);
  ctx.lineTo(LE.x+15,LE.y+5);
  ctx.quadraticCurveTo(LE.x+10,LE.y-4,P.x-8,P.y+37);
@@ -1843,7 +1874,7 @@ function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
  ctx.quadraticCurveTo(RE.x-10,RE.y-4,RE.x-15,RE.y+5);
  ctx.lineTo(RE.x+16,RE.y+4);
  ctx.lineTo(R.x+22,R.y+8);
- ctx.quadraticCurveTo(P.x+42,P.y+14,P.x+39,P.y-6);
+ ctx.quadraticCurveTo(P.x+33,P.y+14,P.x+30,P.y-6);
  ctx.closePath();
 
  ctx.fillStyle='#15191f';
@@ -1853,7 +1884,7 @@ function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
  ctx.stroke();
 
  ctx.beginPath();
- ctx.roundRect(P.x-39,P.y-7,78,13,6);
+ ctx.roundRect(P.x-29,P.y-7,58,13,6);
  ctx.fillStyle='#15191f';
  ctx.fill();
  ctx.strokeStyle='#69737d';
@@ -1868,7 +1899,7 @@ function drawRobotShorts(pelvis,hipL,hipR,kneeL,kneeR){
 }
 
 function drawConnectedLimb(a,b,rA,rB,fill,stroke='rgba(255,255,255,.16)'){
- const _sc=isMobileLandscape()?.72:1;
+ const _sc=1;
  rA*=_sc;rB*=_sc;
  const A=project(a),B=project(b);
  fillScreenPoly(capsulePoly(a,b,rA,rB),fill,stroke,1);
@@ -2112,6 +2143,10 @@ function drawRobot(a,cpu){
  const head=attachedHeadCenter(a,cpu,neck);
  const L=lowerBodyPose(a,pelvis,cpu);
 
+ const _ps=PLAYER_SCALE;
+ if(_ps!==1){const _f=project(L.footL);if(cpu)_scaleAnchors.cpu=_f;else _scaleAnchors.human=_f;ctx.save();ctx.translate(_f.x,_f.y);ctx.scale(_ps,_ps*PLAYER_HEIGHT_SCALE);ctx.translate(-_f.x,-_f.y);}
+
+
  let rightTarget,leftTarget;
  if(!S.playing&&S.resetIntro?.active){
    rightTarget=straightArmTarget(a,cpu,'right');
@@ -2150,18 +2185,18 @@ function drawRobot(a,cpu){
  const LA=solveTwoBone3D(offSh,leftTarget,sk.upperArm,sk.foreArm,{x:offSh.x+sgn*.12,y:offSh.y-.14,z:offSh.z+(cpu?-.32:.32)});
 
  if(cpu){
-   drawConnectedLimb(L.hipR,L.kneeR,17,14,'#343b43','#68727c');
-   drawConnectedLimb(L.hipL,L.kneeL,17,14,'#343b43','#68727c');
+   drawConnectedLimb(L.hipR,L.kneeR,13,11,'#343b43','#68727c');
+   drawConnectedLimb(L.hipL,L.kneeL,13,11,'#343b43','#68727c');
    drawRobotShorts(pelvis,L.hipL,L.hipR,L.kneeL,L.kneeR);
    drawRobotAthleticTorso(J,A);
-   drawConnectedLimb(L.kneeR,L.footR,14,11,'#59636d','#8f99a2');
-   drawConnectedLimb(L.kneeL,L.footL,14,11,'#59636d','#8f99a2');
+   drawConnectedLimb(L.kneeR,L.footR,11,9,'#59636d','#8f99a2');
+   drawConnectedLimb(L.kneeL,L.footL,11,9,'#59636d','#8f99a2');
 
    // CPU paddle arm from leftShoulder, non-paddle from rightShoulder
-   drawConnectedLimb(paddleSh,RA.joint,17,13,'#20262c','#77818a');
-   drawConnectedLimb(RA.joint,RA.end,11,9,'#8b949d','#c1c7cc');
-   drawConnectedLimb(offSh,LA.joint,17,13,'#20262c','#77818a');
-   drawConnectedLimb(LA.joint,LA.end,11,9,'#8b949d','#c1c7cc');
+   drawConnectedLimb(paddleSh,RA.joint,13,10,'#20262c','#77818a');
+   drawConnectedLimb(RA.joint,RA.end,9,7,'#8b949d','#c1c7cc');
+   drawConnectedLimb(offSh,LA.joint,13,10,'#20262c','#77818a');
+   drawConnectedLimb(LA.joint,LA.end,9,7,'#8b949d','#c1c7cc');
 
    ellipseScreen(project(paddleSh),14,14,'#59636d','#d7dde2',1.5);
    ellipseScreen(project(offSh),14,14,'#59636d','#d7dde2',1.5);
@@ -2175,18 +2210,18 @@ function drawRobot(a,cpu){
    };
  }else{
    const skin='#e0b28f';
-   drawConnectedLimb(L.hipR,L.kneeR,17,14,skin,'rgba(120,85,60,.20)');
-   drawConnectedLimb(L.hipL,L.kneeL,17,14,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(L.hipR,L.kneeR,13,11,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(L.hipL,L.kneeL,13,11,skin,'rgba(120,85,60,.20)');
    drawHumanShorts(pelvis,L.hipL,L.hipR,L.kneeL,L.kneeR);
    drawHumanAthleticTorso(J);
-   drawConnectedLimb(L.kneeR,L.footR,14,11,skin,'rgba(120,85,60,.20)');
-   drawConnectedLimb(L.kneeL,L.footL,14,11,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(L.kneeR,L.footR,10,8,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(L.kneeL,L.footL,10,8,skin,'rgba(120,85,60,.20)');
    ellipseScreen(project(A.rightShoulder),11,11,'#f5f6f7','#a7b0ba',1.1);
    ellipseScreen(project(A.leftShoulder),11,11,'#f5f6f7','#a7b0ba',1.1);
-   drawConnectedLimb(A.rightShoulder,RA.joint,15,12,'#f5f6f7','#a7b0ba');
-   drawConnectedLimb(RA.joint,RA.end,11,9,skin,'rgba(120,85,60,.20)');
-   drawConnectedLimb(A.leftShoulder,LA.joint,15,12,'#f5f6f7','#a7b0ba');
-   drawConnectedLimb(LA.joint,LA.end,11,9,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(A.rightShoulder,RA.joint,11,9,'#f5f6f7','#a7b0ba');
+   drawConnectedLimb(RA.joint,RA.end,9,7,skin,'rgba(120,85,60,.20)');
+   drawConnectedLimb(A.leftShoulder,LA.joint,11,9,'#f5f6f7','#a7b0ba');
+   drawConnectedLimb(LA.joint,LA.end,9,7,skin,'rgba(120,85,60,.20)');
  }
 
  drawShoe(L.footL,cpu);drawShoe(L.footR,cpu);
@@ -2194,10 +2229,11 @@ function drawRobot(a,cpu){
  if(cpu)drawRobotScan(head);
  drawPaddle3D(a.hand,cpu,a.paddle);
  if(!cpu)drawHumanPaddle3DArrow();
+ if(_ps!==1)ctx.restore();
 }
 
 function makeShot(hitter,stroke,forceMiss=false){
- const p=profiles[stroke],dir=hitter==='human'?-1:1,startX=hitter==='human'?1.62:-1.62,recvX=-startX;updateDynamicTactic();
+ const _mh=mobileHomeX();const p=profiles[stroke],dir=hitter==='human'?-1:1,startX=hitter==='human'?_mh-0.36:-(_mh-0.36),recvX=-startX;updateDynamicTactic();
  const sign=S.tactic.angleBias;let dynamicDepth=clamp(p.bounceDepth+S.tactic.depthBias,.28,.98);let dynamicLat=clamp((p.lateral*sign)+S.tactic.lateralBias,-.58,.58);
  const sliceDir=(Math.random()<.5?-1:1);if(stroke==='slice'){dynamicDepth=clamp(.38+Math.random()*.32,.32,.72);dynamicLat=sliceDir*(.26+Math.random()*.18);}
  const bounceX=dir*dynamicDepth,bounceZ=dynamicLat;let endZ=clamp(bounceZ+(p.sideSpin*.012),-.70,.70);if(stroke==='slice')endZ=clamp(-bounceZ+sliceDir*.18,-.78,.78);
@@ -2335,6 +2371,7 @@ function updateShot(dt){
 
    if(u>=1){
      // Illegal human/CPU shots resolve immediately at net or off-table landing.
+     if(q.outcome==='net'){flashNet();}
      if(q.outcome==='net'||q.outcome==='wide'||q.outcome==='long'){
        pointTo(q.receiver);
        return;
@@ -2703,7 +2740,7 @@ function resetAll(){
  resetRigDefaults();
  lockResetPose();
  S.ball={x:1.62,y:1.08,z:0,r:.026};
- S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?2.06:-2.06,backswing:false,forward:false,last:null};
+ const _mh0=mobileHomeX();S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?_mh0+0.06:-(_mh0+0.06),backswing:false,forward:false,last:null};
  S.manualPaddle={drag:false,last:null,active:false};S.humanRally={armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,lastGesture:{dx:0,dy:0,dz:0},target:null,window:0,holdTime:0,assistStrength:.82,
   gestureBase:null,pointerStart:null,totalDX:0,totalDY:0,maxBackDrag:0,maxForwardDrag:0,contactLatched:false,contactBall:null,contactElapsed:0,contactDuration:.72,contactGrace:0};
  beginRallyPlan();
@@ -2721,12 +2758,10 @@ function drawBall(){
 }
 function draw(){
  ctx.clearRect(0,0,innerWidth,innerHeight);const g=ctx.createLinearGradient(0,0,0,innerHeight);g.addColorStop(0,'#0d1520');g.addColorStop(1,'#11161b');ctx.fillStyle=g;ctx.fillRect(0,0,innerWidth,innerHeight);
- poly([{x:-3,y:0,z:-2.4},{x:3,y:0,z:-2.4},{x:3,y:0,z:2.4},{x:-3,y:0,z:2.4}],'#181e24','#181e24',1);
+ poly([{x:-2.4,y:0,z:-2.0},{x:2.4,y:0,z:-2.0},{x:2.4,y:0,z:2.0},{x:-2.4,y:0,z:2.0}],'#181e24','#181e24',1);
  drawTable();
- if(isMobileLandscape()){ctx.save();ctx.translate(innerWidth/2,innerHeight/2);ctx.scale(.60,1);ctx.translate(-innerWidth/2,-innerHeight/2);}
  try{drawRobot(S.cpu,true)}catch(e){console.error('CPU ROBOT',e)}
  try{drawRobot(S.human,false)}catch(e){console.error('HUMAN ROBOT',e)}
- if(isMobileLandscape())ctx.restore();
  try{drawBall()}catch(e){console.error('BALL',e)}
  if($('ballSpeed'))$('ballSpeed').textContent=S.shot?(2.8/speedFactor()).toFixed(1):'0.0';
  if(S.auto&&S.autoDemo?.active){
@@ -2859,7 +2894,7 @@ function armServeFor(side){
    S.faceLocked=true;
  }
  S.shot=null;
- S.serve={armed:true,side,drag:false,maxBackX:side==='human'?2.06:-2.06,backswing:false,forward:false,last:null};
+ const _mhA=mobileHomeX();S.serve={armed:true,side,drag:false,maxBackX:side==='human'?_mhA+0.06:-(_mhA+0.06),backswing:false,forward:false,last:null};
  const actor=side==='human'?S.human:S.cpu;
  S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.07,z:actor.hand.z,r:.026};
  ui();
@@ -2874,7 +2909,7 @@ function prepareHumanIntercept(){
  S.humanRally.target={x:ball.x,y:ball.y,z:ball.z};
 
  const a=.72;
- S.human.baseX=lerp(S.human.baseX,S.human.homeX-(ball.x<1.55?.16:.04),a);
+ const _te=tableHX();S.human.baseX=lerp(S.human.baseX,S.human.homeX-(ball.x<_te?.16:.04),a);
  S.human.baseZ=lerp(S.human.baseZ,clamp(ball.z*1.05,-.48,.48),a);
 
  if((performance.now()-S.human.paddleInputAt)>700)applySelectedPaddlePreset();
@@ -2910,8 +2945,8 @@ function sweptBallPaddleContact(prevBall,currBall,hand,cpu,angles){
  const y=lerp(a.y,b.y,t);
  const z=lerp(a.z,b.z,t);
  const ballR=currBall.r||.026;
- const ry=.125+ballR*.55;
- const rz=.085+ballR*.55;
+ const ry=.125*PADDLE_SCALE+ballR*.55;
+ const rz=.085*PADDLE_SCALE+ballR*.55;
  const ellipse=(y*y)/(ry*ry)+(z*z)/(rz*rz);
  if(ellipse>1)return null;
 
@@ -2945,8 +2980,8 @@ function sweptBladeClosestContact(prevBall,currBall,hand,cpu,angles){
 
  const ballR=currBall.r||.026;
  const planeTol=ballR+.018;
- const ry=.125+ballR*.72;
- const rz=.085+ballR*.72;
+ const ry=.125*PADDLE_SCALE+ballR*.72;
+ const rz=.085*PADDLE_SCALE+ballR*.72;
  const ellipse=(y*y)/(ry*ry)+(z*z)/(rz*rz);
 
  if(Math.abs(x)>planeTol||ellipse>1)return null;
@@ -3101,7 +3136,7 @@ function moveHumanRallyGesture(x,y){
  const vertical=clamp(-totalDY*.00135*_sens,-.18,.18);
 
  S.human.hand.z=clamp(desired.z+lateral,-.78,.78);
- S.human.hand.x=clamp(desired.x-depth,1.05,2.52);
+ S.human.hand.x=clamp(desired.x-depth,S.human.homeX-0.50,S.human.homeX+0.50);
  S.human.hand.y=clamp(desired.y+vertical,.66,1.78);
 
  const eventVX=(-dxStep*.00055)/dt;
@@ -3123,44 +3158,60 @@ function manualShotOutcome(stroke){
  const speed=Math.max(.01,S.humanRally.peakSpeed);
  const backPx=S.humanRally.maxBackDrag||0;
  const fwdPx=S.humanRally.maxForwardDrag||0;
+ const totalDX=S.humanRally.totalDX||0;
  const totalDY=S.humanRally.totalDY||0;
 
- // Normalize player gesture into intent.
- const backNorm=clamp(backPx/260,0,1.35);
- const fwdNorm=clamp(fwdPx/220,0,1.35);
+ // Total drag magnitude — the primary driver for how deep the ball goes.
+ // Short drag -> ball lands short near the net; long drag -> ball goes deep.
+ const dragMag=Math.hypot(totalDX,totalDY);
+ const dragNorm=clamp(dragMag/320,0,1.5);
+
+ // Forward component (toward table on human side = negative X on screen = left swipe).
+ // This is the main depth driver: more forward swipe = deeper ball.
+ const fwdNorm=clamp(fwdPx/200,0,1.5);
+ const backNorm=clamp(backPx/240,0,1.35);
  const speedNorm=clamp(speed/5.2,0,1.35);
 
- // Main rule requested by user:
- // long backswing + faster swing -> deeper toward baseline/edge
- // short slow swing -> mid-table or short near net
- let depth=.28 + backNorm*.62 + fwdNorm*.28 + speedNorm*.24;
+ // Depth maps directly to drag distance:
+ // - Minimal drag (tap/flick) -> ball drops just past the net (~0.22)
+ // - Medium drag -> mid-table (~0.65)
+ // - Long drag + fast swing -> deep near baseline (~1.4+)
+ let depth=.22 + dragNorm*.55 + fwdNorm*.35 + speedNorm*.22;
 
- // Vertical/lateral control
+ // Swipe angle controls lateral placement.
+ // The perpendicular component of the swipe relative to "toward table"
+ // determines cross-court vs down-the-line.
+ // totalDX < 0 (left swipe) = toward table; totalDY < 0 (up) = higher arc.
+ // Lateral comes from the DY component mixed with gesture lateral velocity.
+ // Lateral z from the vertical component of the swipe and gesture lateral velocity.
  const z=clamp(
-   profiles[stroke].lateral*.38 +
-   (g?.dz||0)*.095 +
-   (S.humanRally.totalDX||0)*.00135,
+   profiles[stroke].lateral*.30 +
+   (g?.dz||0)*.12 +
+   totalDY*.0018 +
+   totalDX*.00080,
    -1.05,1.05
  );
- let clearance=.07 + clamp(-totalDY/220,-.7,.7)*.18 + speedNorm*.035;
 
- if(stroke==='smash'){depth+=.18;clearance-=.045}
- if(stroke==='slice'){depth-=.10;clearance+=.015}
- if(stroke==='topspin'){depth+=.08;clearance+=.025}
+ // Clearance (arc height): upward swipe = higher arc, downward = flatter.
+ let clearance=.06 + clamp(-totalDY/200,-.8,.8)*.20 + speedNorm*.03;
+
+ if(stroke==='smash'){depth+=.18;clearance-=.05}
+ if(stroke==='slice'){depth-=.10;clearance+=.02}
+ if(stroke==='topspin'){depth+=.08;clearance+=.03}
 
  const wide=Math.abs(z)>.72;
  const long=depth>1.40;
- const tooShort=depth<.18;
+ const tooShort=depth<.15;
 
  let outcome='legal';
- if(clearance<.025||tooShort)outcome='net';
+ if(clearance<.02||tooShort)outcome='net';
  else if(wide)outcome='wide';
  else if(long)outcome='long';
- else if(depth<.46)outcome='short';
+ else if(depth<.42)outcome='short';
 
  return{
    outcome,depth,z,clearance,speed,
-   backNorm,fwdNorm,speedNorm
+   backNorm,fwdNorm,speedNorm,dragNorm
  };
 }
 
@@ -3171,7 +3222,8 @@ function buildFreeHumanShot(stroke,contact){
  let bounceX=-clamp(intent.depth,.12,1.72);
  let bounceZ=intent.z;
  let bounceY=.845;
- let endX=-1.62;
+ // End X scales with depth: short ball stays near net, deep ball goes to baseline.
+ let endX=-clamp(1.10+intent.depth*.55,1.20,2.10);
  let endZ=bounceZ+p.sideSpin*.012;
 
  // Backward drag also pushes cross-court placement farther toward a side edge.
@@ -3203,7 +3255,9 @@ function buildFreeHumanShot(stroke,contact){
    endX=-2.10;
  }
  if(intent.outcome==='short'){
-   bounceX=-clamp(intent.depth,.24,.45);
+   bounceX=-clamp(intent.depth,.20,.45);
+   // Short ball: opponent must lean forward to reach.
+   endX=-clamp(1.10+intent.depth*.55,1.20,1.50);
  }
 
  const total=clamp(p.duration*speedFactor()*(1.08-.09*intent.speed),.38,1.45);
@@ -3319,7 +3373,7 @@ function moveManualPaddle(x,y){
    // allow position movement without changing face
    S.human.hand.z=clamp(S.human.hand.z+dx*.00145,-.78,.78);
    S.human.hand.y=clamp(S.human.hand.y-dy*.00180,.66,1.78);
-   S.human.hand.x=clamp(S.human.hand.x-dx*.00045,1.05,2.52);
+   S.human.hand.x=clamp(S.human.hand.x-dx*.00045,S.human.homeX-0.50,S.human.homeX+0.50);
  }else{
    S.human.paddle.yaw=clamp(S.human.paddle.yaw-dx*.0040,-.65,.65);
    S.human.paddle.pitch=clamp(S.human.paddle.pitch-dy*.0040,-.55,.55);
@@ -3351,14 +3405,16 @@ function moveGesture(x,y){
  const p=S.serve.last,dx=x-p.x,dy=y-p.y;S.serve.lastMotion=Math.hypot(dx,dy);
  const _ss=isMobileLandscape()?2.2:1;
  if(side==='human'){
-   actor.hand.x=clamp(actor.hand.x+dx*.0042*_ss,1.34,2.48);
+   const _hh=Math.abs(actor.homeX);
+   actor.hand.x=clamp(actor.hand.x+dx*.0042*_ss,_hh-0.20,_hh+0.50);
    S.serve.maxBackX=Math.max(S.serve.maxBackX,actor.hand.x);
-   if(S.serve.maxBackX>2.16)S.serve.backswing=true;
+   const _h=Math.abs(actor.homeX);
+   if(S.serve.maxBackX>_h+0.20)S.serve.backswing=true;
    if(S.serve.backswing&&actor.hand.x<S.serve.maxBackX-.16)S.serve.forward=true;
  }else{
-   actor.hand.x=clamp(actor.hand.x-dx*.0042*_ss,-2.48,-1.34);
+   actor.hand.x=clamp(actor.hand.x-dx*.0042*_ss,-(_h+0.50),-(_h-0.20));
    S.serve.maxBackX=Math.min(S.serve.maxBackX,actor.hand.x);
-   if(S.serve.maxBackX<-2.16)S.serve.backswing=true;
+   if(S.serve.maxBackX<-(_h+0.20))S.serve.backswing=true;
    if(S.serve.backswing&&actor.hand.x>S.serve.maxBackX+.16)S.serve.forward=true;
  }
  actor.hand.y=clamp(actor.hand.y-dy*.0035*_ss,.90,1.50);
@@ -3374,6 +3430,7 @@ function endGesture(){
  if(!releaseServe())ui();
 }
 canvas.addEventListener('pointerdown',e=>{
+ if(e.pointerType==='touch')return;
  let accepted=false;
 
  if(S.serve.armed){
@@ -3395,18 +3452,21 @@ canvas.addEventListener('pointerdown',e=>{
 });
 
 canvas.addEventListener('pointermove',e=>{
+ if(e.pointerType==='touch')return;
  if(!S.rigControl?.active && S.playing && !S.auto){
    canvas.style.cursor=humanPaddleArrowHit(e.clientX,e.clientY)?'grab':'default';
  }
 });
 canvas.addEventListener('pointermove',e=>{
+ if(e.pointerType==='touch')return;
  if(S.serve.drag)moveGesture(e.clientX,e.clientY);
  else if(S.humanRally.drag)moveHumanRallyGesture(e.clientX,e.clientY);
  else if(S.rigControl?.active)moveRigControl(e.clientX,e.clientY);
  else if(S.manualPaddle.drag)moveManualPaddle(e.clientX,e.clientY);
 });
 
-canvas.addEventListener('pointerup',()=>{
+canvas.addEventListener('pointerup',e=>{
+ if(e.pointerType==='touch')return;
  if(S.serve.drag)endGesture();
  else if(S.humanRally.drag)endHumanRallyGesture();
  else if(S.rigControl?.active)endRigControl();
