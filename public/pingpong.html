@@ -61,8 +61,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;col
 #tip .tipItem:last-child{border-bottom:0}
 #tip b{color:#ffe9a0}
 #playBtn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(108px + var(--safe-bottom));width:92px;height:36px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-size:16px;font-weight:800;background:#35637f}
-#speedWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-bottom));width:min(520px,48vw);pointer-events:auto}
-#speedLabel{display:block;text-align:center;font-size:9px;margin-bottom:2px}
+#speedWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(48px + var(--safe-bottom));width:min(520px,48vw);pointer-events:auto}
+#speedLabel{display:none!important}
 #speed{width:100%;appearance:none;height:14px;border-radius:8px;border:1px solid #d9e0e7;background:linear-gradient(90deg,#78b8ff,#e6ef7b,#ff6a4d)}
 #speed::-webkit-slider-thumb{appearance:none;width:19px;height:19px;border-radius:50%;background:#fff;border:2px solid #1a232c}
 .serveSideBtn,#resetBtn{position:absolute;bottom:calc(60px + var(--safe-bottom));width:106px;height:40px;pointer-events:auto;touch-action:none;border-radius:9px;border:1px solid #8296a8;color:#fff;font-weight:800;font-size:10px}
@@ -115,8 +115,8 @@ body.mobile-device.portrait #rotateGuard{display:grid}
   border:1px solid #8296a8;color:#fff;font-weight:800;font-size:12px;
   background:linear-gradient(#29465e,#183247);
 }
-#cpuServeBtn{left:31%}
-#humanServeBtn{right:31%}
+#cpuServeBtn{left:calc(50% - min(520px,48vw)/2 - 4px);transform:translateX(-100%)}
+#humanServeBtn{right:calc(50% - min(520px,48vw)/2 - 4px);transform:translateX(100%)}
 .serveSideBtn:disabled{opacity:.42;filter:grayscale(.5);cursor:not-allowed}.serveSideBtn.selected{opacity:.46;filter:grayscale(.65);box-shadow:none}
 .serveArrow{font-size:24px;color:#ffd55a;display:inline-block;margin:0 4px}
 .serveSideBtn.armed .serveArrow{animation:serveBlink .42s steps(1,end) infinite}
@@ -146,9 +146,9 @@ button,input{touch-action:manipulation}
  #tipBtn{right:8px}
  #playBtn{bottom:146px;width:82px;height:34px;font-size:14px}
  .serveSideBtn{bottom:94px;width:84px;height:29px;font-size:11px}
- #cpuServeBtn{left:2%;bottom:58px !important}
- #humanServeBtn{right:2%;bottom:58px !important}
- #speedWrap{bottom:54px;width:min(360px,48vw)}
+ #cpuServeBtn{left:calc(50% - min(360px,48vw)/2 - 4px)!important;right:auto!important;transform:translateX(-100%);bottom:calc(42px + var(--safe-bottom))!important}
+ #humanServeBtn{right:calc(50% - min(360px,48vw)/2 - 4px)!important;left:auto!important;transform:translateX(100%);bottom:calc(42px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(42px + var(--safe-bottom))!important;width:min(360px,48vw)}
  #resetBtn{right:8px;bottom:50px;width:82px;height:36px;font-size:9px}
  #serveHint{bottom:25px;font-size:7px;max-width:78vw;overflow:hidden;text-overflow:ellipsis}
  #strokeBar{bottom:2px;gap:2px}
@@ -174,9 +174,9 @@ button,input{touch-action:manipulation}
  #autoBtn{top:63px;width:108px;height:26px}
  #playBtn{bottom:137px;width:74px;height:32px;font-size:13px}
  .serveSideBtn{bottom:89px;width:78px;height:27px}
- #cpuServeBtn{left:1.5%;bottom:49px !important}
- #humanServeBtn{right:1.5%;bottom:49px !important}
- #speedWrap{bottom:49px;width:42vw}
+ #cpuServeBtn{left:calc(50% - 42vw/2 - 4px)!important;right:auto!important;transform:translateX(-100%);bottom:calc(38px + var(--safe-bottom))!important}
+ #humanServeBtn{right:calc(50% - 42vw/2 - 4px)!important;left:auto!important;transform:translateX(100%);bottom:calc(38px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(38px + var(--safe-bottom))!important;width:42vw}
  #resetBtn{bottom:46px;width:72px;height:34px}
  #serveHint{bottom:22px}
  .stroke{min-width:40px;padding:3px 4px;font-size:7px}
@@ -192,7 +192,7 @@ button,input{touch-action:manipulation}
  #audioBtn{right:42px}
  #playBtn{bottom:126px;height:30px}
  .serveSideBtn{bottom:82px;height:26px}
- #speedWrap{bottom:44px}
+ #speedWrap{bottom:calc(38px + var(--safe-bottom))!important}
  #resetBtn{bottom:42px;height:32px}
  #serveHint{bottom:19px}
  #strokeBar{bottom:1px}
@@ -216,7 +216,7 @@ button,input{touch-action:manipulation}
  #audioBtn,#tipBtn{top:3px!important;width:28px!important;height:28px!important}
  #playBtn{bottom:106px!important;width:68px!important;height:28px!important;font-size:12px!important}
  .serveSideBtn{bottom:70px!important;width:74px!important;height:23px!important;font-size:9px!important}
- #speedWrap{bottom:37px!important;width:44vw!important}
+ #speedWrap{bottom:calc(34px + var(--safe-bottom))!important;width:44vw!important}
  #speedLabel{font-size:7px!important}
  #speed{height:10px!important}
  #resetBtn{bottom:36px!important;width:68px!important;height:30px!important;font-size:8px!important}
@@ -231,22 +231,22 @@ button,input{touch-action:manipulation}
 #serveHint{display:none!important}
 #score{padding-bottom:7px!important}
 .serveSideBtn{bottom:calc(29px + var(--safe-bottom))!important}
-#speedWrap{bottom:calc(20px + var(--safe-bottom))!important}
+#speedWrap{bottom:calc(48px + var(--safe-bottom))!important}
 #strokeBar{bottom:14px!important}
 
 @media (max-width:900px){
  .serveSideBtn{bottom:calc(26px + var(--safe-bottom))!important}
- #speedWrap{bottom:calc(18px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(42px + var(--safe-bottom))!important}
  #strokeBar{bottom:14px!important}
 }
 @media (max-height:430px) and (orientation:landscape){
  .serveSideBtn{bottom:calc(22px + var(--safe-bottom))!important}
- #speedWrap{bottom:calc(15px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(38px + var(--safe-bottom))!important}
  #strokeBar{bottom:12px!important}
 }
 @media (orientation:landscape) and (max-height:360px){
  .serveSideBtn{bottom:calc(18px + var(--safe-bottom))!important}
- #speedWrap{bottom:calc(12px + var(--safe-bottom))!important}
+ #speedWrap{bottom:calc(34px + var(--safe-bottom))!important}
  #strokeBar{bottom:10px!important}
 }
 
@@ -259,9 +259,9 @@ button,input{touch-action:manipulation}
 .serveSideBtn{display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;overflow:visible}
 .serveArrow{flex:0 0 auto;margin:0;font-size:18px}
 #playResetWrap{bottom:calc(78px + var(--safe-bottom))!important}
-@media(max-width:900px){#playResetWrap{bottom:calc(72px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:62px!important;height:26px!important;font-size:10px!important}.serveSideBtn{width:105px;height:29px;font-size:11px}.serveArrow{font-size:17px}}
-@media(max-height:430px) and (orientation:landscape){#playResetWrap{bottom:calc(68px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{height:23px!important;font-size:9px!important}.serveSideBtn{width:98px;height:27px;font-size:11px}.serveArrow{font-size:16px}}
-@media(orientation:landscape) and (max-height:360px){#playResetWrap{bottom:calc(64px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:51px!important;height:21px!important;font-size:9px!important}.serveSideBtn{width:92px;height:23px;font-size:9px}.serveArrow{font-size:14px}}
+@media(max-width:900px){#playResetWrap{bottom:calc(86px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:62px!important;height:26px!important;font-size:10px!important}.serveSideBtn{width:105px;height:29px;font-size:11px}.serveArrow{font-size:17px}#cpuServeBtn{left:calc(50% - min(360px,48vw)/2 - 4px)!important;right:auto!important;transform:translateX(-100%)}#humanServeBtn{right:calc(50% - min(360px,48vw)/2 - 4px)!important;left:auto!important;transform:translateX(100%)}}
+@media(max-height:430px) and (orientation:landscape){#playResetWrap{bottom:calc(80px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{height:23px!important;font-size:9px!important}.serveSideBtn{width:98px;height:27px;font-size:11px}.serveArrow{font-size:16px}#cpuServeBtn{left:calc(50% - 42vw/2 - 4px)!important;right:auto!important;transform:translateX(-100%)}#humanServeBtn{right:calc(50% - 42vw/2 - 4px)!important;left:auto!important;transform:translateX(100%)}}
+@media(orientation:landscape) and (max-height:360px){#playResetWrap{bottom:calc(74px + var(--safe-bottom))!important}#playResetWrap #playBtn,#playResetWrap #resetBtn{width:51px!important;height:21px!important;font-size:9px!important}.serveSideBtn{width:92px;height:23px;font-size:9px}.serveArrow{font-size:14px}#cpuServeBtn{left:calc(50% - 44vw/2 - 4px)!important;right:auto!important;transform:translateX(-100%)}#humanServeBtn{right:calc(50% - 44vw/2 - 4px)!important;left:auto!important;transform:translateX(100%)}}
 @media(max-width:900px){#strokeBar{bottom:18px!important}}
 @media(max-height:430px) and (orientation:landscape){#strokeBar{bottom:16px!important}}
 @media(orientation:landscape) and (max-height:360px){#strokeBar{bottom:14px!important}}
@@ -276,9 +276,9 @@ button,input{touch-action:manipulation}
  min-width:300px;padding:18px 24px;border-radius:16px;background:rgba(4,10,16,.94);border:2px solid #ffd86a;
  box-shadow:0 0 28px rgba(255,216,106,.28);text-align:center;color:white;font:800 22px Arial;pointer-events:none"></div>
 <div id="netFlash" style="display:none;position:fixed;z-index:60;left:50%;top:40%;transform:translate(-50%,-50%);
- padding:24px 48px;border-radius:20px;background:rgba(180,40,40,.22);border:3px solid #ff5050;
- box-shadow:0 0 40px rgba(255,80,80,.45),inset 0 0 30px rgba(255,80,80,.18);
- text-align:center;color:#ff5555;font:900 38px Arial;letter-spacing:.12em;text-shadow:0 0 22px rgba(255,80,80,.7);
+ padding:7px 14px;border-radius:10px;background:rgba(180,40,40,.22);border:2px solid #ff5050;
+ box-shadow:0 0 22px rgba(255,80,80,.45),inset 0 0 16px rgba(255,80,80,.18);
+ text-align:center;color:#ff5555;font:900 11px Arial;letter-spacing:.12em;text-shadow:0 0 14px rgba(255,80,80,.7);
  pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)"></div>
 <div id="hud">
   <div id="build" style="display:none">BUILD v59 • CPU SHOULDER 0.50 + COMPACT HUD • RIGHT-HANDED PLAYERS</div>
@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-23';
+ const V='20260902-24';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -740,6 +740,7 @@ function announce(text,sub='',ms=1450){
 }
 function flashNet(){
  const el=$('netFlash');if(!el)return;
+ el.style.left=S.shot?.hitter==='human'?'38%':'62%';
  el.textContent='NET';
  el.style.display='block';
  el.style.animation='none';
@@ -1660,9 +1661,9 @@ function updateRobotScan(dt){
 }
 
 function tableScanTarget(){
- // Convert scan plan into a table-surface world point on the Human court.
- const z=clamp(S.robotScan.targetZ,-.58,.58);
- const x=lerp(.18,1.22,clamp(S.robotScan.targetDepth,0,1));
+ // Convert scan plan into a table-surface world point across the Human court.
+ const z=clamp(S.robotScan.targetZ,-.72,.72);
+ const x=lerp(.18,1.58,clamp(S.robotScan.targetDepth,0,1));
  return{x,y:.78,z};
 }
 
@@ -2862,7 +2863,7 @@ function beginCpuServeCountdown(){
        S.serve.forward=true;
        S.cpu.hand.x=-1.56;
        S.cpu.hand.y=1.04;
-       S.ball={x:-1.61,y:1.12,z:S.cpu.hand.z,r:.026};
+       S.ball={x:-1.578,y:1.065,z:S.cpu.hand.z,r:.026};
        ui();
 
        setTimeout(()=>{
@@ -2896,7 +2897,7 @@ function armServeFor(side){
  S.shot=null;
  const _mhA=mobileHomeX();S.serve={armed:true,side,drag:false,maxBackX:side==='human'?_mhA+0.06:-(_mhA+0.06),backswing:false,forward:false,last:null};
  const actor=side==='human'?S.human:S.cpu;
- S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.07,z:actor.hand.z,r:.026};
+ S.ball={x:actor.hand.x+(side==='human'?-.018:.018),y:actor.hand.y+.025,z:actor.hand.z,r:.026};
  ui();
 }
 $('humanServeBtn').onclick=()=>{press3DButton('humanServeBtn',180);armServeFor('human')};
@@ -3047,10 +3048,13 @@ function updateContactWindow(){
  // Slightly enlarged touchscreen-friendly physical blade corridor.
  const corridor=Math.sqrt(dx*dx+dy*dy+dz*dz)<.135;
  const dynamicHit=swept||closest;
+ const q=S.shot;
+ const beforePaddlePass=q?.phase!=='humanContact'||q.t<=q.contactDuration*.58;
+ const physicalHit=beforePaddlePass&&(staticHit.hit||!!dynamicHit);
 
- S.humanRally.contactReady=staticHit.hit||!!dynamicHit||corridor;
+ S.humanRally.contactReady=physicalHit;
 
- if(S.humanRally.contactReady&&humanPaddleRecentlyControlled()){
+ if(physicalHit&&humanPaddleRecentlyControlled()){
    const contact=dynamicHit?.point || S.ball;
 
    // Physical paddle contact wins immediately. No later timeout is allowed
@@ -3060,7 +3064,7 @@ function updateContactWindow(){
 
  const planeScore=clamp(1-staticHit.plane/.13,0,1);
  const ovalScore=clamp(1-(Math.sqrt(Math.max(0,staticHit.ellipse))-1)/.85,0,1);
- S.humanRally.window=clamp(Math.max(planeScore*ovalScore,corridor?.86:0),0,1);
+ S.humanRally.window=clamp(Math.max(planeScore*ovalScore,corridor&&beforePaddlePass?.86:0),0,1);
 }
 
 function humanIncoming(){
@@ -3164,7 +3168,7 @@ function manualShotOutcome(stroke){
  // Total drag magnitude — the primary driver for how deep the ball goes.
  // Short drag -> ball lands short near the net; long drag -> ball goes deep.
  const dragMag=Math.hypot(totalDX,totalDY);
- const dragNorm=clamp(dragMag/320,0,1.5);
+ const dragNorm=clamp(dragMag/320,0,1.35);
 
  // Forward component (toward table on human side = negative X on screen = left swipe).
  // This is the main depth driver: more forward swipe = deeper ball.
@@ -3176,7 +3180,8 @@ function manualShotOutcome(stroke){
  // - Minimal drag (tap/flick) -> ball drops just past the net (~0.22)
  // - Medium drag -> mid-table (~0.65)
  // - Long drag + fast swing -> deep near baseline (~1.4+)
- let depth=.22 + dragNorm*.55 + fwdNorm*.35 + speedNorm*.22;
+ const releaseRatio=clamp(dragMag/320,0,1);
+ let depth=.16 + releaseRatio*.88 + fwdNorm*.28 + backNorm*.16 + speedNorm*.16;
 
  // Swipe angle controls lateral placement.
  // The perpendicular component of the swipe relative to "toward table"
@@ -3184,11 +3189,9 @@ function manualShotOutcome(stroke){
  // totalDX < 0 (left swipe) = toward table; totalDY < 0 (up) = higher arc.
  // Lateral comes from the DY component mixed with gesture lateral velocity.
  // Lateral z from the vertical component of the swipe and gesture lateral velocity.
+ const angleLateral=clamp(totalDY/180,-1,1)*.56 + clamp(totalDX/260,-1,1)*.16;
  const z=clamp(
-   profiles[stroke].lateral*.30 +
-   (g?.dz||0)*.12 +
-   totalDY*.0018 +
-   totalDX*.00080,
+   profiles[stroke].lateral*.16 + angleLateral + (g?.dz||0)*.20,
    -1.05,1.05
  );
 
@@ -3228,7 +3231,7 @@ function buildFreeHumanShot(stroke,contact){
 
  // Backward drag also pushes cross-court placement farther toward a side edge.
  const edgeBias=clamp(intent.backNorm*.34 + intent.speedNorm*.12,0,.48);
- const dragSign=Math.sign((S.humanRally.totalDX||0) || (S.humanRally.lastGesture?.dz||1))||1;
+ const dragSign=Math.sign((S.humanRally.totalDY||0) || (S.humanRally.lastGesture?.dz||1))||1;
  if(Math.abs(bounceZ)<.18 && edgeBias>.10){
    bounceZ=dragSign*(.18+edgeBias);
  }
@@ -3396,7 +3399,7 @@ function beginGesture(x,y){
 function releaseServe(){
  computeServer();if(!S.serve.armed||S.server!==S.serve.side||S.pointLocked)return false;
  const side=S.serve.side,actor=side==='human'?S.human:S.cpu;const moved=S.serve.forward||S.serve.backswing||(S.serve.lastMotion&&S.serve.lastMotion>.015);if(side==='human'&&!moved)return false;
- S.serve.armed=false;S.serve.drag=false;S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.07,z:actor.hand.z,r:.026};launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
+ S.serve.armed=false;S.serve.drag=false;S.ball={x:actor.hand.x+(side==='human'?-.018:.018),y:actor.hand.y+.025,z:actor.hand.z,r:.026};launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
 }
 function moveGesture(x,y){
  if(!S.serve.armed||!S.serve.drag||!S.serve.last)return;
@@ -3419,7 +3422,7 @@ function moveGesture(x,y){
  }
  actor.hand.y=clamp(actor.hand.y-dy*.0035*_ss,.90,1.50);
  actor.hand.z=clamp(actor.hand.z+dy*.0018*_ss,-.50,.50);
- S.ball={x:actor.hand.x+(side==='human'?-.05:.05),y:actor.hand.y+.08,z:actor.hand.z,r:.026};
+ S.ball={x:actor.hand.x+(side==='human'?-.018:.018),y:actor.hand.y+.025,z:actor.hand.z,r:.026};
  S.serve.last={x,y,t:performance.now()};
  ui();
 }
