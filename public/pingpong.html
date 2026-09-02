@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-27';
+ const V='20260902-28';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -2754,7 +2754,16 @@ function resetAll(){
 }
 
 function drawBall(){
- const P=project(S.ball),r=Math.max(4,S.ball.r*P.s);
+ const attached=!S.shot;
+ let P=project(S.ball);
+ let radScale=1;
+ if(attached){
+   const side=S.serve.armed?S.serve.side:(S.server||'human');
+   const cpu=side==='cpu';
+   P=applyPlayerScale(P,cpu);
+   radScale=PLAYER_SCALE;
+ }
+ const r=Math.max(4,S.ball.r*P.s*radScale);
  ctx.save();ctx.translate(P.x,P.y);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
  /* rotating red seam shows spin direction and speed */
  ctx.rotate(S.spinPhase);ctx.strokeStyle='#e34c55';ctx.lineWidth=Math.max(1,r*.18);ctx.beginPath();ctx.arc(0,0,r*.72,-1.05,1.05);ctx.stroke();
