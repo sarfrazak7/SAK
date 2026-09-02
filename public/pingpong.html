@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-28';
+ const V='20260902-29';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -2349,6 +2349,11 @@ function updateShot(dt){
        pointTo('cpu');
        return;
      }
+     if(!S.humanRally.drag){
+       const contact=S.humanRally.contactBall||S.ball;
+       launchHumanReturnFromContact(contact);
+       return;
+     }
    }
    return;
  }
@@ -3065,6 +3070,13 @@ function updateContactWindow(){
  const physicalHit=beforePaddlePass&&(staticHit.hit||!!dynamicHit);
 
  S.humanRally.contactReady=physicalHit;
+
+ if(physicalHit){
+   const contact=dynamicHit?.point || S.ball;
+   S.humanRally.contactLatched=true;
+   S.humanRally.contactBall=contact;
+   S.humanRally.contactGrace=.25;
+ }
 
  if(physicalHit&&humanPaddleRecentlyControlled()){
    const contact=dynamicHit?.point || S.ball;
