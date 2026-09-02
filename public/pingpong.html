@@ -275,10 +275,10 @@ button,input{touch-action:manipulation}
 <div id="announcement" style="display:none;position:fixed;z-index:50;left:50%;top:43%;transform:translate(-50%,-50%);
  min-width:300px;padding:18px 24px;border-radius:16px;background:rgba(4,10,16,.94);border:2px solid #ffd86a;
  box-shadow:0 0 28px rgba(255,216,106,.28);text-align:center;color:white;font:800 22px Arial;pointer-events:none"></div>
-<div id="netFlash" style="display:none;position:fixed;z-index:60;left:50%;top:40%;transform:translate(-50%,-50%);
- padding:7px 14px;border-radius:10px;background:rgba(180,40,40,.22);border:2px solid #ff5050;
- box-shadow:0 0 22px rgba(255,80,80,.45),inset 0 0 16px rgba(255,80,80,.18);
- text-align:center;color:#ff5555;font:900 11px Arial;letter-spacing:.12em;text-shadow:0 0 14px rgba(255,80,80,.7);
+<div id="netFlash" style="display:none;position:fixed;z-index:60;left:50%;top:24%;transform:translate(-50%,-50%);
+ padding:9px 17px;border-radius:12px;background:rgba(180,40,40,.22);border:2px solid #ff5050;
+ box-shadow:0 0 26px rgba(255,80,80,.45),inset 0 0 18px rgba(255,80,80,.18);
+ text-align:center;color:#ff5555;font:900 13px Arial;letter-spacing:.12em;text-shadow:0 0 16px rgba(255,80,80,.7);
  pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)"></div>
 <div id="hud">
   <div id="build" style="display:none">BUILD v59 • CPU SHOULDER 0.50 + COMPACT HUD • RIGHT-HANDED PLAYERS</div>
@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-24';
+ const V='20260902-25';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -745,9 +745,9 @@ function flashNet(){
  el.style.display='block';
  el.style.animation='none';
  void el.offsetWidth;
- el.style.animation='netPulse .25s ease-in-out 4';
+ el.style.animation='netPulse .25s ease-in-out 8';
  clearTimeout(flashNet._t);
- flashNet._t=setTimeout(()=>{el.style.display='none';el.style.animation='none'},1000);
+ flashNet._t=setTimeout(()=>{el.style.display='none';el.style.animation='none'},2000);
 }
 
 function gameWonBy(side){
