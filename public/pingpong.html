@@ -275,7 +275,7 @@ button,input{touch-action:manipulation}
 <div id="announcement" style="display:none;position:fixed;z-index:50;left:50%;top:43%;transform:translate(-50%,-50%);
  min-width:300px;padding:18px 24px;border-radius:16px;background:rgba(4,10,16,.94);border:2px solid #ffd86a;
  box-shadow:0 0 28px rgba(255,216,106,.28);text-align:center;color:white;font:800 22px Arial;pointer-events:none"></div>
-<div id="netFlash" style="display:none;position:fixed;z-index:60;left:50%;top:24%;transform:translate(-50%,-50%);
+<div id="netFlash" style="display:none;position:fixed;z-index:60;left:50%;top:31%;transform:translate(-50%,-50%);
  padding:9px 17px;border-radius:12px;background:rgba(180,40,40,.22);border:2px solid #ff5050;
  box-shadow:0 0 26px rgba(255,80,80,.45),inset 0 0 18px rgba(255,80,80,.18);
  text-align:center;color:#ff5555;font:900 13px Arial;letter-spacing:.12em;text-shadow:0 0 16px rgba(255,80,80,.7);
@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-25';
+ const V='20260902-26';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -1639,24 +1639,27 @@ function updateRobotScan(dt){
  const robotPlaying=!!(
    S.playing &&
    (
+     S.cpuServePending ||
+     S.serve.armed ||
      S.server==='cpu' ||
      (S.shot && (S.shot.hitter==='cpu' || S.shot.receiver==='cpu'))
    )
  );
 
  rs.active=robotPlaying;
- if(!robotPlaying)return;
+ if(!robotPlaying){rs.phase=0;return;}
 
  rs.phase+=dt*1.9;
 
- // During robot's attacking phase, bias scan target toward planned bounce.
  if(S.shot && S.shot.hitter==='cpu' && S.shot.bounce){
-   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.bounce.z,-.55,.55),Math.min(1,dt*4));
-   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.bounce.x)/1.37,.38,.96),Math.min(1,dt*4));
+   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.bounce.z,-.72,.72),Math.min(1,dt*4));
+   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.bounce.x)/1.58,.20,1),Math.min(1,dt*4));
+ }else if(S.shot && S.shot.receiver==='cpu' && S.shot.end){
+   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.end.z,-.72,.72),Math.min(1,dt*4));
+   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.end.x)/1.58,.20,1),Math.min(1,dt*4));
  }else{
-   // gentle boundary sweep while preparing
-   rs.targetZ=Math.sin(rs.phase)*.48;
-   rs.targetDepth=.55+.30*(.5+.5*Math.sin(rs.phase*.73));
+   rs.targetZ=Math.sin(rs.phase)*.62;
+   rs.targetDepth=.45+.40*(.5+.5*Math.sin(rs.phase*.73));
  }
 }
 
@@ -2740,7 +2743,7 @@ function resetAll(){
  S.cpu.rig={bodyYaw:0,bodyLift:0,bodyBend:0,headOffset:{x:0,y:0,z:0}};
  resetRigDefaults();
  lockResetPose();
- S.ball={x:1.62,y:1.08,z:0,r:.026};
+ S.ball={x:S.human.hand.x-.018,y:S.human.hand.y+.025,z:S.human.hand.z,r:.026};
  const _mh0=mobileHomeX();S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?_mh0+0.06:-(_mh0+0.06),backswing:false,forward:false,last:null};
  S.manualPaddle={drag:false,last:null,active:false};S.humanRally={armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,lastGesture:{dx:0,dy:0,dz:0},target:null,window:0,holdTime:0,assistStrength:.82,
   gestureBase:null,pointerStart:null,totalDX:0,totalDY:0,maxBackDrag:0,maxForwardDrag:0,contactLatched:false,contactBall:null,contactElapsed:0,contactDuration:.72,contactGrace:0};
@@ -2855,7 +2858,7 @@ function beginCpuServeCountdown(){
      S.serve.forward=false;
      S.cpu.hand.x=-2.28;
      S.cpu.hand.y=1.10;
-     S.ball={x:-2.23,y:1.19,z:S.cpu.hand.z,r:.026};
+     S.ball={x:S.cpu.hand.x+.018,y:S.cpu.hand.y+.025,z:S.cpu.hand.z,r:.026};
      ui();
 
      setTimeout(()=>{
@@ -2863,7 +2866,7 @@ function beginCpuServeCountdown(){
        S.serve.forward=true;
        S.cpu.hand.x=-1.56;
        S.cpu.hand.y=1.04;
-       S.ball={x:-1.578,y:1.065,z:S.cpu.hand.z,r:.026};
+       S.ball={x:S.cpu.hand.x+.018,y:S.cpu.hand.y+.025,z:S.cpu.hand.z,r:.026};
        ui();
 
        setTimeout(()=>{
@@ -2897,7 +2900,7 @@ function armServeFor(side){
  S.shot=null;
  const _mhA=mobileHomeX();S.serve={armed:true,side,drag:false,maxBackX:side==='human'?_mhA+0.06:-(_mhA+0.06),backswing:false,forward:false,last:null};
  const actor=side==='human'?S.human:S.cpu;
- S.ball={x:actor.hand.x+(side==='human'?-.018:.018),y:actor.hand.y+.025,z:actor.hand.z,r:.026};
+ S.ball={x:actor.hand.x+(side==='human'?-.008:.008),y:actor.hand.y+.012,z:actor.hand.z,r:.026};
  ui();
 }
 $('humanServeBtn').onclick=()=>{press3DButton('humanServeBtn',180);armServeFor('human')};
@@ -3231,7 +3234,7 @@ function buildFreeHumanShot(stroke,contact){
 
  // Backward drag also pushes cross-court placement farther toward a side edge.
  const edgeBias=clamp(intent.backNorm*.34 + intent.speedNorm*.12,0,.48);
- const dragSign=Math.sign((S.humanRally.totalDY||0) || (S.humanRally.lastGesture?.dz||1))||1;
+ const dragSign=Math.sign(lateralComponent || (S.humanRally.lastGesture?.dz||0))||1;
  if(Math.abs(bounceZ)<.18 && edgeBias>.10){
    bounceZ=dragSign*(.18+edgeBias);
  }
@@ -3399,7 +3402,7 @@ function beginGesture(x,y){
 function releaseServe(){
  computeServer();if(!S.serve.armed||S.server!==S.serve.side||S.pointLocked)return false;
  const side=S.serve.side,actor=side==='human'?S.human:S.cpu;const moved=S.serve.forward||S.serve.backswing||(S.serve.lastMotion&&S.serve.lastMotion>.015);if(side==='human'&&!moved)return false;
- S.serve.armed=false;S.serve.drag=false;S.ball={x:actor.hand.x+(side==='human'?-.018:.018),y:actor.hand.y+.025,z:actor.hand.z,r:.026};launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
+ S.serve.armed=false;S.serve.drag=false;S.ball={x:actor.hand.x+(side==='human'?-.008:.008),y:actor.hand.y+.012,z:actor.hand.z,r:.026};launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
 }
 function moveGesture(x,y){
  if(!S.serve.armed||!S.serve.drag||!S.serve.last)return;
@@ -3422,7 +3425,7 @@ function moveGesture(x,y){
  }
  actor.hand.y=clamp(actor.hand.y-dy*.0035*_ss,.90,1.50);
  actor.hand.z=clamp(actor.hand.z+dy*.0018*_ss,-.50,.50);
- S.ball={x:actor.hand.x+(side==='human'?-.018:.018),y:actor.hand.y+.025,z:actor.hand.z,r:.026};
+ S.ball={x:actor.hand.x+(side==='human'?-.008:.008),y:actor.hand.y+.012,z:actor.hand.z,r:.026};
  S.serve.last={x,y,t:performance.now()};
  ui();
 }
