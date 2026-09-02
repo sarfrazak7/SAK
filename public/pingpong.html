@@ -333,7 +333,7 @@ button,input{touch-action:manipulation}
 <script>
 'use strict';
 (function(){
- const V='20260902-26';
+ const V='20260902-27';
  try{
   const u=new URL(location.href);
   if(u.searchParams.get('v')!==V){
@@ -1636,12 +1636,12 @@ function trackedHeadCenter(actor,cpu,neck,tangent){
 
 function updateRobotScan(dt){
  const rs=S.robotScan;
+ const _hx=tableHX();
  const robotPlaying=!!(
    S.playing &&
    (
      S.cpuServePending ||
-     S.serve.armed ||
-     S.server==='cpu' ||
+     (S.serve.armed && S.serve.side==='cpu') ||
      (S.shot && (S.shot.hitter==='cpu' || S.shot.receiver==='cpu'))
    )
  );
@@ -1652,11 +1652,11 @@ function updateRobotScan(dt){
  rs.phase+=dt*1.9;
 
  if(S.shot && S.shot.hitter==='cpu' && S.shot.bounce){
-   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.bounce.z,-.72,.72),Math.min(1,dt*4));
-   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.bounce.x)/1.58,.20,1),Math.min(1,dt*4));
+   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.bounce.z,-.76,.76),Math.min(1,dt*4));
+   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.bounce.x)/_hx,.05,1),Math.min(1,dt*4));
  }else if(S.shot && S.shot.receiver==='cpu' && S.shot.end){
-   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.end.z,-.72,.72),Math.min(1,dt*4));
-   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.end.x)/1.58,.20,1),Math.min(1,dt*4));
+   rs.targetZ=lerp(rs.targetZ,clamp(S.shot.end.z,-.76,.76),Math.min(1,dt*4));
+   rs.targetDepth=lerp(rs.targetDepth,clamp(Math.abs(S.shot.end.x)/_hx,.05,1),Math.min(1,dt*4));
  }else{
    rs.targetZ=Math.sin(rs.phase)*.62;
    rs.targetDepth=.45+.40*(.5+.5*Math.sin(rs.phase*.73));
@@ -1664,9 +1664,9 @@ function updateRobotScan(dt){
 }
 
 function tableScanTarget(){
- // Convert scan plan into a table-surface world point across the Human court.
- const z=clamp(S.robotScan.targetZ,-.72,.72);
- const x=lerp(.18,1.58,clamp(S.robotScan.targetDepth,0,1));
+ const _hx=tableHX(),_hz=isMobileLandscape()?.88:.7625;
+ const z=clamp(S.robotScan.targetZ,-_hz,_hz);
+ const x=lerp(.05,_hx,clamp(S.robotScan.targetDepth,0,1));
  return{x,y:.78,z};
 }
 
@@ -2743,7 +2743,7 @@ function resetAll(){
  S.cpu.rig={bodyYaw:0,bodyLift:0,bodyBend:0,headOffset:{x:0,y:0,z:0}};
  resetRigDefaults();
  lockResetPose();
- S.ball={x:S.human.hand.x-.018,y:S.human.hand.y+.025,z:S.human.hand.z,r:.026};
+ {const _bc=paddleBladeCenter(S.human.hand,false,S.human.paddle);S.ball={x:_bc.x,y:_bc.y,z:_bc.z,r:.026};}
  const _mh0=mobileHomeX();S.serve={armed:false,side:S.server,drag:false,maxBackX:S.server==='human'?_mh0+0.06:-(_mh0+0.06),backswing:false,forward:false,last:null};
  S.manualPaddle={drag:false,last:null,active:false};S.humanRally={armed:false,drag:false,last:null,start:null,peakSpeed:0,contactReady:false,lastGesture:{dx:0,dy:0,dz:0},target:null,window:0,holdTime:0,assistStrength:.82,
   gestureBase:null,pointerStart:null,totalDX:0,totalDY:0,maxBackDrag:0,maxForwardDrag:0,contactLatched:false,contactBall:null,contactElapsed:0,contactDuration:.72,contactGrace:0};
@@ -2858,7 +2858,7 @@ function beginCpuServeCountdown(){
      S.serve.forward=false;
      S.cpu.hand.x=-2.28;
      S.cpu.hand.y=1.10;
-     S.ball={x:S.cpu.hand.x+.018,y:S.cpu.hand.y+.025,z:S.cpu.hand.z,r:.026};
+     {const _bc=paddleBladeCenter(S.cpu.hand,true,S.cpu.paddle);S.ball={x:_bc.x,y:_bc.y,z:_bc.z,r:.026};}
      ui();
 
      setTimeout(()=>{
@@ -2866,7 +2866,7 @@ function beginCpuServeCountdown(){
        S.serve.forward=true;
        S.cpu.hand.x=-1.56;
        S.cpu.hand.y=1.04;
-       S.ball={x:S.cpu.hand.x+.018,y:S.cpu.hand.y+.025,z:S.cpu.hand.z,r:.026};
+       {const _bc2=paddleBladeCenter(S.cpu.hand,true,S.cpu.paddle);S.ball={x:_bc2.x,y:_bc2.y,z:_bc2.z,r:.026};}
        ui();
 
        setTimeout(()=>{
@@ -2900,7 +2900,7 @@ function armServeFor(side){
  S.shot=null;
  const _mhA=mobileHomeX();S.serve={armed:true,side,drag:false,maxBackX:side==='human'?_mhA+0.06:-(_mhA+0.06),backswing:false,forward:false,last:null};
  const actor=side==='human'?S.human:S.cpu;
- S.ball={x:actor.hand.x+(side==='human'?-.008:.008),y:actor.hand.y+.012,z:actor.hand.z,r:.026};
+ {const _bc=paddleBladeCenter(actor.hand,side==='cpu',actor.paddle);S.ball={x:_bc.x,y:_bc.y,z:_bc.z,r:.026};}
  ui();
 }
 $('humanServeBtn').onclick=()=>{press3DButton('humanServeBtn',180);armServeFor('human')};
@@ -3402,7 +3402,7 @@ function beginGesture(x,y){
 function releaseServe(){
  computeServer();if(!S.serve.armed||S.server!==S.serve.side||S.pointLocked)return false;
  const side=S.serve.side,actor=side==='human'?S.human:S.cpu;const moved=S.serve.forward||S.serve.backswing||(S.serve.lastMotion&&S.serve.lastMotion>.015);if(side==='human'&&!moved)return false;
- S.serve.armed=false;S.serve.drag=false;S.ball={x:actor.hand.x+(side==='human'?-.008:.008),y:actor.hand.y+.012,z:actor.hand.z,r:.026};launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
+ S.serve.armed=false;S.serve.drag=false;{const _bc=paddleBladeCenter(actor.hand,side==='cpu',actor.paddle);S.ball={x:_bc.x,y:_bc.y,z:_bc.z,r:.026};}launchServe(side,side==='human'?S.stroke:chooseCPUStroke());ui();return true;
 }
 function moveGesture(x,y){
  if(!S.serve.armed||!S.serve.drag||!S.serve.last)return;
@@ -3425,7 +3425,7 @@ function moveGesture(x,y){
  }
  actor.hand.y=clamp(actor.hand.y-dy*.0035*_ss,.90,1.50);
  actor.hand.z=clamp(actor.hand.z+dy*.0018*_ss,-.50,.50);
- S.ball={x:actor.hand.x+(side==='human'?-.008:.008),y:actor.hand.y+.012,z:actor.hand.z,r:.026};
+ {const _bc=paddleBladeCenter(actor.hand,side==='cpu',actor.paddle);S.ball={x:_bc.x,y:_bc.y,z:_bc.z,r:.026};}
  S.serve.last={x,y,t:performance.now()};
  ui();
 }
@@ -3545,6 +3545,17 @@ function renderStep(t,physics=true){
      if(!S.drill.active)updateHeadTracking(S.human,false,dt);
      updateHeadTracking(S.cpu,true,dt);
      updateRobotScan(dt);
+
+     /* Keep ball glued to the paddle blade center whenever it is in
+        "attached" mode: idle, pre-serve, and during serve backswing/forward
+        before the ball is launched. */
+     if(!S.shot && !S.serve.drag){
+       const side=S.serve.armed?S.serve.side:(S.server||'human');
+       const actor=side==='cpu'?S.cpu:S.human;
+       const cpu=side==='cpu';
+       const bc=paddleBladeCenter(actor.hand,cpu,actor.paddle);
+       S.ball.x=bc.x;S.ball.y=bc.y;S.ball.z=bc.z;
+     }
    }
 
    draw();
