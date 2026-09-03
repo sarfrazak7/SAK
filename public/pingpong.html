@@ -848,7 +848,7 @@ function mobileCam(){
 const PLAYER_SCALE=0.528;
 const PLAYER_HEIGHT_SCALE=2.063;
 function tableHX(){return isMobileLandscape()?1.78:1.37;}
-function mobileHomeX(){return isMobileLandscape()?2.30:2.00;}
+function mobileHomeX(){return 2.30;}
 let _scaleAnchors={human:null,cpu:null};
 function applyPlayerScale(sp,cpu){
  const foot=cpu?_scaleAnchors.cpu:_scaleAnchors.human;
@@ -1663,7 +1663,9 @@ function drawRobotScan(head){
  if(!S.robotScan.active)return;
 
  const target=tableScanTarget();
- const H=project(head);
+ const Hraw=project(head);
+ const f=_scaleAnchors.cpu,ps=PLAYER_SCALE,phs=PLAYER_HEIGHT_SCALE;
+ const H=f?{x:f.x+(Hraw.x-f.x)*ps,y:f.y+(Hraw.y-f.y)*ps*phs}:Hraw;
  const T=project(target);
 
  // twin red rays from robot eyes toward target area
@@ -2219,10 +2221,10 @@ function drawRobot(a,cpu){
 
  drawShoe(L.footL,cpu);drawShoe(L.footR,cpu);
  drawFace(head,cpu,{x:0,y:1,z:0});
- if(cpu)drawRobotScan(head);
  drawPaddle3D(a.hand,cpu,a.paddle);
  if(!cpu)drawHumanPaddle3DArrow();
  if(_ps!==1)ctx.restore();
+ if(cpu)drawRobotScan(head);
 }
 
 function makeShot(hitter,stroke,forceMiss=false){
