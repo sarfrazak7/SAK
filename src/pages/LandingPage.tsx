@@ -7,6 +7,8 @@ interface Props {
   onNavigate: (r: Route) => void;
 }
 
+const GAME_VERSION = '20260903-34';
+
 const AI_CARDS = [
   {
     icon: Brain,
@@ -65,7 +67,7 @@ const GAMES = [
     route: 'tabletennis' as Route,
     name: 'Ping Pong 3D',
     desc: 'Fast-paced reflex rally with smart AI opponents.',
-    tag: 'COMING SOON',
+    tag: 'PLAY NOW',
     img: 'https://images.pexels.com/photos/13793163/pexels-photo-13793163.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
 ];
@@ -212,7 +214,7 @@ export default function LandingPage({ onNavigate }: Props) {
 
       <div className="pointer-events-none fixed bottom-3 left-4 z-40">
         <p className="text-xs font-medium tracking-wide text-white/40">
-          &copy; {new Date().getFullYear()} ArcadeAI &middot; All rights reserved
+          &copy; {new Date().getFullYear()} ArcadeAI &middot; All rights reserved &middot; v{GAME_VERSION}
         </p>
       </div>
 

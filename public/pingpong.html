@@ -332,17 +332,6 @@ button,input{touch-action:manipulation}
 
 <script>
 'use strict';
-(function(){
- const V='20260902-30';
- try{
-  const u=new URL(location.href);
-  if(u.searchParams.get('v')!==V){
-   u.searchParams.set('v',V);
-   location.replace(u.toString());
-   return;
-  }
- }catch(_){}
-})();
 
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
 window.addEventListener('message',e=>{
@@ -859,7 +848,7 @@ function mobileCam(){
 const PLAYER_SCALE=0.528;
 const PLAYER_HEIGHT_SCALE=2.063;
 function tableHX(){return isMobileLandscape()?1.78:1.37;}
-function mobileHomeX(){return isMobileLandscape()?2.55:2.22;}
+function mobileHomeX(){return isMobileLandscape()?2.30:2.00;}
 let _scaleAnchors={human:null,cpu:null};
 function applyPlayerScale(sp,cpu){
  const foot=cpu?_scaleAnchors.cpu:_scaleAnchors.human;
@@ -2239,8 +2228,9 @@ function drawRobot(a,cpu){
 function makeShot(hitter,stroke,forceMiss=false){
  const _mh=mobileHomeX();const p=profiles[stroke],dir=hitter==='human'?-1:1,startX=hitter==='human'?_mh-0.36:-(_mh-0.36),recvX=-startX;updateDynamicTactic();
  const sign=S.tactic.angleBias;let dynamicDepth=clamp(p.bounceDepth+S.tactic.depthBias,.28,.98);let dynamicLat=clamp((p.lateral*sign)+S.tactic.lateralBias,-.58,.58);
- const sliceDir=(Math.random()<.5?-1:1);if(stroke==='slice'){dynamicDepth=clamp(.38+Math.random()*.32,.32,.72);dynamicLat=sliceDir*(.26+Math.random()*.18);}
- const bounceX=dir*dynamicDepth,bounceZ=dynamicLat;let endZ=clamp(bounceZ+(p.sideSpin*.012),-.70,.70);if(stroke==='slice')endZ=clamp(-bounceZ+sliceDir*.18,-.78,.78);
+ let sliceDir=Math.sign(dynamicLat)||1;if(stroke==='slice'){sliceDir=(Math.random()<.5?-1:1);dynamicDepth=clamp(.38+Math.random()*.32,.32,.72);dynamicLat=sliceDir*(.26+Math.random()*.18);}
+ const _curveMap={slice:.18,topspin:.12,forehand:.14,backhand:.14,smash:.06};const _cAmt=_curveMap[stroke]||.12;
+ const bounceX=dir*dynamicDepth,bounceZ=dynamicLat;let endZ=clamp(bounceZ+sliceDir*_cAmt,-.78,.78);if(stroke==='slice')endZ=clamp(-bounceZ+sliceDir*.18,-.78,.78);
  const deceptiveSpin=stroke==='topspin',spinKick=deceptiveSpin?clamp(sign*(.16+.16*S.tactic.aggression),-.34,.34):0;if(deceptiveSpin)endZ=clamp(bounceZ+spinKick,-.76,.76);
  const start={x:startX,y:1.08,z:S.ball.z},bounce={x:bounceX,y:.845,z:bounceZ},end={x:recvX,y:stroke==='smash'?.98:stroke==='slice'?1.00:1.10,z:endZ},apparentEnd={x:recvX,y:end.y,z:bounceZ};
  const total=p.duration*speedFactor()*(1.08-.18*S.tactic.aggression),pre=total*(stroke==='slice'?.61:.54),post=total-pre;let outcome='legal';if(Math.random()<.13&&stroke!=='smash'){outcome='short';bounce.x=dir*(.26+Math.random()*.17);}if(Math.random()<.035){outcome='net';bounce.x=0;bounce.y=.82;}
@@ -2250,15 +2240,17 @@ function shotPoint(seg,u){
  const p=profiles[seg.stroke],A=seg.phase==='pre'?seg.start:seg.bounce,B=seg.phase==='pre'?seg.bounce:seg.end;let arc=seg.phase==='pre'?p.preArc:p.postArc;
  if(seg.outcome==='net'&&seg.phase==='pre')arc=Math.max(.005,seg.clearance||.01);
  let z=lerp(A.z,B.z,u);
- if(seg.stroke==='slice'){
+ {
    const dir=seg.sliceDir||1;
-   if(seg.phase==='pre')z+=dir*.055*Math.sin(Math.PI*u);
-   else{const s=u*u*(3-2*u);z+=dir*(-.34*s+.09*Math.sin(Math.PI*u));}
- }else if(seg.deceptiveSpin){
-   if(seg.phase==='pre')z+=.008*Math.sin(Math.PI*u);else{const delayed=u*u*(3-2*u);z+=(seg.spinKick||0)*delayed+.05*Math.sin(Math.PI*u);}
- }else{
-   if(seg.stroke==='backhand'||seg.stroke==='forehand')z+=p.sideSpin*.005*Math.sin(Math.PI*u);
-   if(seg.stroke==='topspin'&&seg.phase==='post')z+=.035*Math.sin(Math.PI*u);
+   const _cm={slice:1,topspin:.72,forehand:.78,backhand:.78,smash:.42};
+   const cMul=_cm[seg.stroke]||.72;
+   if(seg.deceptiveSpin){
+     if(seg.phase==='pre')z+=dir*.04*cMul*Math.sin(Math.PI*u);
+     else{const delayed=u*u*(3-2*u);z+=(seg.spinKick||0)*delayed+dir*.09*cMul*Math.sin(Math.PI*u);}
+   }else{
+     if(seg.phase==='pre')z+=dir*.055*cMul*Math.sin(Math.PI*u);
+     else{const s=u*u*(3-2*u);z+=dir*(-.34*cMul*s+.09*cMul*Math.sin(Math.PI*u));}
+   }
  }
  let y=lerp(A.y,B.y,u)+4*arc*u*(1-u);if(seg.stroke==='topspin'&&seg.phase==='post')y-=.06*u*u;if(seg.stroke==='slice'&&seg.phase==='post')y-=.10*u;
  return{x:lerp(A.x,B.x,u),z,y};
@@ -2350,8 +2342,8 @@ function updateShot(dt){
        return;
      }
      if(!S.humanRally.drag){
-       const contact=S.humanRally.contactBall||S.ball;
-       launchHumanReturnFromContact(contact);
+       $('serveHint').textContent='MISSED RETURN • HUMANOID POINT';
+       pointTo('cpu');
        return;
      }
    }
@@ -3078,7 +3070,7 @@ function updateContactWindow(){
    S.humanRally.contactGrace=.25;
  }
 
- if(physicalHit&&humanPaddleRecentlyControlled()){
+ if(physicalHit&&S.humanRally.drag&&humanPaddleRecentlyControlled()){
    const contact=dynamicHit?.point || S.ball;
 
    // Physical paddle contact wins immediately. No later timeout is allowed
@@ -3150,26 +3142,24 @@ function moveHumanRallyGesture(x,y){
 
  const desired=desiredHandForBladeContact(S.ball,false,S.human.paddle);
 
- // CURSOR-SYNCED mapping:
- // cursor right  -> paddle right on screen
- // cursor left   -> paddle left on screen
- // cursor up     -> paddle up
- // cursor down   -> paddle down
- //
- // world Z controls visible left/right most directly in this camera.
- // world X adds only a smaller depth component.
+ // SWipe-direction-consistent mapping:
+ // Screen horizontal (totalDX) -> world X (toward/away from table)
+ //   Left swipe = toward CPU = depth
+ // Screen vertical (totalDY) -> world Z (lateral along table width) + world Y (height)
+ //   Up/down swipe angles the ball cross-court or down-the-line
+ // This matches manualShotOutcome so the ball goes where the paddle was dragged.
  const _sens=isMobileLandscape()?2.6:1;
- const lateral=clamp(totalDX*.00155*_sens,-.22,.22);
- const depth=clamp(totalDX*.00055*_sens,-.08,.08);
- const vertical=clamp(-totalDY*.00135*_sens,-.18,.18);
+ const towardTable=clamp(totalDX*.00090*_sens,-.14,.14);
+ const lateral=clamp(totalDY*.00130*_sens,-.22,.22);
+ const vertical=clamp(-totalDY*.00085*_sens,-.14,.14);
 
+ S.human.hand.x=clamp(desired.x+towardTable,S.human.homeX-0.50,S.human.homeX+0.50);
  S.human.hand.z=clamp(desired.z+lateral,-.78,.78);
- S.human.hand.x=clamp(desired.x-depth,S.human.homeX-0.50,S.human.homeX+0.50);
  S.human.hand.y=clamp(desired.y+vertical,.66,1.78);
 
- const eventVX=(-dxStep*.00055)/dt;
- const eventVY=(-dyStep*.00135)/dt;
- const eventVZ=(dxStep*.00155)/dt;
+ const eventVX=(-dxStep*.00090)/dt;
+ const eventVY=(-dyStep*.00085)/dt;
+ const eventVZ=(dyStep*.00130)/dt;
  const eventSpeed=Math.hypot(eventVX,eventVY,eventVZ);
 
  S.humanRally.peakSpeed=Math.max(S.humanRally.peakSpeed,eventSpeed);
@@ -3190,55 +3180,49 @@ function manualShotOutcome(stroke){
  const totalDY=S.humanRally.totalDY||0;
 
  // Total drag magnitude — the primary driver for how deep the ball goes.
- // Short drag -> ball lands short near the net; long drag -> ball goes deep.
+ // Lowered denominators so short phone swipes still produce enough depth.
  const dragMag=Math.hypot(totalDX,totalDY);
- const dragNorm=clamp(dragMag/320,0,1.35);
+ const dragNorm=clamp(dragMag/200,0,1.5);
 
- // Forward component (toward table on human side = negative X on screen = left swipe).
- // This is the main depth driver: more forward swipe = deeper ball.
- const fwdNorm=clamp(fwdPx/200,0,1.5);
- const backNorm=clamp(backPx/240,0,1.35);
- const speedNorm=clamp(speed/5.2,0,1.35);
+ // Toward-table component (left swipe on human side = toward CPU).
+ const towardTable=Math.max(0,-totalDX);
+ const towardNorm=clamp(towardTable/150,0,1.5);
+ const backNorm=clamp(backPx/180,0,1.5);
+ const speedNorm=clamp(speed/4.5,0,1.5);
 
- // Depth maps directly to drag distance:
- // - Minimal drag (tap/flick) -> ball drops just past the net (~0.22)
- // - Medium drag -> mid-table (~0.65)
- // - Long drag + fast swing -> deep near baseline (~1.4+)
- const releaseRatio=clamp(dragMag/320,0,1);
- let depth=.16 + releaseRatio*.88 + fwdNorm*.28 + backNorm*.16 + speedNorm*.16;
+ // Depth: base + drag magnitude + toward-table component + speed.
+ // Higher base (.22) and lower thresholds give more leeway on short swipes.
+ let depth=.22 + dragNorm*.68 + towardNorm*.32 + backNorm*.14 + speedNorm*.12;
 
- // Swipe angle controls lateral placement.
- // The perpendicular component of the swipe relative to "toward table"
- // determines cross-court vs down-the-line.
- // totalDX < 0 (left swipe) = toward table; totalDY < 0 (up) = higher arc.
- // Lateral comes from the DY component mixed with gesture lateral velocity.
- // Lateral z from the vertical component of the swipe and gesture lateral velocity.
- const angleLateral=clamp(totalDY/180,-1,1)*.56 + clamp(totalDX/260,-1,1)*.16;
- const z=clamp(
-   profiles[stroke].lateral*.16 + angleLateral + (g?.dz||0)*.20,
-   -1.05,1.05
- );
+ // Lateral placement (world Z): driven ONLY by the vertical component of the swipe.
+ // Swipe down (totalDY>0)  -> ball to opponent's LEFT  (+Z)
+ // Swipe up   (totalDY<0)  -> ball to opponent's RIGHT (-Z)
+ // Horizontal swipe        -> ball goes straight (z≈0)
+ // No stroke base-bias so the swipe angle is the sole authority.
+ const angleLateral=clamp(totalDY/140,-1,1)*.62 + (g?.dz||0)*.10;
+ const z=clamp(angleLateral,-.92,.92);
 
  // Clearance (arc height): upward swipe = higher arc, downward = flatter.
- let clearance=.06 + clamp(-totalDY/200,-.8,.8)*.20 + speedNorm*.03;
+ // Higher base (.09) and reduced sensitivity so short/downward swipes don't net.
+ let clearance=.09 + clamp(-totalDY/220,-.5,.8)*.15 + speedNorm*.03;
 
- if(stroke==='smash'){depth+=.18;clearance-=.05}
- if(stroke==='slice'){depth-=.10;clearance+=.02}
- if(stroke==='topspin'){depth+=.08;clearance+=.03}
+ if(stroke==='smash'){depth+=.16;clearance-=.04}
+ if(stroke==='slice'){depth-=.08;clearance+=.03}
+ if(stroke==='topspin'){depth+=.06;clearance+=.02}
 
- const wide=Math.abs(z)>.72;
- const long=depth>1.40;
- const tooShort=depth<.15;
+ const wide=Math.abs(z)>.80;
+ const long=depth>1.45;
+ const tooShort=depth<.10;
 
  let outcome='legal';
- if(clearance<.02||tooShort)outcome='net';
+ if(clearance<.012||tooShort)outcome='net';
  else if(wide)outcome='wide';
  else if(long)outcome='long';
- else if(depth<.42)outcome='short';
+ else if(depth<.38)outcome='short';
 
  return{
    outcome,depth,z,clearance,speed,
-   backNorm,fwdNorm,speedNorm,dragNorm
+   backNorm,towardNorm,speedNorm,dragNorm
  };
 }
 
@@ -3249,22 +3233,13 @@ function buildFreeHumanShot(stroke,contact){
  let bounceX=-clamp(intent.depth,.12,1.72);
  let bounceZ=intent.z;
  let bounceY=.845;
- // End X scales with depth: short ball stays near net, deep ball goes to baseline.
  let endX=-clamp(1.10+intent.depth*.55,1.20,2.10);
- let endZ=bounceZ+p.sideSpin*.012;
-
- // Backward drag also pushes cross-court placement farther toward a side edge.
- const edgeBias=clamp(intent.backNorm*.34 + intent.speedNorm*.12,0,.48);
+ // Swipe angle drives lateral placement for every stroke, just like slice.
  const dragSign=Math.sign(intent.z || (S.humanRally.lastGesture?.dz||0))||1;
- if(Math.abs(bounceZ)<.18 && edgeBias>.10){
-   bounceZ=dragSign*(.18+edgeBias);
- }
-
  const sliceDir=dragSign;
- if(stroke==='slice'){
-   bounceZ=clamp(dragSign*(.24+Math.abs(intent.z)*.55+edgeBias*.25),-.62,.62);
-   endZ=clamp(-bounceZ+dragSign*.18,-.80,.80);
- }
+ const _hcMap={slice:.18,topspin:.12,forehand:.14,backhand:.14,smash:.06};
+ const _hCurve=_hcMap[stroke]||.12;
+ let endZ=clamp(bounceZ+dragSign*_hCurve,-.80,.80);
 
  if(intent.outcome==='net'){
    bounceX=0;
@@ -3330,7 +3305,7 @@ function endHumanRallyGesture(){
 
  // A visually/physically valid paddle touch must count.
  // Keep only a small minimum swing-speed threshold.
- if(!S.humanRally.contactLatched || S.humanRally.peakSpeed<.08){
+ if(!S.humanRally.contactLatched || S.humanRally.peakSpeed<.04){
    $('serveHint').textContent='MISS • SWING THROUGH THE BALL';
    pointTo('cpu');
    return true;
@@ -3502,8 +3477,15 @@ canvas.addEventListener('pointerup',e=>{
 
 canvas.addEventListener('touchstart',e=>{
  if(!e.touches[0])return;
- e.preventDefault();
  const x=e.touches[0].clientX,y=e.touches[0].clientY;
+
+ // Don't intercept touches that land on HUD buttons.
+ const target=e.target;
+ if(target&&target!==canvas){
+   if(target.closest('button')||target.closest('#strokeBar')||target.closest('#speedWrap')||target.closest('#playResetWrap'))return;
+ }
+
+ e.preventDefault();
 
  if(S.serve.armed&&!playerControlZoneHit(S.serve.side,x,y))return;
 
@@ -3536,8 +3518,16 @@ canvas.addEventListener('touchend',e=>{
  if(!b)return;
  b.addEventListener('pointerdown',()=>b.classList.add('pressed'));
  ['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>b.classList.remove('pressed')));
- b.addEventListener('touchstart',()=>b.classList.add('pressed'),{passive:true});
- b.addEventListener('touchend',()=>b.classList.remove('pressed'),{passive:true});
+ b.addEventListener('touchstart',e=>{e.stopPropagation();b.classList.add('pressed')},{passive:true});
+ b.addEventListener('touchend',e=>{e.stopPropagation();b.classList.remove('pressed');b.click()},{passive:true});
+});
+
+// PLAY and stroke buttons: fire action on touchend for instant iPhone response.
+$('playBtn').addEventListener('touchstart',e=>{e.stopPropagation()},{passive:true});
+$('playBtn').addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();$('playBtn').click()},{passive:false});
+document.querySelectorAll('.stroke').forEach(b=>{
+ b.addEventListener('touchstart',e=>{e.stopPropagation()},{passive:true});
+ b.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();b.click()},{passive:false});
 });
 
 
