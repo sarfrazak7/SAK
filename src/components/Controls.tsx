@@ -1,4 +1,4 @@
-import { RotateCcw, Info, Eye, EyeOff } from 'lucide-react';
+import { RotateCcw, Eye, EyeOff } from 'lucide-react';
 import type { Puzzle, SpinDir } from '@/game/types';
 
 interface Props {
@@ -76,11 +76,6 @@ export default function Controls({ puzzles, foundByFace, currentFace, onJump, on
         <button onClick={onResetAll} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-white/5 px-3 py-2 text-xs font-medium text-white/70 transition hover:bg-white/10">
           <RotateCcw className="h-3.5 w-3.5" /> Reset all
         </button>
-      </div>
-
-      <div className="flex items-start gap-2 rounded-xl bg-white/[0.02] px-3 py-2 text-[11px] leading-relaxed text-white/40">
-        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-        <span>Drag across letters to select a word. Swipe a red hand icon in any direction to spin the cube. Each face has a 5-minute timer that auto-advances to the next face. Use Reveal to highlight all words on the current face. Clear a face fast for time bonus points!</span>
       </div>
 
       <div className="flex flex-col gap-1.5 rounded-xl bg-white/[0.02] px-3 py-2.5">

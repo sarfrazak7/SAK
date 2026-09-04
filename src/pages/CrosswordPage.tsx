@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Github, Trophy } from 'lucide-react';
+import { Github, Trophy, Lightbulb } from 'lucide-react';
 import Cube from '@/components/Cube';
 import WordPanel from '@/components/WordPanel';
 import Controls from '@/components/Controls';
@@ -8,6 +8,7 @@ import { buildPuzzles, totalWordCount, FACE_SETS, pickRandomSetIndex } from '@/g
 import type { Cell, SpinDir } from '@/game/types';
 import { playClap, playBuzzer, unlockAudio } from '@/lib/sound';
 import { bonusForElapsed, tierLabel } from '@/game/scoring';
+import CrosswordProTips from '@/components/CrosswordProTips';
 
 const FACE_HOME_ROT: Array<{ x: number; y: number }> = [
   { x: 0, y: 0 },
@@ -56,6 +57,7 @@ export default function CrosswordPage() {
   const [pointsByFace, setPointsByFace] = useState<Record<number, number>>({});
   const [bonusFlash, setBonusFlash] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
+  const [showProTips, setShowProTips] = useState(false);
   const faceStartRef = useRef(Date.now());
   const lastTimeoutFaceRef = useRef(-1);
 
@@ -152,6 +154,42 @@ export default function CrosswordPage() {
       <BackdropGlow />
       <BackToHomeButton />
 
+      {/* Pro Tips icon — top right corner */}
+      <button
+        onClick={() => setShowProTips(true)}
+        className="fixed top-4 right-4 z-30 flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-casino-gold/10 text-gray-400 hover:text-casino-gold transition-colors"
+        title="Pro Tips"
+        aria-label="Pro Tips"
+      >
+        <span className="prorec-led" aria-hidden="true">
+          <span className="prorec-led-core" />
+        </span>
+        <Lightbulb className="w-4 h-4" />
+      </button>
+
+      {/* CrossWord 3D header — centered at top */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <div
+          className="rounded-xl border px-6 py-2 text-center"
+          style={{
+            background: 'linear-gradient(180deg, rgba(23,39,55,0.9), rgba(7,13,19,0.9))',
+            borderColor: 'rgba(255,216,106,0.25)',
+            boxShadow: '0 8px 18px rgba(0,0,0,0.28)',
+          }}
+        >
+          <span
+            className="font-bold tracking-[0.08em]"
+            style={{
+              fontSize: '15px',
+              color: '#ffd86a',
+              textShadow: '0 0 16px rgba(255,216,106,0.4), 0 1px 3px rgba(0,0,0,0.6)',
+            }}
+          >
+            CrossWord 3D
+          </span>
+        </div>
+      </div>
+
       <div className="relative z-10 mx-auto max-w-6xl px-5 pb-10 pt-24 sm:px-8">
         <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-white/50">
           <span>Set {setIndex + 1}/{FACE_SETS.length}</span>
@@ -225,6 +263,10 @@ export default function CrosswordPage() {
           </aside>
         </div>
       </div>
+
+      {showProTips && (
+        <CrosswordProTips onClose={() => setShowProTips(false)} />
+      )}
     </div>
   );
 }
