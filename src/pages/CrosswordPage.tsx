@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Boxes, Github, Trophy } from 'lucide-react';
+import { Github, Trophy } from 'lucide-react';
 import Cube from '@/components/Cube';
 import WordPanel from '@/components/WordPanel';
 import Controls from '@/components/Controls';
+import BackToHomeButton from '@/components/BackToHomeButton';
 import { buildPuzzles, totalWordCount, FACE_SETS, pickRandomSetIndex } from '@/game/puzzles';
 import type { Cell, SpinDir } from '@/game/types';
 import { playClap, playBuzzer, unlockAudio } from '@/lib/sound';
@@ -149,18 +150,9 @@ export default function CrosswordPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       <BackdropGlow />
+      <BackToHomeButton />
 
       <div className="relative z-10 mx-auto max-w-6xl px-5 pb-10 pt-24 sm:px-8">
-        <div className="mb-6 flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/10">
-            <Boxes className="h-5 w-5 text-cyan-300" />
-          </div>
-          <div>
-            <h1 className="text-base font-bold tracking-[0.2em]">CROSSWORDS PRO</h1>
-            <p className="text-[10px] tracking-widest text-white/40">SIX FACES · SIX PUZZLES</p>
-          </div>
-        </div>
-
         <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-white/50">
           <span>Set {setIndex + 1}/{FACE_SETS.length}</span>
           <span className="h-4 w-px bg-white/15" />
