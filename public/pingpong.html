@@ -1181,8 +1181,17 @@ function playerControlZoneHit(side,clientX,clientY){
 }
 
 
+function updateBow(dt){
+ if(!S.bow||!S.bow.active)return;
+ S.bow.t+=dt;
+ if(S.bow.t>=S.bow.duration){S.bow.active=false;return;}
+ const u=S.bow.t/S.bow.duration;
+ const bowLean=4*Math.sin(Math.PI*u)*0.45;
+ for(const a of [S.human,S.cpu]){a.spine.lean=bowLean;a.spine.targetLean=bowLean;}
+}
 function updateSpineDynamics(actor,cpu,dt){
  const side=cpu?'cpu':'human';
+ if(S.bow&&S.bow.active)return;
  let target=.15,twist=0;
  if(!cpu&&S.manualPaddle.drag&&S.playing&&!S.auto){target=clamp(actor.spine.targetLean,.03,.34);twist=clamp(actor.spine.targetTwist,-.12,.12);}
 
@@ -2736,6 +2745,7 @@ function resetAll(){
  S.playing=false;S.auto=false;S.p=S.c=0;S.hGames=S.cGames=0;S.gameNumber=1;S.gamesToWin=3;
  S.gameStartServer='human';S.server='human';S.matchOver=false;S.matchWinner='';S.matchStart=null;S.setupPaddle={pitch:0,yaw:0,roll:0,locked:false};S.faceLocked=false;S.drill={active:false,stage:0,t:0,phase:'idle',enteredAt:0,watchdog:false};S.cpuServePending=false;S.cpuServeCountdown=0;S.pointIndex=0;S.servicePair=0;S.servicePoint=0;S.rallyId=0;S.resolvedRallyId=-1;S.pointLocked=false;S.serveToken=0;S.faceLocked=false;S.lockedStroke='forehand';S.prevBall=null;S.tactic={exchange:0,angleBias:1,lastSwitch:0,depthBias:0,lateralBias:0,aggression:.55};
  S.rally=S.best=0;S.shot=null;S.phase='idle';S.spinPhase=0;
+ S.bow={active:false,t:0,duration:1.0};
  const _hx=mobileHomeX();S.human={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:_hx,baseX:_hx,baseZ:0,hand:{x:_hx-.44,y:1.12,z:.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0},paddleInputAt:0};
  S.cpu={spine:{lean:.105,targetLean:.105,twist:0,targetTwist:0},headTrack:{yaw:0,pitch:0,targetYaw:0,targetPitch:0},legs:{kneeFlex:.17,targetFlex:.17,stance:.18,targetStance:.18},homeX:-_hx,baseX:-_hx,baseZ:0,hand:{x:-(_hx-.44),y:1.12,z:-.28},move:0,follow:0,paddle:{pitch:0,yaw:0,roll:0}};
  ensureHumanRigState();
@@ -2789,6 +2799,7 @@ $('playBtn').onclick=()=>{
  S.playing=true;S.auto=false;S.faceLocked=false;S.setupPaddle.locked=false;
  if(!S.matchStart)S.matchStart=performance.now();
  if(S.resetIntro)S.resetIntro.active=false;
+ S.bow={active:true,t:0,duration:1.0};
  $('status').textContent='3D BODY CONTROL READY';$('status').style.color='#6fe59a';
  $('serveHint').textContent='3D CONTROL: tap HEAD / either HAND / either FOOT and drag • drag EMPTY SPACE to rotate body 360° or bend/lift';
  ui();
@@ -3548,6 +3559,7 @@ function renderStep(t,physics=true){
 
    if(physics){
      S.prevBall=S.ball?{...S.ball}:null;
+     updateBow(dt);
      updateResetPresentation(dt);
      if(S.drill.active)updatePreGameDrills(dt);
      else if(S.playing&&S.shot&&!S.pointLocked)updateShot(dt);
