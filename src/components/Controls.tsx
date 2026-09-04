@@ -1,5 +1,6 @@
-import { RotateCcw, Eye, EyeOff } from 'lucide-react';
-import type { Puzzle, SpinDir } from '@/game/types';
+import { RotateCcw, Eye, EyeOff, ChevronDown } from 'lucide-react';
+import type { Puzzle, SpinDir, Subject } from '@/game/types';
+import { SUBJECTS, availableSubjects } from '@/game/puzzles';
 
 interface Props {
   puzzles: Puzzle[];
@@ -11,11 +12,30 @@ interface Props {
   onSpin: (dir: SpinDir) => void;
   revealed: boolean;
   onToggleReveal: () => void;
+  subject: Subject;
+  onSubjectChange: (s: Subject) => void;
 }
 
-export default function Controls({ puzzles, foundByFace, currentFace, onJump, onResetFace, onResetAll, revealed, onToggleReveal }: Props) {
+export default function Controls({ puzzles, foundByFace, currentFace, onJump, onResetFace, onResetAll, revealed, onToggleReveal, subject, onSubjectChange }: Props) {
+  const subjects = availableSubjects();
   return (
     <div className="flex w-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md">
+      <div className="relative">
+        <label className="mb-1 block text-[10px] font-medium tracking-wide text-white/50">SUBJECT</label>
+        <div className="relative">
+          <select
+            value={subject}
+            onChange={(e) => onSubjectChange(e.target.value as Subject)}
+            className="w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 pr-9 text-sm font-semibold text-white/90 transition hover:border-white/20 hover:bg-white/[0.06] focus:border-amber-400/40 focus:outline-none"
+          >
+            {subjects.map((s) => (
+              <option key={s} value={s} className="bg-slate-800 text-white">{s}</option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+        </div>
+      </div>
+
       <span className="text-xs font-medium tracking-wide text-white/60">CATEGORIES</span>
 
       <div className="flex flex-col gap-1.5">

@@ -19,3 +19,5 @@ export interface Puzzle {
 
 export type SpinDir = 'left' | 'right' | 'up' | 'down';
 export type Mode = 'solve' | 'rotate';
+
+export type Subject = 'Space' | 'Ocean' | 'Mythology' | 'Technology' | 'Nature' | 'Food' | 'Animals' | 'Weather' | 'Music' | 'Craft' | 'History' | 'Sports';

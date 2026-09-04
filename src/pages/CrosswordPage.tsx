@@ -4,8 +4,8 @@ import Cube from '@/components/Cube';
 import WordPanel from '@/components/WordPanel';
 import Controls from '@/components/Controls';
 import BackToHomeButton from '@/components/BackToHomeButton';
-import { buildPuzzles, totalWordCount, FACE_SETS, pickRandomSetIndex } from '@/game/puzzles';
-import type { Cell, SpinDir } from '@/game/types';
+import { makePuzzleFromFace, totalWordCount, getFacesBySubject, availableSubjects, SUBJECTS } from '@/game/puzzles';
+import type { Cell, SpinDir, Subject } from '@/game/types';
 import { playClap, playBuzzer, unlockAudio } from '@/lib/sound';
 import { bonusForElapsed, tierLabel } from '@/game/scoring';
 import CrosswordProTips from '@/components/CrosswordProTips';
@@ -52,7 +52,8 @@ export default function CrosswordPage() {
   const face = faceFromRotation(rotX, rotY);
   const [foundByFace, setFoundByFace] = useState<Record<number, string[]>>({});
   const [flash, setFlash] = useState<string | null>(null);
-  const [setIndex, setSetIndex] = useState(0);
+  const [subject, setSubject] = useState<Subject>('Space');
+  const [subjectSeed, setSubjectSeed] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [pointsByFace, setPointsByFace] = useState<Record<number, number>>({});
   const [bonusFlash, setBonusFlash] = useState<string | null>(null);
@@ -61,7 +62,20 @@ export default function CrosswordPage() {
   const faceStartRef = useRef(Date.now());
   const lastTimeoutFaceRef = useRef(-1);
 
-  const puzzles = useMemo(() => buildPuzzles(setIndex), [setIndex]);
+  const puzzles = useMemo(() => {
+    const faces = getFacesBySubject(subject);
+    // Pick 6 faces from the subject, cycling through available faces with a seed
+    const start = (subjectSeed * 6) % faces.length;
+    const selected: typeof faces = [];
+    for (let i = 0; i < 6 && i < faces.length; i++) {
+      selected.push(faces[(start + i) % faces.length]);
+    }
+    // If fewer than 6, repeat with different offset
+    while (selected.length < 6) {
+      selected.push(faces[selected.length % faces.length]);
+    }
+    return selected.map((f, i) => makePuzzleFromFace(f, i, (subjectSeed + 1) * 1000 + (i + 1) * 101));
+  }, [subject, subjectSeed]);
   const TOTAL = useMemo(() => totalWordCount(puzzles), [puzzles]);
 
   const foundList = foundByFace[face] ?? [];
@@ -141,7 +155,7 @@ export default function CrosswordPage() {
     setPointsByFace({});
     setRotX(0);
     setRotY(0);
-    setSetIndex((i) => pickRandomSetIndex(i));
+    setSubjectSeed((s) => s + 1);
     setRevealed(false);
     setRunning(false);
     lastTimeoutFaceRef.current = -1;
@@ -192,7 +206,7 @@ export default function CrosswordPage() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-5 pb-10 pt-24 sm:px-8">
         <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-white/50">
-          <span>Set {setIndex + 1}/{FACE_SETS.length}</span>
+          <span className="font-medium text-white/70">{subject}</span>
           <span className="h-4 w-px bg-white/15" />
           <span>Face {face + 1}/6</span>
           <span className="h-4 w-px bg-white/15" />
@@ -256,6 +270,8 @@ export default function CrosswordPage() {
               onSpin={handleSpin}
               revealed={revealed}
               onToggleReveal={toggleReveal}
+              subject={subject}
+              onSubjectChange={(s) => { setSubject(s); setSubjectSeed(0); setFoundByFace({}); setPointsByFace({}); setRevealed(false); setRunning(false); setRotX(0); setRotY(0); }}
             />
             <footer className="flex items-center justify-center gap-1.5 text-[11px] text-white/30">
               <Github className="h-3.5 w-3.5" /> Built with React + CSS 3D
