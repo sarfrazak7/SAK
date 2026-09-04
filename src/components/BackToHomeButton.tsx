@@ -29,8 +29,8 @@ export default function BackToHomeButton() {
       <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 ring-1 ring-white/15 transition-transform group-hover:scale-105">
         <Boxes className="h-4 w-4 text-cyan-300" />
       </div>
-      <span className="text-xs font-bold tracking-[0.18em] text-white">
-        ARCADE<span className="text-cyan-300">AI</span>
+      <span className="text-xs font-bold tracking-[0.18em] text-white" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+        ARCADE<span className="text-cyan-300" style={{ textShadow: '0 0 6px rgba(34,211,238,0.6)' }}>AI</span>
       </span>
     </button>
   );

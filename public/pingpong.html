@@ -21,7 +21,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;col
 .panel{background:rgba(8,12,18,.92);border:1px solid rgba(210,222,234,.42);border-radius:10px}
 #build{position:absolute;left:8px;top:6px;font:700 9px Arial;color:#8fb7c9}
 #status{position:absolute;left:8px;top:20px;font:700 9px Arial;color:#6fe59a}
-#score{position:absolute;left:50%;transform:translateX(-50%);top:calc(5px + var(--safe-top));width:286px;padding:6px 10px;text-align:center}
+#score{position:absolute;left:50%;transform:translateX(-50%);top:calc(5px + var(--safe-top));width:286px;padding:8px 10px 8px;text-align:center}
+#score .scoreHeader{font-weight:900;font-size:15px;letter-spacing:.08em;color:#ffd86a;text-shadow:0 0 16px rgba(255,216,106,.4),0 1px 3px rgba(0,0,0,.6);padding:2px 0 5px;margin-bottom:2px;border-bottom:1px solid rgba(255,216,106,.18);background:linear-gradient(135deg,rgba(255,216,106,.12),rgba(255,184,40,.04));border-radius:6px 6px 0 0}
 #score .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-weight:800;font-size:13px}
 #score .rally{margin-top:3px;color:#ffd86a;font-size:9px}
 #autoBtn{position:absolute;left:50%;transform:translateX(-50%);top:calc(88px + var(--safe-top));width:140px;height:30px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-weight:800;font-size:10px;background:linear-gradient(#56df89,#1b884d)}
@@ -151,9 +152,10 @@ html,body{overscroll-behavior:none}
 button,input{touch-action:manipulation}
 
 @media (max-width:900px){
- #score{width:min(365px,54vw)!important;padding:4px 7px}
+ #score{width:min(365px,54vw)!important;padding:6px 7px 6px}
  #score .row{font-size:11px}
  #score .rally{font-size:8px}
+ #score .scoreHeader{font-size:12px;padding:1px 0 3px;margin-bottom:1px}
  #autoBtn{top:74px;width:120px;height:28px;font-size:9px}
  #audioBtn,#tipBtn{width:34px;height:34px}
  #audioBtn{right:50px}
@@ -199,9 +201,10 @@ button,input{touch-action:manipulation}
 }
 
 @media (max-height:430px) and (orientation:landscape){
- #score{top:2px;padding:3px 6px}
+ #score{top:2px;padding:4px 6px 4px}
  #score .row{font-size:10px}
  #score .rally{font-size:7px}
+ #score .scoreHeader{font-size:10px;padding:1px 0 2px;margin-bottom:1px}
  #autoBtn{top:53px;height:24px}
  #audioBtn,#tipBtn{top:4px;width:30px;height:30px}
  #audioBtn{right:42px}
@@ -224,9 +227,10 @@ button,input{touch-action:manipulation}
 @media (orientation:landscape) and (max-height:360px){
  #build{font-size:6px;top:2px}
  #status{font-size:6px;top:11px}
- #score{top:1px!important;width:min(315px,48vw)!important;padding:2px 5px!important}
+ #score{top:1px!important;width:min(315px,48vw)!important;padding:3px 5px 3px!important}
  #score .row{font-size:9px!important}
  #score .rally{font-size:6px!important;margin-top:1px}
+ #score .scoreHeader{font-size:8px!important;padding:1px 0 1px;margin-bottom:1px}
  #autoBtn{top:43px!important;width:100px!important;height:22px!important;font-size:8px!important}
  #audioBtn,#tipBtn{top:3px!important;width:28px!important;height:28px!important}
  #playBtn{bottom:106px!important;width:68px!important;height:28px!important;font-size:12px!important}
@@ -244,7 +248,7 @@ button,input{touch-action:manipulation}
 
 /* v59 compact-fit HUD */
 #serveHint{display:none!important}
-#score{padding-bottom:7px!important}
+#score{padding-bottom:9px!important}
 .serveSideBtn{bottom:calc(29px + var(--safe-bottom))!important}
 #speedWrap{bottom:calc(48px + var(--safe-bottom))!important}
 #strokeBar{bottom:14px!important}
@@ -301,6 +305,7 @@ button,input{touch-action:manipulation}
   <div id="renderDiag" style="display:none">RENDER: WAITING</div>
 
   <div id="score" class="panel" style="width:365px">
+    <div class="scoreHeader">PingPong 3D</div>
     <div class="row"><span>HUMANOID <span id="cScore">00</span></span><span>HUMAN <span id="pScore">00</span></span></div>
     <div class="rally">
       GAMES <span id="cSets">0</span>–<span id="pSets">0</span> &nbsp; • &nbsp;
