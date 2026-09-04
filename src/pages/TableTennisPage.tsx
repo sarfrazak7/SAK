@@ -43,7 +43,7 @@ export default function TableTennisPage() {
         style={{
           position: 'fixed',
           top: 12,
-          right: 10,
+          right: 100,
           zIndex: 100,
           width: 32,
           height: 32,
