@@ -32,7 +32,7 @@ export default function Navbar({ current, onNavigate }: Props) {
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 ring-1 ring-white/15 transition-transform group-hover:scale-105">
             <Boxes className="h-5 w-5 text-cyan-300" />
           </div>
-          <span className="text-sm font-bold tracking-[0.18em] text-white">ARCADE<span className="text-cyan-300">AI</span></span>
+          <span className="text-sm font-bold tracking-[0.18em] text-white">ARCADE<span className="text-cyan-300">AI</span><span className="text-red-500" style={{ textShadow: '0 0 6px rgba(239,68,68,0.6)' }}> 3D</span></span>
         </a>
 
         {/* Desktop nav */}

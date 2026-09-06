@@ -29,7 +29,7 @@ export default function Crossword3DPage() {
             <Boxes className="h-4 w-4 text-cyan-300" />
           </div>
           <span className="text-xs font-bold tracking-[0.18em] text-white" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-            ARCADE<span className="text-cyan-300" style={{ textShadow: '0 0 6px rgba(34,211,238,0.6)' }}>AI</span>
+            ARCADE<span className="text-cyan-300" style={{ textShadow: '0 0 6px rgba(34,211,238,0.6)' }}>AI</span><span className="text-red-500" style={{ textShadow: '0 0 6px rgba(239,68,68,0.6)' }}> 3D</span>
           </span>
         </button>
       </div>
