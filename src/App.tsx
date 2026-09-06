@@ -4,6 +4,7 @@ import ViewCounter from '@/components/ViewCounter';
 import LandingPage from '@/pages/LandingPage';
 import CrosswordPage from '@/pages/CrosswordPage';
 import PanagramPage from '@/pages/PanagramPage';
+import Crossword3DPage from '@/pages/Crossword3DPage';
 import TableTennisPage from '@/pages/TableTennisPage';
 import ContactPage from '@/pages/ContactPage';
 import FeedbackPage from '@/pages/FeedbackPage';
@@ -15,6 +16,9 @@ export default function App() {
   switch (route) {
     case 'crossword':
       page = <CrosswordPage />;
+      break;
+    case 'crossword3d':
+      page = <Crossword3DPage />;
       break;
     case 'panagram':
       page = <PanagramPage />;
@@ -33,7 +37,7 @@ export default function App() {
   }
 
   const showFooter = route === 'home';
-  const showNavbar = route !== 'tabletennis' && route !== 'panagram' && route !== 'crossword';
+  const showNavbar = route !== 'tabletennis' && route !== 'panagram' && route !== 'crossword' && route !== 'crossword3d';
 
   return (
     <div className="min-h-screen bg-black">

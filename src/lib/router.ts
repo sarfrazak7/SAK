@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export type Route = 'home' | 'crossword' | 'panagram' | 'tabletennis' | 'contact' | 'feedback';
+export type Route = 'home' | 'crossword' | 'crossword3d' | 'panagram' | 'tabletennis' | 'contact' | 'feedback';
 
 const ROUTE_MAP: Record<string, Route> = {
   '': 'home',
@@ -8,6 +8,7 @@ const ROUTE_MAP: Record<string, Route> = {
   '#': 'home',
   '#/': 'home',
   '#/crossword': 'crossword',
+  '#/crossword3d': 'crossword3d',
   '#/panagram': 'panagram',
   '#/tabletennis': 'tabletennis',
   '#/contact': 'contact',

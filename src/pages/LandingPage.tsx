@@ -51,17 +51,24 @@ const AI_CARDS = [
 const GAMES = [
   {
     route: 'crossword' as Route,
-    name: 'Crossword Puzzle',
+    name: 'WordSearch 3D',
     desc: 'A 3D cube with six faces of word-search puzzles. Spin, find, solve.',
     tag: 'PLAY NOW',
     img: 'https://images.pexels.com/photos/12585534/pexels-photo-12585534.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
   {
     route: 'panagram' as Route,
-    name: 'Panagram',
+    name: 'Pangram',
     desc: 'Rearrange letters to spell every word from a hidden pangram.',
     tag: 'PLAY NOW',
     img: 'https://images.pexels.com/photos/8762806/pexels-photo-8762806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+  },
+  {
+    route: 'crossword3d' as Route,
+    name: 'CrossWord 3D',
+    desc: 'An immersive 3D crossword experience across rotating cube faces.',
+    tag: 'COMING SOON',
+    img: 'https://images.pexels.com/photos/6005365/pexels-photo-6005365.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
   {
     route: 'tabletennis' as Route,
@@ -147,7 +154,7 @@ export default function LandingPage({ onNavigate }: Props) {
             <p className="mt-2 text-sm text-white/45">Tap a card to jump in</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:items-start">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {GAMES.map((g) => {
               const card = (
                 <button
@@ -155,7 +162,7 @@ export default function LandingPage({ onNavigate }: Props) {
                   onClick={() => onNavigate(g.route)}
                   className="group relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition hover:border-white/25 hover:scale-[1.02]"
                 >
-                  <div className="relative h-44 overflow-hidden">
+                  <div className="relative h-36 overflow-hidden">
                     <img
                       src={g.img}
                       alt={g.name}
@@ -171,9 +178,9 @@ export default function LandingPage({ onNavigate }: Props) {
                       {g.tag}
                     </span>
                   </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold text-white">{g.name}</h3>
-                    <p className="mt-1 text-sm text-white/50">{g.desc}</p>
+                  <div className="p-4">
+                    <h3 className="text-base font-bold text-white">{g.name}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-white/50">{g.desc}</p>
                     <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-cyan-300 transition group-hover:gap-2">
                       Enter <ArrowRight className="h-3.5 w-3.5" />
                     </span>
@@ -181,15 +188,14 @@ export default function LandingPage({ onNavigate }: Props) {
                 </button>
               );
 
-              if (g.route !== 'crossword') return card;
-
-              return (
-                <div key={g.route} className="flex flex-col gap-6">
-                  {card}
-                  <ChallengeFlyer onOpen={() => setChallengeOpen(true)} />
-                </div>
-              );
+              return card;
             })}
+          </div>
+
+          <div className="mt-5 flex justify-center lg:justify-start">
+            <div className="w-full lg:w-[calc(25%-0.9375rem)]">
+              <ChallengeFlyer onOpen={() => setChallengeOpen(true)} />
+            </div>
           </div>
         </section>
 

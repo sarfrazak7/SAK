@@ -18,7 +18,7 @@ export default function Navbar({ current, onNavigate }: Props) {
     setGamesOpen(false);
   };
 
-  const isGame = current === 'crossword' || current === 'panagram' || current === 'tabletennis';
+  const isGame = current === 'crossword' || current === 'crossword3d' || current === 'panagram' || current === 'tabletennis';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
@@ -56,16 +56,22 @@ export default function Navbar({ current, onNavigate }: Props) {
               <div className="absolute left-1/2 top-full w-56 -translate-x-1/2 pt-2">
                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c12]/95 p-1.5 shadow-2xl shadow-black/60 backdrop-blur-xl">
                   <GameLink
-                    label="Crossword Puzzle"
+                    label="WordSearch 3D"
                     desc="3D cube word search"
                     active={current === 'crossword'}
                     onClick={() => go('crossword')}
                   />
                   <GameLink
-                    label="Panagram"
+                    label="Pangram"
                     desc="Letter arrangement"
                     active={current === 'panagram'}
                     onClick={() => go('panagram')}
+                  />
+                  <GameLink
+                    label="CrossWord 3D"
+                    desc="3D crossword cube"
+                    active={current === 'crossword3d'}
+                    onClick={() => go('crossword3d')}
                   />
                   <GameLink
                     label="Ping Pong 3D"
@@ -101,8 +107,9 @@ export default function Navbar({ current, onNavigate }: Props) {
         <div className="border-t border-white/10 bg-[#0c0c12]/95 px-5 py-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-1">
             <p className="px-3 pb-1 text-[10px] font-bold tracking-widest text-white/30">GAMES</p>
-            <MobileLink active={current === 'crossword'} onClick={() => go('crossword')}>Crossword Puzzle</MobileLink>
-            <MobileLink active={current === 'panagram'} onClick={() => go('panagram')}>Panagram</MobileLink>
+            <MobileLink active={current === 'crossword'} onClick={() => go('crossword')}>WordSearch 3D</MobileLink>
+            <MobileLink active={current === 'panagram'} onClick={() => go('panagram')}>Pangram</MobileLink>
+            <MobileLink active={current === 'crossword3d'} onClick={() => go('crossword3d')}>CrossWord 3D</MobileLink>
             <MobileLink active={current === 'tabletennis'} onClick={() => go('tabletennis')}>Ping Pong 3D</MobileLink>
             <div className="my-2 h-px bg-white/10" />
             <MobileLink active={current === 'contact'} onClick={() => go('contact')}>Contact</MobileLink>
