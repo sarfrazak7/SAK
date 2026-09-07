@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CrossWord Pro 3D</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eee;font-family:Arial,sans-serif;overscroll-behavior:none}
+#kc{position:fixed;inset:0;background:#eee;font:13px Arial;display:grid;grid-template-rows:42px 46px 1fr 112px;overflow:hidden}
+#t,#b{background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 9px;border-bottom:1px solid #bbb;font-weight:900}
+#b{gap:8px}
+select,button{font:inherit}
+select{flex:1;padding:7px;border:1px solid #999;border-radius:8px;background:#fff}
+#fb{background:#d6a21f;color:#111;border:0;border-radius:8px;padding:7px 12px;font-weight:900;min-width:78px}
+#body{min-height:0;display:grid;grid-template-rows:1fr 34px 38px}
+#st{display:grid;place-items:center;perspective:900px;touch-action:none;overflow:hidden;background:radial-gradient(circle,#fafafa,#d5d5d5)}
+#cu{--s:min(70vw,300px);--h:calc(var(--s)/2);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d;will-change:transform}
+.f{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);background:#c91f28;border:3px solid #111;backface-visibility:hidden}
+.a{transform:translateZ(var(--h))}
+.b{transform:rotateY(-90deg) translateZ(var(--h))}
+.c{transform:rotateY(180deg) translateZ(var(--h))}
+.d{transform:rotateY(90deg) translateZ(var(--h))}
+.e{transform:rotateX(90deg) translateZ(var(--h))}
+.g{transform:rotateX(-90deg) translateZ(var(--h))}
+.x{position:relative;display:grid;place-items:center;border-right:1px solid #111;border-bottom:1px solid #111;background:#c91f28;font-size:19px;font-weight:900;user-select:none}
+.x.o{background:#fff}
+.x.s{background:#ffe18a}
+.x.ok{background:#cdeecf}
+.n{position:absolute;left:2px;top:1px;font-size:7px}
+#cl{background:#fff;border-top:1px solid #bbb;padding:7px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ac{background:#fff;display:flex;gap:6px;justify-content:center}
+.q{border:0;border-radius:7px;background:#111;color:#fff;padding:6px 10px;font-weight:900}
+.q.alt{background:#fff;color:#111;border:1px solid #999}
+#kb{background:#d3d6db;padding:4px;display:grid;gap:3px}
+.r{display:flex;gap:3px;justify-content:center}
+.k{flex:1;max-width:35px;border:0;border-radius:5px;background:#fff;box-shadow:0 1px 1px #888;font-weight:900}
+.w{max-width:58px}
+#sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:green}}
+@media(min-width:700px){#cu{--s:360px}#kc{grid-template-rows:48px 50px 1fr 120px}}
+</style>
+</head>
+<body>
+<div id="kc">
+  <div id="t"><span>CrossWord Pro 3D</span><span>Score <b id="sc">0</b></span></div>
+  <div id="b"><select id="cat"></select><button id="fb">FACE 1</button></div>
+  <div id="body">
+    <div id="st"><div id="cu"></div></div>
+    <div id="cl"><b id="cd">1 Across</b> <span id="ct"></span></div>
+    <div id="ac">
+      <button class="q" id="ck">CHECK</button>
+      <button class="q alt" id="nx">NEXT</button>
+      <button class="q alt" id="rv">REVEAL</button>
+      <button class="q alt" id="rs">RESET</button>
+    </div>
+  </div>
+  <div id="kb"></div>
+</div>
+
+<script>
+(()=>{
+const D={
+Garden:'RADISH:red root|TOMATO:garden fruit|TROWEL:hand digger|FLOWER:plant bloom|PETALS:flower parts|PRUNER:trim tool|SHOVEL:digging tool|SPROUT:young plant|BLOOMS:flowers|HEDGES:shrub rows|GRAVEL:path stones|SEEDS:plant embryos|HERBS:aromatic plants|VINES:climbers|ROOTS:absorb water|LAWNS:cut grass|PONDS:water feature|SOILS:growing earth|HOSES:water|RAKES:leaves|BULBS:buds|SHRUB:bush|TREES:wood|WEEDS:unwanted|MOSS:ground|FERN:fronds|LILAC:purple|ROSES:thorns|DAISY:white|TULIP:spring|PEONY:bloom|IRIS:flower|SOD:turf|BEDS:plots|POTS:planters|LOAM:soil',
+Medical:'ARTERY:blood vessel|TISSUE:cell group|NERVES:signal fibers|SUTURE:wound stitch|CANCER:cell disease|PLASMA:blood liquid|PULSE:heart rhythm|TENDON:muscle to bone|CORNEA:eye front|SPINAL:of spine|NEURON:nerve cell|OXYGEN:blood gas|BLOOD:body fluid|HEART:blood pump|LUNGS:breathing organs|BRAIN:control organ|BONES:skeleton parts|VEINS:return vessels|CLINIC:care|DOCTOR:physician|NURSE:caregiver|FEVER:heat|VIRUS:agent|WOUND:injury|XRAYS:images|DRUGS:meds|DOSE:amount|SERUM:fluid|SKIN:covering|LIVER:organ|KIDNEY:filter|MUSCLE:tissue|JOINT:meeting|NERVE:fiber|ULCER:sore|HEAL:recover',
+Engineering:'TORQUE:turning force|STRESS:force per area|SIGNAL:info quantity|BRIDGE:spanning structure|PISTON:cylinder slider|VECTOR:size and direction|GEAR:toothed wheel|SENSOR:detector|ROBOT:programmed machine|FORCE:push or pull|BEAMS:load members|STEEL:structural alloy|MOTOR:motion machine|VALVE:flow control|SHAFT:rotating element|LOADS:applied forces|FRAME:support assembly|WELDS:fused joints|NUT:fastener|BOLT:pin|SCREW:fastener|WIRE:conductor|CHIP:circuit|BOARD:base|TRACE:path|POWER:rate|INPUT:entry|OUTPUT:exit|LATHE:tool|DRILL:borer|PUMP:fluid|PIPE:tube|FLOW:motion|PRESS:force|SPRING:elastic|WHEEL:rotor',
+Politics:'SENATE:law chamber|VOTERS:ballot people|BALLOT:recorded vote|POLICY:govt action|OFFICE:public position|RIGHTS:legal claims|DEBATE:formal argument|ELECT:choose by vote|PARTY:political group|VETO:reject power|MAYOR:city leader|CIVIC:citizen related|STATE:political territory|UNION:joined states|HOUSE:law chamber|POLL:vote survey|LAW:enacted rule|COURT:law institution|VOTES:ballots|TAXES:levies|BILLS:laws|ACTS:laws|RALLY:event|CIVIL:citizen|POWER:authority|JUDGE:court|MEDIA:press|SPEECH:address|TERM:office|SEATS:places|LOCAL:nearby|CITY:municipal|RULE:norm|ORDER:command|LOBBY:influence|CAUCUS:meeting',
+History:'EMPIRE:ruled lands|TREATY:state agreement|COLONY:ruled territory|REGENT:temporary ruler|SCROLL:ancient writing|RELICS:old objects|REVOLT:uprising|CASTLE:fortified home|LEGACY:past inheritance|BATTLE:armed conflict|CROWN:monarchy symbol|THRONE:royal seat|SIEGE:blockade|FORT:defense post|KINGS:male monarchs|QUEENS:female monarchs|ERA:time period|TRIBE:social group|ROMAN:Rome|GREEK:Greece|EGYPT:realm|COINS:money|SWORD:blade|ARMOR:defense|RUINS:remains|TEMPLE:sacred|MONK:religious|KNIGHT:warrior|FEUDAL:medieval|PLAGUE:disease|TRADE:exchange|ROUTE:path|NAVY:sea force|FLEET:ships|WAR:conflict|PEACE:calm',
+Movies:'OSCARS:film awards|ACTORS:performers|CAMERA:records scenes|SCREEN:film display|SCRIPT:movie text|STUDIO:film facility|DIRECT:guide a film|SCENE:dramatic unit|CINEMA:film art|EDITOR:cuts footage|COMEDY:funny genre|FRAME:single image|TAKES:scene attempts|CAST:performer group|REELS:film rolls|SCORE:film music|GENRE:movie type|PLOTS:story lines|FILM:movie|STAR:lead|ROLE:part|AUDIO:sound|LIGHT:set light|LENS:glass|CLAP:slate|CUT:edit|SHOT:take|AWARD:prize|MUSIC:score|SOUND:audio|HORROR:scary|ACTION:stunts|ROMCOM:romance|THRILL:suspense|STUNT:risk|EXTRA:background',
+Science:'PROTON:positive particle|PLANET:orbits star|PHOTON:light quantum|GENOME:genetic set|MAGNET:field source|PLASMA:ionized matter|ATOM:element unit|ORBIT:curved path|ENERGY:work capacity|CELL:life unit|LASER:coherent light|MASS:matter amount|MOLES:chem amount|SOLID:matter state|LIQUID:flowing state|WAVES:energy motion|ION:charged atom|ACIDS:proton donors|QUARK:particle|MOLE:unit|ACID:low pH|BASE:alkaline|GAS:state|HEAT:thermal|LIGHT:radiation|SOUND:wave|DNA:genes|RNA:messenger|GENE:heredity|STAR:stellar|COMET:icy|METAL:element|CARBON:C|WATER:H2O|SOLAR:sun|LUNAR:moon',
+Geography:'ISLAND:water-ringed land|TUNDRA:cold treeless land|CANYON:deep valley|DESERT:dry region|BORDER:area boundary|SUMMIT:mountain top|VALLEY:low land|RIVER:flowing water|DELTA:river mouth|FOREST:wooded region|OCEAN:salt water|COAST:sea edge|PLAINS:flat lands|HILLS:raised lands|BASIN:drainage lowland|CREEK:small stream|RIDGE:narrow highland|GULF:sea inlet|MAP:chart|ATLAS:maps|EARTH:planet|NORTH:direction|SOUTH:direction|EAST:direction|WEST:direction|LAKE:water|MOUNT:peak|CAPE:point|BAY:inlet|SEA:water|DUNE:sand|CLIFF:rock|CAVE:chamber|URBAN:city|RURAL:country|ARCTIC:polar',
+Sports:'TENNIS:racket sport|SOCCER:foot game|SPRINT:short race|GOALIE:goal defender|RACKET:tennis gear|MEDALS:top awards|RUNNER:race person|LEAGUE:competition group|COACH:team instructor|RACING:speed contest|BOXING:glove combat|HOCKEY:stick sport|PLAYER:game person|TEAM:competing group|MATCH:sport contest|TRACK:race course|FIELD:play area|SCORE:game points|BALL:sphere|GOAL:target|POINT:score|SERVE:start|COURT:surface|NET:mesh|BAT:gear|CLUB:golf|GLOVE:hand|SKATE:ice|SKI:snow|RACE:speed|LAP:circuit|JUMP:leap|THROW:field|SWIM:water|DIVE:entry|GOLF:sport',
+Literature:'NOVELS:long fiction|AUTHOR:book writer|POETRY:verse writing|SONNET:14-line poem|VERSES:poem lines|STANZA:line group|PROSE:plain writing|NOVELA:short novel|DRAMA:stage writing|RHYME:matching sounds|EPILOG:closing section|FABLE:moral story|PAGES:book leaves|TITLE:work name|STORY:narrative|TALES:short stories|METER:verse rhythm|THEME:central idea|BOOK:work|POEM:verse|NOVEL:fiction|EPIC:heroic|MYTH:tale|ESSAY:prose|PLOT:events|HERO:lead|QUOTE:citation|SCENE:section|ACT:division|LINE:text|WORD:unit|PAGE:leaf|EDIT:revise|READ:interpret|TALE:story|SAGA:narrative'
+};
+for(const k in D) D[k]=D[k].split('|').map(v=>v.split(':')).filter(x=>x[0].length<=6);
+
+const C=Object.keys(D), F=['a','b','c','d','e','g'];
+let cat=C[0],face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={};
+const cu=document.getElementById('cu'),st=document.getElementById('st'),se=document.getElementById('cat'),
+sc=document.getElementById('sc'),fb=document.getElementById('fb'),cd=document.getElementById('cd'),
+ct=document.getElementById('ct'),kb=document.getElementById('kb');
+C.forEach(v=>se.add(new Option(v,v)));
+
+function groups(){
+  let R=[];
+  for(let f=0;f<6;f++){
+    const pool=D[cat].slice(f*6,f*6+6);
+    let G=Array.from({length:6},()=>Array(6).fill('')),W=[];
+    pool.forEach((x,j)=>{
+      const d=j%2?'D':'A', L=x[0].length;
+      let r=d==='A'?j:0, c=d==='D'?j:0;
+      if(d==='A'&&L>6)c=0;
+      if(d==='D'&&L>6)r=0;
+      for(let k=0;k<L&&k<6;k++){
+        let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
+        if(rr<6&&cc<6)G[rr][cc]=x[0][k];
+      }
+      W.push({id:f*6+j,ans:x[0],cl:x[1],r,c,d,n:j+1});
+    });
+    R.push({G,W});
+  }
+  return R;
+}
+let P=groups();
+
+function wordKey(w){return cat+'|'+face+'|'+w.id}
+function cellKey(r,c){return cat+'|'+face+'|'+r+'|'+c}
+function tr(){cu.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`}
+
+function findWord(f,r,c){
+  return P[f].W.find(q=>q.d==='A'
+    ? r===q.r && c>=q.c && c<q.c+q.ans.length
+    : c===q.c && r>=q.r && r<q.r+q.ans.length);
+}
+function draw(){
+  cu.innerHTML='';
+  for(let f=0;f<6;f++){
+    const fe=document.createElement('div');fe.className='f '+F[f];
+    for(let r=0;r<6;r++)for(let c=0;c<6;c++){
+      const z=document.createElement('div');z.className='x';
+      if(P[f].G[r][c]){
+        z.classList.add('o');
+        const w=findWord(f,r,c);
+        if(w){
+          if(f===face&&selw&&selw.id===w.id)z.classList.add('s');
+          if(f===face&&sol.has(wordKey(w)))z.classList.add('ok');
+          const start=P[f].W.find(q=>q.r===r&&q.c===c);
+          if(start){const nn=document.createElement('span');nn.className='n';nn.textContent=start.n;z.append(nn)}
+          if(f===face) z.append(document.createTextNode(letm[cellKey(r,c)]||''));
+          if(f===face) z.onclick=()=>{selw=w;clue();draw()};
+        }
+      }
+      fe.append(z);
+    }
+    cu.append(fe);
+  }
+  fb.textContent='FACE '+(face+1);
+  sc.textContent=score;
+}
+function clue(){
+  if(!selw||!P[face].W.some(w=>w.id===selw.id))selw=P[face].W[0];
+  cd.textContent=selw.n+' '+(selw.d==='A'?'Across':'Down');
+  ct.textContent=selw.cl;
+}
+function type(ch){
+  if(!selw)return;
+  for(let i=0;i<selw.ans.length;i++){
+    let r=selw.r+(selw.d==='D'?i:0),c=selw.c+(selw.d==='A'?i:0),k=cellKey(r,c);
+    if(!letm[k]){letm[k]=ch;break}
+  }
+  draw();
+}
+function back(){
+  if(!selw)return;
+  for(let i=selw.ans.length-1;i>=0;i--){
+    let r=selw.r+(selw.d==='D'?i:0),c=selw.c+(selw.d==='A'?i:0),k=cellKey(r,c);
+    if(letm[k]){letm[k]='';break}
+  }
+  draw();
+}
+function answer(w){
+  let s='';
+  for(let i=0;i<w.ans.length;i++) s+=letm[cellKey(w.r+(w.d==='D'?i:0),w.c+(w.d==='A'?i:0))]||'';
+  return s;
+}
+function next(){
+  let a=P[face].W,i=a.findIndex(w=>w.id===selw.id);
+  selw=a[(i+1)%a.length];clue();draw();
+}
+function check(){
+  if(answer(selw)===selw.ans&&!sol.has(wordKey(selw))){
+    sol.add(wordKey(selw));score+=100;sc.classList.remove('pop');void sc.offsetWidth;sc.classList.add('pop');next();
+  }
+  draw();
+}
+function reveal(){
+  if(!selw)return;
+  let K=wordKey(selw);
+  for(let i=0;i<selw.ans.length;i++) letm[cellKey(selw.r+(selw.d==='D'?i:0),selw.c+(selw.d==='A'?i:0))]=selw.ans[i];
+  if(!sol.has(K)){sol.add(K);score-=100}
+  next();
+}
+function live(){
+  let p=Math.max(-90,Math.min(90,rx)),f;
+  if(p<=-45)f=4;
+  else if(p>=45)f=5;
+  else{
+    let y=((ry%360)+360)%360;
+    f=[0,3,2,1][Math.round(y/90)%4];
+  }
+  fb.textContent='FACE '+(f+1);
+  return f;
+}
+function snap(){
+  face=live();
+  let T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
+  rx=T[0];ry=T[1];
+  cu.style.transition='transform .15s';tr();
+  setTimeout(()=>cu.style.transition='',160);
+  selw=P[face].W[0];clue();draw();
+}
+
+se.onchange=()=>{
+  cat=se.value;face=0;rx=ry=score=0;sol.clear();letm={};P=groups();selw=P[0].W[0];tr();clue();draw();
+};
+document.getElementById('ck').onclick=check;
+document.getElementById('nx').onclick=next;
+document.getElementById('rv').onclick=reveal;
+document.getElementById('rs').onclick=()=>{score=0;sol.clear();letm={};draw()};
+
+['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'].forEach((r,i)=>{
+  let d=document.createElement('div');d.className='r';
+  if(i===2){let b=document.createElement('button');b.className='k w';b.textContent='⌫';b.onclick=back;d.append(b)}
+  [...r].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
+  if(i===2){let b=document.createElement('button');b.className='k w';b.textContent='✓';b.onclick=check;d.append(b)}
+  kb.append(d);
+});
+
+let dg=0,sx=0,sy=0,bx=0,by=0;
+st.addEventListener('pointerdown',e=>{
+  dg=1;sx=e.clientX;sy=e.clientY;bx=rx;by=ry;
+  st.setPointerCapture(e.pointerId);
+});
+st.addEventListener('pointermove',e=>{
+  if(!dg)return;
+  ry=by+(e.clientX-sx)*.75;
+  rx=Math.max(-90,Math.min(90,bx-(e.clientY-sy)*.75));
+  tr();live();
+});
+st.addEventListener('pointerup',()=>{dg=0;snap()});
+st.addEventListener('pointercancel',()=>{dg=0;snap()});
+
+selw=P[0].W[0];tr();clue();draw();
+})();
+</script>
+</body>
+</html>
