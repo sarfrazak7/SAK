@@ -6,37 +6,37 @@
 <title>CrossWord Pro 3D</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eee;font-family:Arial,sans-serif;overscroll-behavior:none}
-#kc{position:fixed;inset:0;background:#eee;font:13px Arial;display:grid;grid-template-rows:42px 46px 1fr 112px;overflow:hidden}
-#t,#b{background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 9px;border-bottom:1px solid #bbb;font-weight:900}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;font-family:Arial,sans-serif;overscroll-behavior:none}
+#kc{position:fixed;inset:0;background:#111;font:13px Arial;color:#eee;display:grid;grid-template-rows:42px 46px 1fr 112px;overflow:hidden}
+#t,#b{background:#1a1a1a;display:flex;align-items:center;justify-content:space-between;padding:0 9px;border-bottom:1px solid #333;font-weight:900;color:#eee}
 #b{gap:8px}
 select,button{font:inherit}
-select{flex:1;padding:7px;border:1px solid #999;border-radius:8px;background:#fff}
+select{flex:1;padding:7px;border:1px solid #444;border-radius:8px;background:#222;color:#eee}
 #fb{background:#d6a21f;color:#111;border:0;border-radius:8px;padding:7px 12px;font-weight:900;min-width:78px}
 #body{min-height:0;display:grid;grid-template-rows:1fr 34px 38px}
-#st{display:grid;place-items:center;perspective:900px;touch-action:none;overflow:hidden;background:radial-gradient(circle,#fafafa,#d5d5d5)}
+#st{display:grid;place-items:center;perspective:900px;touch-action:none;overflow:hidden;background:radial-gradient(circle,#1e1e1e,#0a0a0a)}
 #cu{--s:min(70vw,300px);--h:calc(var(--s)/2);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d;will-change:transform}
-.f{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);background:#c91f28;border:3px solid #111;backface-visibility:hidden}
+.f{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);background:#c91f28;border:3px solid #333;backface-visibility:hidden}
 .a{transform:translateZ(var(--h))}
 .b{transform:rotateY(-90deg) translateZ(var(--h))}
 .c{transform:rotateY(180deg) translateZ(var(--h))}
 .d{transform:rotateY(90deg) translateZ(var(--h))}
 .e{transform:rotateX(90deg) translateZ(var(--h))}
 .g{transform:rotateX(-90deg) translateZ(var(--h))}
-.x{position:relative;display:grid;place-items:center;border-right:1px solid #111;border-bottom:1px solid #111;background:#c91f28;font-size:19px;font-weight:900;user-select:none}
-.x.o{background:#fff}
-.x.s{background:#ffe18a}
-.x.ok{background:#cdeecf}
-.n{position:absolute;left:2px;top:1px;font-size:7px}
-#cl{background:#fff;border-top:1px solid #bbb;padding:7px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#ac{background:#fff;display:flex;gap:6px;justify-content:center}
-.q{border:0;border-radius:7px;background:#111;color:#fff;padding:6px 10px;font-weight:900}
-.q.alt{background:#fff;color:#111;border:1px solid #999}
-#kb{background:#d3d6db;padding:4px;display:grid;gap:3px}
+.x{position:relative;display:grid;place-items:center;border-right:1px solid #222;border-bottom:1px solid #222;background:#c91f28;font-size:19px;font-weight:900;color:#fff;user-select:none}
+.x.o{background:#2a2a2a;color:#fff}
+.x.s{background:#3a3a1a;color:#ffe18a}
+.x.ok{background:#1a3a1a;color:#6ee787}
+.n{position:absolute;left:2px;top:1px;font-size:7px;color:#aaa}
+#cl{background:#1a1a1a;color:#eee;border-top:1px solid #333;padding:7px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ac{background:#1a1a1a;display:flex;gap:6px;justify-content:center}
+.q{border:0;border-radius:7px;background:#06b6d4;color:#111;padding:6px 10px;font-weight:900}
+.q.alt{background:#333;color:#eee;border:1px solid #555}
+#kb{background:#0a0a0a;padding:4px;display:grid;gap:3px}
 .r{display:flex;gap:3px;justify-content:center}
-.k{flex:1;max-width:35px;border:0;border-radius:5px;background:#fff;box-shadow:0 1px 1px #888;font-weight:900}
+.k{flex:1;max-width:35px;border:0;border-radius:5px;background:#2a2a2a;color:#eee;box-shadow:0 1px 1px #000;font-weight:900}
 .w{max-width:58px}
-#sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:green}}
+#sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
 @media(min-width:700px){#cu{--s:360px}#kc{grid-template-rows:48px 50px 1fr 120px}}
 </style>
 </head>

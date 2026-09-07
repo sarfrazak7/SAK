@@ -3,7 +3,7 @@ import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
 const GAME_VERSION = '20260904-35';
-const TOP_BAR = 56;
+const TOP_BAR = 66;
 
 export default function TableTennisPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
