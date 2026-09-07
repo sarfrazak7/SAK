@@ -163,22 +163,108 @@ async function syncStats(creditDelta,debitDelta){
   }catch(err){}
 }
 
+function placeWord(G,word,d,r,c){
+  const L=word.length;
+  for(let k=0;k<L;k++){
+    let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
+    if(rr<0||rr>=6||cc<0||cc>=6)return false;
+    let existing=G[rr][cc];
+    if(existing&&existing!==word[k])return false;
+  }
+  if(d==='A'){
+    if(c>0&&G[r][c-1])return false;
+    if(c+L<6&&G[r][c+L])return false;
+  }else{
+    if(r>0&&G[r-1][c])return false;
+    if(r+L<6&&G[r+L][c])return false;
+  }
+  for(let k=1;k<L-1;k++){
+    let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
+    if(d==='A'){
+      if((rr>0&&G[rr-1][cc])||(rr<5&&G[rr+1][cc]))return false;
+    }else{
+      if((cc>0&&G[rr][cc-1])||(cc<5&&G[rr][cc+1]))return false;
+    }
+  }
+  for(let k=0;k<L;k++){
+    let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
+    G[rr][cc]=word[k];
+  }
+  return true;
+}
+function tryPlace(G,word,d){
+  const L=word.length;
+  if(L>6)return null;
+  let best=null;
+  for(let r=0;r<6;r++)for(let c=0;c<6;c++){
+    let intersects=false,ok=true;
+    for(let k=0;k<L;k++){
+      let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
+      if(rr>=6||cc>=6){ok=false;break}
+      if(G[rr][cc]){
+        if(G[rr][cc]!==word[k]){ok=false;break}
+        intersects=true;
+      }
+    }
+    if(!ok)continue;
+    if(d==='A'){
+      if(c>0&&G[r][c-1])continue;
+      if(c+L<6&&G[r][c+L])continue;
+    }else{
+      if(r>0&&G[r-1][c])continue;
+      if(r+L<6&&G[r+L][c])continue;
+    }
+    let sideConflict=false;
+    for(let k=1;k<L-1;k++){
+      let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
+      if(d==='A'){
+        if((rr>0&&G[rr-1][cc])||(rr<5&&G[rr+1][cc])){sideConflict=true;break}
+      }else{
+        if((cc>0&&G[rr][cc-1])||(cc<5&&G[rr][cc+1])){sideConflict=true;break}
+      }
+    }
+    if(sideConflict)continue;
+    if(intersects)return{r,c};
+    if(!best)best={r,c};
+  }
+  return best;
+}
+function buildFace(pool){
+  let G=Array.from({length:6},()=>Array(6).fill(''));
+  let W=[];
+  let placed=[];
+  if(pool.length===0)return{G,W};
+  let first=pool[0];
+  if(first[0].length<=6){
+    placeWord(G,first[0],'A',0,0);
+    placed.push({word:first[0],cl:first[1],d:'A',r:0,c:0});
+  }
+  for(let j=1;j<pool.length;j++){
+    let word=pool[j][0],clue=pool[j][1];
+    if(word.length>6)continue;
+    let dA=tryPlace(G,word,'A');
+    let dD=tryPlace(G,word,'D');
+    let chosen=null;
+    if(dA&&dD)chosen=Math.random()<0.5?{r:dA.r,c:dA.c,d:'A'}:{r:dD.r,c:dD.c,d:'D'};
+    else if(dA)chosen={r:dA.r,c:dA.c,d:'A'};
+    else if(dD)chosen={r:dD.r,c:dD.c,d:'D'};
+    if(chosen){
+      placeWord(G,word,chosen.d,chosen.r,chosen.c);
+      placed.push({word,clue,d:chosen.d,r:chosen.r,c:chosen.c});
+    }
+  }
+  placed.sort((a,b)=>(a.r*6+a.c)-(b.r*6+b.c));
+  placed.forEach((p,i)=>{
+    W.push({id:0,ans:p.word,cl:p.clue,r:p.r,c:p.c,d:p.d,n:i+1});
+  });
+  return{G,W};
+}
 function groups(){
   let R=[];
   for(let f=0;f<6;f++){
     const pool=D[cat].slice(f*6,f*6+6);
-    let G=Array.from({length:6},()=>Array(6).fill('')),W=[];
-    pool.forEach((x,j)=>{
-      const d=j%2?'D':'A', L=x[0].length;
-      let r=d==='A'?j:0, c=d==='D'?j:0;
-      if(d==='A'&&L>6)c=0;
-      if(d==='D'&&L>6)r=0;
-      for(let k=0;k<L&&k<6;k++){
-        let rr=r+(d==='D'?k:0),cc=c+(d==='A'?k:0);
-        if(rr<6&&cc<6)G[rr][cc]=x[0][k];
-      }
-      W.push({id:f*6+j,ans:x[0],cl:x[1],r,c,d,n:j+1});
-    });
+    let{G,W}=buildFace(pool);
+    W.forEach(w=>w.id=f*6+W.indexOf(w));
     R.push({G,W});
   }
   return R;
@@ -189,10 +275,16 @@ function wordKey(w){return cat+'|'+face+'|'+w.id}
 function cellKey(r,c){return cat+'|'+face+'|'+r+'|'+c}
 function tr(){cu.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`}
 
-function findWord(f,r,c){
-  return P[f].W.find(q=>q.d==='A'
+function wordsAt(f,r,c){
+  return P[f].W.filter(q=>q.d==='A'
     ? r===q.r && c>=q.c && c<q.c+q.ans.length
     : c===q.c && r>=q.r && r<q.r+q.ans.length);
+}
+function findWord(f,r,c){
+  const all=wordsAt(f,r,c);
+  if(all.length===0)return null;
+  if(selw&&all.some(w=>w.id===selw.id))return all.find(w=>w.id===selw.id);
+  return all[0];
 }
 function draw(){
   cu.innerHTML='';
@@ -202,14 +294,23 @@ function draw(){
       const z=document.createElement('div');z.className='x';
       if(P[f].G[r][c]){
         z.classList.add('o');
+        const allW=wordsAt(f,r,c);
         const w=findWord(f,r,c);
         if(w){
-          if(f===face&&selw&&selw.id===w.id)z.classList.add('s');
-          if(f===face&&sol.has(wordKey(w)))z.classList.add('ok');
-          const start=P[f].W.find(q=>q.r===r&&q.c===c);
-          if(start){const nn=document.createElement('span');nn.className='n';nn.textContent=start.n;z.append(nn)}
+          if(f===face&&selw&&allW.some(ww=>ww.id===selw.id))z.classList.add('s');
+          if(f===face&&allW.some(ww=>sol.has(wordKey(ww))))z.classList.add('ok');
+          const starts=allW.filter(q=>q.r===r&&q.c===c).sort((a,b)=>a.n-b.n);
+          if(starts.length>0){const nn=document.createElement('span');nn.className='n';nn.textContent=starts[0].n;z.append(nn)}
           if(f===face) z.append(document.createTextNode(letm[cellKey(r,c)]||''));
-          if(f===face) z.onclick=()=>{selw=w;clue();draw()};
+          if(f===face) z.onclick=()=>{
+            if(allW.length>1){
+              const curIdx=allW.findIndex(ww=>selw&&ww.id===selw.id);
+              selw=allW[(curIdx+1)%allW.length];
+            }else{
+              selw=w;
+            }
+            clue();draw();
+          };
         }
       }
       fe.append(z);
