@@ -3,6 +3,7 @@ import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
 const GAME_VERSION = '20260904-35';
+const TOP_BAR = 56;
 
 export default function TableTennisPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -28,12 +29,20 @@ export default function TableTennisPage() {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#0b1017' }}>
+    <div style={{ position: 'fixed', inset: 0, background: '#000' }}>
       <iframe
         ref={iframeRef}
         src={`/pingpong.html?v=${GAME_VERSION}`}
         title="Table Tennis"
-        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+        style={{
+          position: 'absolute',
+          top: TOP_BAR,
+          left: 0,
+          width: '100%',
+          height: `calc(100% - ${TOP_BAR}px)`,
+          border: 'none',
+          display: 'block',
+        }}
         allow="autoplay; fullscreen"
       />
       <BackToHomeButton />
@@ -51,15 +60,15 @@ export default function TableTennisPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'rgba(0,0,0,0.55)',
+          background: 'rgba(255,255,255,0.08)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.12)',
           cursor: 'pointer',
           transition: 'background 0.2s',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.75)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
       >
         <RotateCw className="h-4 w-4 text-white/80" />
       </button>

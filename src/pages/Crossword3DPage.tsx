@@ -3,6 +3,7 @@ import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
 const GAME_VERSION = '20260907-1';
+const TOP_BAR = 56;
 
 export default function Crossword3DPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -13,12 +14,20 @@ export default function Crossword3DPage() {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#eee' }}>
+    <div style={{ position: 'fixed', inset: 0, background: '#000' }}>
       <iframe
         ref={iframeRef}
         src={`/crossword3d.html?v=${GAME_VERSION}`}
         title="CrossWord Pro 3D"
-        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+        style={{
+          position: 'absolute',
+          top: TOP_BAR,
+          left: 0,
+          width: '100%',
+          height: `calc(100% - ${TOP_BAR}px)`,
+          border: 'none',
+          display: 'block',
+        }}
         allow="autoplay; fullscreen"
       />
       <BackToHomeButton />
@@ -36,15 +45,15 @@ export default function Crossword3DPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'rgba(0,0,0,0.55)',
+          background: 'rgba(255,255,255,0.08)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.12)',
           cursor: 'pointer',
           transition: 'background 0.2s',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.75)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
       >
         <RotateCw className="h-4 w-4 text-white/80" />
       </button>
