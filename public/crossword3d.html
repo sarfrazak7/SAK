@@ -37,9 +37,13 @@ select,button{font:inherit}
 select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#222;color:#eee;min-width:120px;max-width:150px}
 
 /* Score bar: below cube, centered */
-#scorebar{background:#1a1a1a;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 9px;border-top:1px solid #333;font-weight:900;color:#eee;height:40px;flex-shrink:0}
+#scorebar{background:#1a1a1a;display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 9px;border-top:1px solid #333;font-weight:900;color:#eee;height:40px;flex-shrink:0}
+#scorebar .grp{display:flex;align-items:center;gap:6px}
 #scorebar .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px}
+#scorebar .sep{width:1px;height:20px;background:#333}
 #sc{font-size:18px;color:#6ee787}
+#atc{font-size:14px;color:#d6a21f}
+#atc.loading{color:#555}
 
 /* Clue + actions */
 #cl{background:#1a1a1a;color:#eee;border-top:1px solid #333;padding:7px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
@@ -66,7 +70,11 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
       <select id="cat"></select>
     </div>
   </div>
-  <div id="scorebar"><span class="lbl">Score</span><b id="sc">0</b></div>
+  <div id="scorebar">
+    <div class="grp"><span class="lbl">Score</span><b id="sc">0</b></div>
+    <div class="sep"></div>
+    <div class="grp"><span class="lbl">All-Time</span><b id="atc" class="loading">—</b></div>
+  </div>
   <div id="cl"><b id="cd">1 Across</b> <span id="ct"></span></div>
   <div id="ac">
     <button class="q" id="ck">CHECK</button>
@@ -97,8 +105,63 @@ const C=Object.keys(D), F=['a','b','c','d','e','g'];
 let cat=C[0],face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={};
 const cu=document.getElementById('cu'),st=document.getElementById('st'),se=document.getElementById('cat'),
 sc=document.getElementById('sc'),fb=document.getElementById('fb'),cd=document.getElementById('cd'),
-ct=document.getElementById('ct'),kb=document.getElementById('kb');
+ct=document.getElementById('ct'),kb=document.getElementById('kb'),atc=document.getElementById('atc');
 C.forEach(v=>se.add(new Option(v,v)));
+
+/* --- Player identity & score sync (mirrors Pangram device_id pattern) --- */
+let SUPA_URL='',SUPA_KEY='',DEV_ID='';
+let allTimeCredit=0,allTimeDebit=0,supaReady=false;
+
+window.addEventListener('message',e=>{
+  const m=e.data;
+  if(!m||m.type!=='crossword3d-creds')return;
+  SUPA_URL=m.url;SUPA_KEY=m.key;DEV_ID=m.deviceId;
+  supaReady=true;loadAllTime();
+});
+
+async function loadAllTime(){
+  if(!supaReady)return;
+  try{
+    const r=await fetch(`${SUPA_URL}/rest/v1/crossword3d_player_stats?select=total_credit,total_debit&device_id=eq.${DEV_ID}`,{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+    if(!r.ok)return;
+    const rows=await r.json();
+    if(rows.length>0){allTimeCredit=rows[0].total_credit||0;allTimeDebit=rows[0].total_debit||0;}
+    updateAllTimeDisplay();
+  }catch(err){}
+}
+
+function updateAllTimeDisplay(){
+  atc.classList.remove('loading');
+  const net=allTimeCredit-allTimeDebit;
+  atc.textContent=(net>=0?'+':'')+net;
+  atc.style.color=net>=0?'#d6a21f':'#ef4444';
+}
+
+async function syncStats(creditDelta,debitDelta){
+  allTimeCredit+=creditDelta;
+  allTimeDebit+=debitDelta;
+  updateAllTimeDisplay();
+  if(!supaReady)return;
+  try{
+    const sel=await fetch(`${SUPA_URL}/rest/v1/crossword3d_player_stats?select=total_credit,total_debit&device_id=eq.${DEV_ID}`,{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+    let cur={total_credit:0,total_debit:0};
+    if(sel.ok){const rows=await sel.json();if(rows.length>0)cur=rows[0];}
+    await fetch(`${SUPA_URL}/rest/v1/crossword3d_player_stats?on_conflict=device_id`,{
+      method:'POST',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({
+        device_id:DEV_ID,
+        total_credit:(cur.total_credit||0)+creditDelta,
+        total_debit:(cur.total_debit||0)+debitDelta,
+        updated_at:new Date().toISOString()
+      })
+    });
+  }catch(err){}
+}
 
 function groups(){
   let R=[];
@@ -188,7 +251,7 @@ function next(){
 }
 function check(){
   if(answer(selw)===selw.ans&&!sol.has(wordKey(selw))){
-    sol.add(wordKey(selw));score+=100;sc.classList.remove('pop');void sc.offsetWidth;sc.classList.add('pop');next();
+    sol.add(wordKey(selw));score+=100;sc.classList.remove('pop');void sc.offsetWidth;sc.classList.add('pop');syncStats(100,0);next();
   }
   draw();
 }
@@ -196,7 +259,7 @@ function reveal(){
   if(!selw)return;
   let K=wordKey(selw);
   for(let i=0;i<selw.ans.length;i++) letm[cellKey(selw.r+(selw.d==='D'?i:0),selw.c+(selw.d==='A'?i:0))]=selw.ans[i];
-  if(!sol.has(K)){sol.add(K);score-=100}
+  if(!sol.has(K)){sol.add(K);score-=100;syncStats(0,100)}
   next();
 }
 function live(){

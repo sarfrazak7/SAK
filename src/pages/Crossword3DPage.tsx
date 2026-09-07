@@ -1,12 +1,29 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
+import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260907-1';
+const GAME_VERSION = '20260907-2';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const url = import.meta.env.VITE_SUPABASE_URL || '';
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+    const deviceId = getDeviceId();
+    const send = () => {
+      iframe.contentWindow?.postMessage(
+        { type: 'crossword3d-creds', url, key, deviceId },
+        '*',
+      );
+    };
+    iframe.addEventListener('load', send);
+    return () => iframe.removeEventListener('load', send);
+  }, []);
 
   const reloadGame = () => {
     const iframe = iframeRef.current;
