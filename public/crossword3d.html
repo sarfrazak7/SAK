@@ -230,40 +230,52 @@ function tryPlace(G,word,d){
   return best;
 }
 function buildFace(pool){
-  let G=Array.from({length:6},()=>Array(6).fill(''));
-  let W=[];
-  let placed=[];
-  if(pool.length===0)return{G,W};
-  let first=pool[0];
-  if(first[0].length<=6){
-    placeWord(G,first[0],'A',0,0);
-    placed.push({word:first[0],cl:first[1],d:'A',r:0,c:0});
-  }
-  for(let j=1;j<pool.length;j++){
-    let word=pool[j][0],clue=pool[j][1];
-    if(word.length>6)continue;
-    let dA=tryPlace(G,word,'A');
-    let dD=tryPlace(G,word,'D');
-    let chosen=null;
-    if(dA&&dD)chosen=Math.random()<0.5?{r:dA.r,c:dA.c,d:'A'}:{r:dD.r,c:dD.c,d:'D'};
-    else if(dA)chosen={r:dA.r,c:dA.c,d:'A'};
-    else if(dD)chosen={r:dD.r,c:dD.c,d:'D'};
-    if(chosen){
-      placeWord(G,word,chosen.d,chosen.r,chosen.c);
-      placed.push({word,clue,d:chosen.d,r:chosen.r,c:chosen.c});
+  let bestG=null,bestPlaced=null,bestCount=0;
+  for(let attempt=0;attempt<40;attempt++){
+    let G=Array.from({length:6},()=>Array(6).fill(''));
+    let placed=[];
+    let shuf=[...pool].sort(()=>Math.random()-0.5);
+    if(shuf.length===0)continue;
+    let first=shuf[0];
+    if(first[0].length<=6){
+      let d=Math.random()<0.5?'A':'D';
+      let L=first[0].length;
+      let r=d==='A'?Math.floor(Math.random()*6):0;
+      let c=d==='A'?0:Math.floor(Math.random()*6);
+      placeWord(G,first[0],d,r,c);
+      placed.push({word:first[0],clue:first[1],d,r,c});
     }
+    for(let j=1;j<shuf.length;j++){
+      let word=shuf[j][0],clue=shuf[j][1];
+      if(word.length>6)continue;
+      let dA=tryPlace(G,word,'A');
+      let dD=tryPlace(G,word,'D');
+      let chosen=null;
+      if(dA&&dD)chosen=Math.random()<0.5?{r:dA.r,c:dA.c,d:'A'}:{r:dD.r,c:dD.c,d:'D'};
+      else if(dA)chosen={r:dA.r,c:dA.c,d:'A'};
+      else if(dD)chosen={r:dD.r,c:dD.c,d:'D'};
+      if(chosen){
+        placeWord(G,word,chosen.d,chosen.r,chosen.c);
+        placed.push({word,clue,d:chosen.d,r:chosen.r,c:chosen.c});
+      }
+    }
+    if(placed.length>bestCount){bestCount=placed.length;bestG=G;bestPlaced=placed;}
+    if(bestCount>=Math.min(pool.length,5))break;
   }
-  placed.sort((a,b)=>(a.r*6+a.c)-(b.r*6+b.c));
-  placed.forEach((p,i)=>{
-    W.push({id:0,ans:p.word,cl:p.clue,r:p.r,c:p.c,d:p.d,n:i+1});
-  });
-  return{G,W};
+  if(!bestG){bestG=Array.from({length:6},()=>Array(6).fill(''));bestPlaced=[];}
+  bestPlaced.sort((a,b)=>(a.r*6+a.c)-(b.r*6+b.c));
+  let W=[];
+  bestPlaced.forEach((p,i)=>{W.push({id:0,ans:p.word,cl:p.clue,r:p.r,c:p.c,d:p.d,n:i+1});});
+  return{G:bestG,W};
 }
 function groups(){
   let R=[];
+  let pool=[...D[cat]];
+  pool.sort((a,b)=>a[0].length-b[0].length);
+  let facePools=Array.from({length:6},()=>[]);
+  pool.forEach((w,i)=>facePools[i%6].push(w));
   for(let f=0;f<6;f++){
-    const pool=D[cat].slice(f*6,f*6+6);
-    let{G,W}=buildFace(pool);
+    let{G,W}=buildFace(facePools[f]);
     W.forEach(w=>w.id=f*6+W.indexOf(w));
     R.push({G,W});
   }
