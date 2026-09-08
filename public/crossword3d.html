@@ -13,7 +13,7 @@ select,button{font:inherit}
 /* Scoreboard banner - top center, ping pong style */
 #scoreboard{
   position:absolute;left:50%;transform:translateX(-50%);top:0;
-  width:300px;padding:8px 10px;text-align:center;z-index:20;pointer-events:none;
+  width:300px;padding:8px 10px 10px;text-align:center;z-index:20;pointer-events:none;
   background:linear-gradient(180deg,#08111b,#070d13);
   border:1px solid #33404d;border-radius:0 0 12px 12px;
   box-shadow:0 8px 18px rgba(0,0,0,.28);
@@ -21,10 +21,19 @@ select,button{font:inherit}
 #scoreboard .scoreHeader{
   font-weight:900;font-size:16px;letter-spacing:.1em;color:#ffd86a;
   text-shadow:0 0 16px rgba(255,216,106,.4),0 1px 3px rgba(0,0,0,.6);
-  padding:4px 0 5px;
+  padding:4px 0 5px;margin-bottom:8px;
   background:linear-gradient(135deg,rgba(255,216,106,.12),rgba(255,184,40,.04));
   border-radius:6px;
+  border-bottom:1px solid rgba(255,216,106,.18);
 }
+#scoreboard .scoreRow{
+  display:flex;align-items:center;justify-content:center;gap:20px;
+}
+#scoreboard .grp{display:flex;flex-direction:column;align-items:center;gap:2px}
+#scoreboard .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px}
+#scoreboard #sc{font-size:18px;color:#6ee787}
+#scoreboard #atc{font-size:16px;color:#d6a21f}
+#scoreboard #atc.loading{color:#555}
 
 /* Stage - full screen for cube dragging */
 #stagediv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1e1e1e,#0a0a0a);overflow:hidden}
@@ -43,12 +52,11 @@ select,button{font:inherit}
 .x.ok{background:#cdeecf;color:#111}
 .n{position:absolute;left:2px;top:1px;font-size:7px;color:#666}
 
-/* FACE button - just above top center edge of cube */
+/* FACE button - inline with category label, left side */
 #fb{
-  position:absolute;left:50%;transform:translateX(-50%);
-  top:calc(50% - min(35vw,150px) - 38px);
+  position:absolute;left:14px;top:100px;
   background:#d6a21f;color:#111;border:0;border-radius:8px;
-  padding:6px 16px;font-weight:900;min-width:90px;text-align:center;
+  padding:8px 16px;font-weight:900;min-width:90px;text-align:center;
   z-index:15;cursor:pointer;
 }
 
@@ -66,27 +74,17 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 }
 #cl b{color:#d6a21f}
 
-/* Score panel - left side of cube */
-#scorepanel{
-  position:absolute;left:16px;top:50%;transform:translateY(-50%);
-  z-index:10;display:flex;flex-direction:column;gap:14px;
-  background:linear-gradient(180deg,#08111b,#070d13);
-  border:1px solid #33404d;border-radius:12px;
-  padding:14px 18px;box-shadow:0 8px 18px rgba(0,0,0,.28);
-}
-#scorepanel .grp{display:flex;flex-direction:column;align-items:center;gap:4px}
-#scorepanel .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px}
-#sc{font-size:28px;color:#6ee787}
-#atc{font-size:22px;color:#d6a21f}
-#atc.loading{color:#555}
+/* Score panel removed - score now in scoreboard */
 
 /* Keyboard - 1.4x, below cube bottom edge, centered */
 #kbWrap{
   position:absolute;left:50%;transform:translateX(-50%);
-  top:calc(50% + min(35vw,150px) + 8px);
+  top:calc(50% + min(35vw,150px) + 23px);
   z-index:15;
+  border:3px solid #444;border-radius:10px;padding:6px;
+  background:#0a0a0a;box-shadow:0 0 12px rgba(0,0,0,.6);
 }
-#kb{transform:scale(1.4);transform-origin:center top;padding:4px;display:grid;gap:3px}
+#kb{transform:scale(1.4);transform-origin:center top;padding:2px;display:grid;gap:3px}
 .r{display:flex;gap:3px;justify-content:center}
 .k{flex:1;max-width:35px;height:36px;border:0;border-radius:5px;background:#2a2a2a;color:#eee;box-shadow:0 1px 1px #000;font-weight:900;font-size:14px}
 .w{max-width:58px}
@@ -108,23 +106,26 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 }
 @media(max-width:600px){
   #kb{transform:scale(1.15);transform-origin:center top}
-  #scorepanel{padding:10px 12px;gap:10px}
-  #sc{font-size:22px}
-  #atc{font-size:18px}
 }
 @media(max-width:420px){
   #kb{transform:scale(0.95);transform-origin:center top}
   #scoreboard{width:220px}
   #scoreboard .scoreHeader{font-size:12px}
   #catwrap{right:6px;top:90px}
+  #fb{left:6px;top:90px}
   #cl{right:6px;top:160px;max-width:140px}
-  #scorepanel{left:6px;padding:8px 10px}
 }
 </style>
 </head>
 <body>
 <div id="kc">
-  <div id="scoreboard"><div class="scoreHeader">CROSSWORD 3D</div></div>
+  <div id="scoreboard">
+    <div class="scoreHeader">CROSSWORD 3D</div>
+    <div class="scoreRow">
+      <div class="grp"><span class="lbl">Score</span><b id="sc">0</b></div>
+      <div class="grp"><span class="lbl">All-Time</span><b id="atc" class="loading">—</b></div>
+    </div>
+  </div>
   <div id="stagediv"><div id="st"><div id="cu"></div></div></div>
   <button id="fb">FACE 1</button>
   <div id="catwrap">
@@ -132,10 +133,6 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
     <select id="cat"></select>
   </div>
   <div id="cl"><b id="cd">1 Across</b> <span id="ct"></span></div>
-  <div id="scorepanel">
-    <div class="grp"><span class="lbl">Score</span><b id="sc">0</b></div>
-    <div class="grp"><span class="lbl">All-Time</span><b id="atc" class="loading">—</b></div>
-  </div>
   <div id="kbWrap"><div id="kb"></div></div>
   <div id="ac">
     <button class="q" id="ck">CHECK</button>
@@ -494,13 +491,18 @@ document.getElementById('nx').onclick=next;
 document.getElementById('rv').onclick=reveal;
 document.getElementById('rs').onclick=()=>{score=0;sol.clear();letm={};draw()};
 
-['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'].forEach((r,i)=>{
+['ABCDEFGHIJKL','MNOPQRSTUV'].forEach((r)=>{
   let d=document.createElement('div');d.className='r';
-  if(i===2){let b=document.createElement('button');b.className='k w';b.textContent='⌫';b.onclick=back;d.append(b)}
   [...r].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
-  if(i===2){let b=document.createElement('button');b.className='k w';b.textContent='✓';b.onclick=check;d.append(b)}
   kb.append(d);
 });
+{
+  let d=document.createElement('div');d.className='r';
+  let bb=document.createElement('button');bb.className='k w';bb.textContent='⌫';bb.onclick=back;d.append(bb);
+  [...'WXYZ'].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
+  let cb=document.createElement('button');cb.className='k w';cb.textContent='✓';cb.onclick=check;d.append(cb);
+  kb.append(d);
+}
 
 let dg=0,sx=0,sy=0,bx=0,by=0;
 st.addEventListener('pointerdown',e=>{
