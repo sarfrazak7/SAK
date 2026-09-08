@@ -79,7 +79,7 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 /* Keyboard - 1.4x, below cube bottom edge, centered */
 #kbWrap{
   position:absolute;left:50%;transform:translateX(-50%);
-  top:calc(50% + min(35vw,150px) + 23px);
+  top:calc(50% + min(35vw,150px) + 10px);
   z-index:15;
   border:3px solid #444;border-radius:10px;padding:6px;
   background:#0a0a0a;box-shadow:0 0 12px rgba(0,0,0,.6);
@@ -102,7 +102,7 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 @media(min-width:700px){
   #cu{--s:360px}
   #fb{top:calc(50% - 180px - 38px)}
-  #kbWrap{top:calc(50% + 180px + 8px)}
+  #kbWrap{top:calc(50% + 180px + 10px)}
 }
 @media(max-width:600px){
   #kb{transform:scale(1.15);transform-origin:center top}
