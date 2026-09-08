@@ -4,7 +4,7 @@ import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260908-9';
+const GAME_VERSION = '20260908-10';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
@@ -74,7 +74,7 @@ export default function Crossword3DPage() {
         onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
       >
-        <Lightbulb className="h-4 w-4 text-white/80" />
+        <Lightbulb className="h-4 w-4 text-red-500 protip-blink" />
       </button>
       <button
         onClick={reloadGame}

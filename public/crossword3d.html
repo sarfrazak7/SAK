@@ -52,12 +52,10 @@ select,button{font:inherit}
 .x.ok{background:#cdeecf;color:#111}
 .n{position:absolute;left:2px;top:1px;font-size:7px;color:#666}
 
-/* FACE indicator - positioned by JS at cube top edge */
+/* FACE indicator - in action button row */
 #fb{
-  position:absolute;left:50%;transform:translateX(-50%);
-  top:0;
-  background:#d0d0d0;color:#222;border:1px solid #999;border-radius:6px;
-  padding:3px 14px;font-weight:900;font-size:12px;min-width:80px;text-align:center;
+  background:#d0d0d0;color:#222;border:1px solid #999;
+  border-radius:7px;padding:6px 12px;font-weight:900;font-size:12px;
   z-index:15;cursor:pointer;letter-spacing:.05em;
 }
 
@@ -105,7 +103,6 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
   #cu{--s:360px}
   #kbWrap{top:calc(50% + 235px)}
   #hintbar{width:360px}
-  #fb{top:0}
 }
 @media(max-width:600px){
   #kb{transform:scale(1.15);transform-origin:center top}
@@ -128,7 +125,6 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
     </div>
   </div>
   <div id="stagediv"><div id="st"><div id="cu"></div></div></div>
-  <button id="fb">FACE 1</button>
   <div id="catwrap">
     <label>Category</label>
     <select id="cat"></select>
@@ -140,6 +136,7 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
     <button class="q alt" id="nx">NEXT</button>
     <button class="q alt" id="rv">REVEAL</button>
     <button class="q alt" id="rs">RESET</button>
+    <button class="q" id="fb">FACE 1</button>
   </div>
 </div>
 
@@ -515,17 +512,7 @@ function positionHint(){
   hb.style.top=(kbRect.bottom-kcRect.top+14)+'px';
 }
 
-function positionFace(){
-  const btn=document.getElementById('fb');
-  const cube=document.getElementById('cu');
-  if(!btn||!cube)return;
-  const cubeRect=cube.getBoundingClientRect();
-  const kcRect=document.getElementById('kc').getBoundingClientRect();
-  const cubeTop=cubeRect.top-kcRect.top;
-  btn.style.top=(cubeTop-5-btn.offsetHeight)+'px';
-}
-
-function reposition(){positionHint();positionFace()}
+function reposition(){positionHint()}
 
 window.addEventListener('resize',reposition);
 window.addEventListener('load',()=>setTimeout(reposition,50));
