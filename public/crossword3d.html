@@ -13,7 +13,7 @@ select,button{font:inherit}
 /* Scoreboard banner - top center, ping pong style */
 #scoreboard{
   position:absolute;left:50%;transform:translateX(-50%);top:0;
-  width:150px;padding:8px 10px 10px;text-align:center;z-index:20;pointer-events:none;
+  width:300px;padding:4px 10px 5px;text-align:center;z-index:20;pointer-events:none;
   background:linear-gradient(180deg,#08111b,#070d13);
   border:1px solid #33404d;border-radius:0 0 12px 12px;
   box-shadow:0 8px 18px rgba(0,0,0,.28);
@@ -21,13 +21,13 @@ select,button{font:inherit}
 #scoreboard .scoreHeader{
   font-weight:900;font-size:13px;letter-spacing:.1em;color:#ffd86a;
   text-shadow:0 0 16px rgba(255,216,106,.4),0 1px 3px rgba(0,0,0,.6);
-  padding:4px 0 5px;margin-bottom:6px;
+  padding:2px 0 2px;margin-bottom:3px;
   background:linear-gradient(135deg,rgba(255,216,106,.12),rgba(255,184,40,.04));
   border-radius:6px;
   border-bottom:1px solid rgba(255,216,106,.18);
 }
 #scoreboard .scoreRow{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
 }
 #scoreboard .grp{display:flex;flex-direction:row;align-items:center;gap:6px;padding:0 4px}
 #scoreboard .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px}
@@ -109,7 +109,7 @@ select#cat{padding:6px 10px;border:1px solid #444;border-radius:8px;background:#
 }
 @media(max-width:420px){
   #kb{transform:scale(0.95);transform-origin:center top}
-  #scoreboard{width:120px}
+  #scoreboard{width:220px}
   #scoreboard .scoreHeader{font-size:10px}
   #catwrap{left:50%;transform:translateX(-50%);top:118px}
 }
