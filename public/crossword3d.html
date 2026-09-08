@@ -65,14 +65,15 @@ select,button{font:inherit}
 #catwrap label{font-size:9px;font-weight:900;color:#888;text-transform:uppercase;letter-spacing:1px;text-align:center}
 select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#222;color:#eee;min-width:120px;max-width:150px}
 
-/* Clue - under category dropdown */
-#cl{
-  position:absolute;right:14px;top:172px;z-index:10;
-  background:#1a1a1a;color:#eee;border:1px solid #333;border-radius:8px;
-  padding:8px 10px;max-width:180px;font-size:12px;white-space:normal;
-  line-height:1.4;
+/* Hint bar - below keyboard, same width as cube */
+#hintbar{
+  position:absolute;left:50%;transform:translateX(-50%);
+  z-index:15;width:min(70vw,300px);
+  background:#1a1a1a;border:1px solid #d6a21f;border-radius:8px;
+  padding:5px 10px;text-align:center;overflow:hidden;
 }
-#cl b{color:#d6a21f}
+#hintbar .hlabel{font-weight:900;font-size:11px;color:#d6a21f;letter-spacing:.05em}
+#hintbar .htext{font-size:11px;color:#ccc;line-height:1.3}
 
 /* Score panel removed - score now in scoreboard */
 
@@ -102,6 +103,7 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 @media(min-width:700px){
   #cu{--s:360px}
   #kbWrap{top:calc(50% + 235px)}
+  #hintbar{width:360px}
 }
 @media(max-width:600px){
   #kb{transform:scale(1.15);transform-origin:center top}
@@ -112,7 +114,6 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
   #scoreboard .scoreHeader{font-size:12px}
   #catwrap{right:6px;top:90px}
   #fb{left:6px;top:90px}
-  #cl{right:6px;top:160px;max-width:140px}
 }
 </style>
 </head>
@@ -131,8 +132,8 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
     <label>Category</label>
     <select id="cat"></select>
   </div>
-  <div id="cl"><b id="cd">1 Across</b> <span id="ct"></span></div>
   <div id="kbWrap"><div id="kb"></div></div>
+  <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span></div>
   <div id="ac">
     <button class="q" id="ck">CHECK</button>
     <button class="q alt" id="nx">NEXT</button>
@@ -503,6 +504,18 @@ document.getElementById('rs').onclick=()=>{score=0;sol.clear();letm={};draw()};
   kb.append(d);
 }
 
+function positionHint(){
+  const hb=document.getElementById('hintbar');
+  const kw=document.getElementById('kbWrap');
+  if(!hb||!kw)return;
+  const kwRect=kw.getBoundingClientRect();
+  const kcRect=document.getElementById('kc').getBoundingClientRect();
+  hb.style.top=(kwRect.bottom-kcRect.top+4)+'px';
+}
+
+window.addEventListener('resize',positionHint);
+window.addEventListener('load',()=>setTimeout(positionHint,50));
+
 let dg=0,sx=0,sy=0,bx=0,by=0;
 st.addEventListener('pointerdown',e=>{
   dg=1;sx=e.clientX;sy=e.clientY;bx=rx;by=ry;
@@ -517,7 +530,7 @@ st.addEventListener('pointermove',e=>{
 st.addEventListener('pointerup',()=>{dg=0;snap()});
 st.addEventListener('pointercancel',()=>{dg=0;snap()});
 
-selw=P[0].W[0];tr();clue();draw();
+selw=P[0].W[0];tr();clue();draw();positionHint();
 })();
 </script>
 </body>
