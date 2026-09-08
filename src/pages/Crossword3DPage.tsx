@@ -3,7 +3,7 @@ import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260907-5';
+const GAME_VERSION = '20260908-1';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
