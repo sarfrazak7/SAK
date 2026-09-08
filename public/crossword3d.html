@@ -52,10 +52,10 @@ select,button{font:inherit}
 .x.ok{background:#cdeecf;color:#111}
 .n{position:absolute;left:2px;top:1px;font-size:7px;color:#666}
 
-/* FACE indicator - top center edge of cube */
+/* FACE indicator - top center edge of cube, 5px outside */
 #fb{
-  position:absolute;left:50%;transform:translateX(-50%);
-  top:calc(50% - min(35vw,150px) - 28px);
+  position:absolute;left:50%;transform:translateX(-50%) translateY(-100%);
+  top:calc(50% - min(35vw,150px) - 5px);
   background:#d0d0d0;color:#222;border:1px solid #999;border-radius:6px;
   padding:3px 14px;font-weight:900;font-size:12px;min-width:80px;text-align:center;
   z-index:15;cursor:pointer;letter-spacing:.05em;
@@ -105,7 +105,7 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
   #cu{--s:360px}
   #kbWrap{top:calc(50% + 235px)}
   #hintbar{width:360px}
-  #fb{top:calc(50% - 180px - 28px)}
+  #fb{top:calc(50% - 180px - 5px)}
 }
 @media(max-width:600px){
   #kb{transform:scale(1.15);transform-origin:center top}
