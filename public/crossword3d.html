@@ -516,7 +516,10 @@ se.onchange=()=>{
 document.getElementById('ck').onclick=check;
 document.getElementById('nx').onclick=hint;
 document.getElementById('rv').onclick=reveal;
-document.getElementById('rs').onclick=()=>{score=0;sol.clear();letm={};draw()};
+document.getElementById('rs').onclick=()=>{
+  cat=C[Math.floor(Math.random()*C.length)];se.value=cat;
+  score=0;sol.clear();letm={};face=0;rx=ry=0;P=groups();selw=P[0].W[0];tr();clue();draw();
+};
 document.getElementById('nextArrow').onclick=()=>{
   let a=P[face].W,i=a.findIndex(w=>w.id===selw.id);
   selw=a[(i+1)%a.length];clue();draw();
