@@ -13,26 +13,26 @@ select,button{font:inherit}
 /* Scoreboard banner - top center, ping pong style */
 #scoreboard{
   position:absolute;left:50%;transform:translateX(-50%);top:0;
-  width:300px;padding:8px 10px 10px;text-align:center;z-index:20;pointer-events:none;
+  width:150px;padding:8px 10px 10px;text-align:center;z-index:20;pointer-events:none;
   background:linear-gradient(180deg,#08111b,#070d13);
   border:1px solid #33404d;border-radius:0 0 12px 12px;
   box-shadow:0 8px 18px rgba(0,0,0,.28);
 }
 #scoreboard .scoreHeader{
-  font-weight:900;font-size:16px;letter-spacing:.1em;color:#ffd86a;
+  font-weight:900;font-size:13px;letter-spacing:.1em;color:#ffd86a;
   text-shadow:0 0 16px rgba(255,216,106,.4),0 1px 3px rgba(0,0,0,.6);
-  padding:4px 0 5px;margin-bottom:8px;
+  padding:4px 0 5px;margin-bottom:6px;
   background:linear-gradient(135deg,rgba(255,216,106,.12),rgba(255,184,40,.04));
   border-radius:6px;
   border-bottom:1px solid rgba(255,216,106,.18);
 }
 #scoreboard .scoreRow{
-  display:flex;align-items:center;justify-content:center;gap:20px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
 }
-#scoreboard .grp{display:flex;flex-direction:column;align-items:center;gap:2px}
+#scoreboard .grp{display:flex;flex-direction:row;align-items:center;gap:6px;padding:0 4px}
 #scoreboard .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px}
-#scoreboard #sc{font-size:18px;color:#6ee787}
-#scoreboard #atc{font-size:16px;color:#d6a21f}
+#scoreboard #sc{font-size:14px;color:#6ee787}
+#scoreboard #atc{font-size:13px;color:#d6a21f}
 #scoreboard #atc.loading{color:#555}
 
 /* Stage - full screen for cube dragging */
@@ -55,14 +55,14 @@ select,button{font:inherit}
 /* FACE indicator - in action button row */
 #fb{
   background:#d0d0d0;color:#222;border:1px solid #999;
-  border-radius:7px;padding:6px 12px;font-weight:900;font-size:12px;
+  border-radius:5px;padding:4px 9px;font-weight:900;font-size:9px;
   z-index:15;cursor:pointer;letter-spacing:.05em;
 }
 
-/* Category dropdown - top right, 100px down */
-#catwrap{position:absolute;right:14px;top:100px;z-index:10;display:flex;flex-direction:column;gap:6px;align-items:stretch}
-#catwrap label{font-size:9px;font-weight:900;color:#888;text-transform:uppercase;letter-spacing:1px;text-align:center}
-select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#222;color:#eee;min-width:120px;max-width:150px}
+/* Category dropdown - below action buttons, centered */
+#catwrap{position:absolute;left:50%;transform:translateX(-50%);top:118px;z-index:10;display:flex;flex-direction:column;gap:4px;align-items:center}
+#catwrap label{font-size:8px;font-weight:900;color:#888;text-transform:uppercase;letter-spacing:1px;text-align:center}
+select#cat{padding:6px 10px;border:1px solid #444;border-radius:8px;background:#222;color:#eee;min-width:110px;max-width:140px;font-size:11px}
 
 /* Hint bar - below keyboard, same width as cube */
 #hintbar{
@@ -89,12 +89,12 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 .k{flex:1;max-width:35px;height:36px;border:0;border-radius:5px;background:#2a2a2a;color:#eee;box-shadow:0 1px 1px #000;font-weight:900;font-size:14px}
 .w{max-width:58px}
 
-/* Action buttons - bottom center */
+/* Action buttons - below scoreboard */
 #ac{
   position:absolute;left:50%;transform:translateX(-50%);
-  bottom:6px;display:flex;gap:6px;justify-content:center;z-index:15;
+  top:82px;display:flex;gap:5px;justify-content:center;z-index:15;
 }
-.q{border:0;border-radius:7px;background:#06b6d4;color:#111;padding:6px 12px;font-weight:900;font-size:12px}
+.q{border:0;border-radius:5px;background:#06b6d4;color:#111;padding:4px 9px;font-weight:900;font-size:9px}
 .q.alt{background:#333;color:#eee;border:1px solid #555}
 
 #sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
@@ -109,9 +109,9 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
 }
 @media(max-width:420px){
   #kb{transform:scale(0.95);transform-origin:center top}
-  #scoreboard{width:220px}
-  #scoreboard .scoreHeader{font-size:12px}
-  #catwrap{right:6px;top:90px}
+  #scoreboard{width:120px}
+  #scoreboard .scoreHeader{font-size:10px}
+  #catwrap{left:50%;transform:translateX(-50%);top:118px}
 }
 </style>
 </head>
@@ -124,13 +124,6 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
       <div class="grp"><span class="lbl">All-Time</span><b id="atc" class="loading">—</b></div>
     </div>
   </div>
-  <div id="stagediv"><div id="st"><div id="cu"></div></div></div>
-  <div id="catwrap">
-    <label>Category</label>
-    <select id="cat"></select>
-  </div>
-  <div id="kbWrap"><div id="kb"></div></div>
-  <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span></div>
   <div id="ac">
     <button class="q" id="ck">CHECK</button>
     <button class="q alt" id="nx">NEXT</button>
@@ -138,6 +131,13 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
     <button class="q alt" id="rs">RESET</button>
     <button class="q" id="fb">FACE 1</button>
   </div>
+  <div id="catwrap">
+    <label>Category</label>
+    <select id="cat"></select>
+  </div>
+  <div id="stagediv"><div id="st"><div id="cu"></div></div></div>
+  <div id="kbWrap"><div id="kb"></div></div>
+  <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span></div>
 </div>
 
 <script>
@@ -509,7 +509,10 @@ function positionHint(){
   if(!hb||!kbEl)return;
   const kbRect=kbEl.getBoundingClientRect();
   const kcRect=document.getElementById('kc').getBoundingClientRect();
-  hb.style.top=(kbRect.bottom-kcRect.top+14)+'px';
+  const hintTop=kbRect.bottom-kcRect.top+30;
+  const hintH=hb.offsetHeight||40;
+  const maxTop=kcRect.height-hintH-6;
+  hb.style.top=Math.min(hintTop,maxTop)+'px';
 }
 
 function reposition(){positionHint()}
