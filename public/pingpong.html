@@ -11,7 +11,7 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
 
-<title>Robo Ping Pro v59</title>
+<title>Robo Ping Pro v60</title>
 <style>
 :root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -400,11 +400,16 @@ function resize(){
  // iOS/QuickLook can show the DOM before RAF paints. Force a real first paint.
  try{ if(typeof draw==='function'&&S&&S.human) draw(); }catch(_){}
 }
-addEventListener('resize',()=>{resize();kickRenderLoop();});
+let _resizeTimer=0;
+function debouncedResize(){
+ clearTimeout(_resizeTimer);
+ _resizeTimer=setTimeout(()=>{resize();kickRenderLoop();},100);
+}
+addEventListener('resize',debouncedResize);
 addEventListener('orientationchange',()=>setTimeout(()=>{resize();kickRenderLoop();},90));
 if(window.visualViewport){
- visualViewport.addEventListener('resize',()=>{resize();kickRenderLoop();});
- visualViewport.addEventListener('scroll',resize);
+ visualViewport.addEventListener('resize',debouncedResize);
+ visualViewport.addEventListener('scroll',debouncedResize);
 }
 resize();
 
@@ -3527,14 +3532,22 @@ canvas.addEventListener('touchstart',e=>{
  else if(S.playing&&!S.auto)beginRigControl(x,y);
 },{passive:false});
 
+let _touchMovePending=false,_touchMoveX=0,_touchMoveY=0;
 canvas.addEventListener('touchmove',e=>{
  if(!e.touches[0])return;
  e.preventDefault();
- const x=e.touches[0].clientX,y=e.touches[0].clientY;
- if(S.serve.drag)moveGesture(x,y);
- else if(S.humanRally.drag)moveHumanRallyGesture(x,y);
- else if(S.rigControl?.active)moveRigControl(x,y);
- else if(S.manualPaddle.drag)moveManualPaddle(x,y);
+ _touchMoveX=e.touches[0].clientX;
+ _touchMoveY=e.touches[0].clientY;
+ if(_touchMovePending)return;
+ _touchMovePending=true;
+ requestAnimationFrame(()=>{
+   _touchMovePending=false;
+   const x=_touchMoveX,y=_touchMoveY;
+   if(S.serve.drag)moveGesture(x,y);
+   else if(S.humanRally.drag)moveHumanRallyGesture(x,y);
+   else if(S.rigControl?.active)moveRigControl(x,y);
+   else if(S.manualPaddle.drag)moveManualPaddle(x,y);
+ });
 },{passive:false});
 
 canvas.addEventListener('touchend',e=>{
@@ -3673,7 +3686,7 @@ try{draw();lastRenderBeat=performance.now();}catch(_){}
  }
 })();
 kickRenderLoop();
-setInterval(frameWatchdog,300);
+setInterval(frameWatchdog,800);
 document.addEventListener('visibilitychange',()=>{
  if(document.visibilityState==='visible'){
    setTimeout(()=>{resize();kickRenderLoop();},50);

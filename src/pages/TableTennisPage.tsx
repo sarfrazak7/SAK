@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
-const GAME_VERSION = '20260904-35';
+const GAME_VERSION = '20260908-60';
 const TOP_BAR = 66;
 
 export default function TableTennisPage() {
