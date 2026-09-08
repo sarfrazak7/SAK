@@ -6,12 +6,14 @@ interface CrosswordProTipsProps {
 }
 
 const TIPS: { n: number; text: React.ReactNode }[] = [
-  { n: 1, text: <>Drag across letters on the cube face to select a hidden word.</> },
-  { n: 2, text: <>Swipe a <strong>red hand icon</strong> in any direction to spin the cube to the next face.</> },
-  { n: 3, text: <>Each face has a <strong>5-minute timer</strong> that auto-advances when it runs out.</> },
-  { n: 4, text: <>Clear a face <strong>fast</strong> to earn <strong>time bonus points</strong> — up to 1000!</> },
-  { n: 5, text: <>Use <strong>Reveal</strong> to highlight all words on the current face.</> },
-  { n: 6, text: <>There are <strong>6 faces</strong> on the cube, each with its own theme. Clear them all!</> },
+  { n: 1, text: <>Each face of the cube has its own set of hidden words. <strong>Drag</strong> to rotate the cube and find all six faces.</> },
+  { n: 2, text: <>The hint bar below the keyboard shows the <strong>word number</strong>, direction, and a full clue sentence for the selected word.</> },
+  { n: 3, text: <>Tap a white cell to select that word. If two words cross at a cell, tap again to <strong>switch between Across and Down</strong>.</> },
+  { n: 4, text: <>Type letters using the on-screen keyboard. Use <strong>Backspace</strong> to erase the last typed letter.</> },
+  { n: 5, text: <>Press <strong>Check</strong> to verify the selected word — earn <strong>100 points</strong> for each correct word.</> },
+  { n: 6, text: <>Press <strong>Reveal</strong> to fill in the selected word automatically — but it costs <strong>100 points</strong>.</> },
+  { n: 7, text: <>Press <strong>Next</strong> to jump to the next word on the current face without checking.</> },
+  { n: 8, text: <>Use the <strong>Category</strong> dropdown to switch themes — each category has its own word pool.</> },
 ];
 
 export default function CrosswordProTips({ onClose }: CrosswordProTipsProps) {
@@ -156,18 +158,19 @@ export default function CrosswordProTips({ onClose }: CrosswordProTipsProps) {
 
           <div className="mt-4 pt-3 border-t border-casino-gold/15">
             <p className="font-display text-[11px] text-casino-gold tracking-wider mb-1">
-              Time Bonus (per face)
+              Scoring
             </p>
             <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-1.5">
               {[
-                ['≤2 min', '1000'],
-                ['≤3 min', '500'],
-                ['≤4 min', '300'],
-                ['≤5 min', '100'],
+                ['Correct word', '+100'],
+                ['Reveal word', '-100'],
+                ['All-Time net', 'tracked'],
               ].map(([label, val]) => (
                 <div key={label} className="flex items-center justify-between font-body text-[11px]">
                   <span className="text-gray-400">{label}</span>
-                  <span className="text-casino-gold font-bold">{val}</span>
+                  <span className={val.startsWith('-') ? 'text-rose-400 font-bold' : 'text-casino-gold font-bold'}>
+                    {val}
+                  </span>
                 </div>
               ))}
             </div>

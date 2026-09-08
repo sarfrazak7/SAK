@@ -1,13 +1,15 @@
-import { useEffect, useRef } from 'react';
-import { RotateCw } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { RotateCw, Lightbulb } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
+import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260908-6';
+const GAME_VERSION = '20260908-7';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [showTips, setShowTips] = useState(false);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -49,6 +51,32 @@ export default function Crossword3DPage() {
       />
       <BackToHomeButton />
       <button
+        onClick={() => setShowTips(true)}
+        aria-label="Pro Tips"
+        style={{
+          position: 'fixed',
+          top: 12,
+          right: 140,
+          zIndex: 100,
+          width: 32,
+          height: 32,
+          borderRadius: 8,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          cursor: 'pointer',
+          transition: 'background 0.2s',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+      >
+        <Lightbulb className="h-4 w-4 text-white/80" />
+      </button>
+      <button
         onClick={reloadGame}
         aria-label="Reload game"
         style={{
@@ -74,6 +102,7 @@ export default function Crossword3DPage() {
       >
         <RotateCw className="h-4 w-4 text-white/80" />
       </button>
+      {showTips && <CrosswordProTips onClose={() => setShowTips(false)} />}
     </div>
   );
 }

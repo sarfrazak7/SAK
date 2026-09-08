@@ -52,12 +52,13 @@ select,button{font:inherit}
 .x.ok{background:#cdeecf;color:#111}
 .n{position:absolute;left:2px;top:1px;font-size:7px;color:#666}
 
-/* FACE button - inline with category label, left side */
+/* FACE indicator - top center edge of cube */
 #fb{
-  position:absolute;left:14px;top:100px;
-  background:#d6a21f;color:#111;border:0;border-radius:8px;
-  padding:8px 16px;font-weight:900;min-width:90px;text-align:center;
-  z-index:15;cursor:pointer;
+  position:absolute;left:50%;transform:translateX(-50%);
+  top:calc(50% - min(35vw,150px) - 28px);
+  background:#d0d0d0;color:#222;border:1px solid #999;border-radius:6px;
+  padding:3px 14px;font-weight:900;font-size:12px;min-width:80px;text-align:center;
+  z-index:15;cursor:pointer;letter-spacing:.05em;
 }
 
 /* Category dropdown - top right, 100px down */
@@ -104,6 +105,7 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
   #cu{--s:360px}
   #kbWrap{top:calc(50% + 235px)}
   #hintbar{width:360px}
+  #fb{top:calc(50% - 180px - 28px)}
 }
 @media(max-width:600px){
   #kb{transform:scale(1.15);transform-origin:center top}
@@ -113,7 +115,6 @@ select#cat{padding:8px 10px;border:1px solid #444;border-radius:8px;background:#
   #scoreboard{width:220px}
   #scoreboard .scoreHeader{font-size:12px}
   #catwrap{right:6px;top:90px}
-  #fb{left:6px;top:90px}
 }
 </style>
 </head>
@@ -154,7 +155,7 @@ Movies:'OSCARS:The top annual awards in the film industry|ACTORS:Performers who 
 Science:'PROTON:A positively charged subatomic particle|PLANET:A large body orbiting a star|PHOTON:A quantum packet of light energy|GENOME:The complete set of genetic material|MAGNET:An object producing a magnetic field|PLASMA:A state of matter consisting of ionized gas|ATOM:The basic building block of all elements|ORBIT:The curved path of one body around another|ENERGY:The capacity to do work|CELL:The fundamental unit of living things|LASER:A device emitting a narrow beam of light|MASS:The amount of matter in an object|MOLES:Units measuring amount of substance|SOLID:A state of matter with fixed shape|LIQUID:A state of matter that flows|WAVES:Disturbances that carry energy|ION:An atom that has gained or lost a charge|ACIDS:Substances that donate protons|QUARK:A fundamental subatomic particle|MOLE:The unit counting particles in chemistry|ACID:A substance with a low pH|BASE:A substance that is alkaline|GAS:A state of matter with no fixed shape|HEAT:Thermal energy transferred between objects|LIGHT:Electromagnetic radiation visible to the eye|SOUND:A wave that travels through a medium|DNA:The molecule carrying genetic instructions|RNA:The molecule that carries genetic messages|GENE:A unit of heredity passed from parent to child|STAR:A luminous ball of burning gas|COMET:An icy body that trails a tail near the sun|METAL:A class of shiny conductive elements|CARBON:The element central to organic chemistry|WATER:The compound essential to all known life|SOLAR:Relating to energy from the sun|LUNAR:Relating to the moon',
 Geography:'ISLAND:A body of land completely surrounded by water|TUNDRA:A cold treeless region found near the poles|CANYON:A deep narrow valley with steep walls|DESERT:A dry region with very little rainfall|BORDER:The line separating two areas or countries|SUMMIT:The highest point of a mountain|VALLEY:A long low area between hills or mountains|RIVER:A large natural stream of flowing water|DELTA:The triangular mouth where a river meets the sea|FOREST:A large area densely covered with trees|OCEAN:A vast body of salt water|COAST:The strip of land bordering the sea|PLAINS:Broad flat lands stretching over large areas|HILLS:Raised areas of land lower than mountains|BASIN:A lowland area that collects drainage water|CREEK:A small natural stream of water|RIDGE:A narrow raised strip of highland|GULF:A large inlet of the sea partly enclosed by land|MAP:A visual chart showing geographical features|ATLAS:A collection of maps bound together|EARTH:The planet on which we live|NORTH:The compass direction toward the pole star|SOUTH:The compass direction opposite of north|EAST:The compass direction of the sunrise|WEST:The compass direction of the sunset|LAKE:A large body of water surrounded by land|MOUNT:A towering peak rising high above the land|CAPE:A point of land extending into water|BAY:A curved inlet of the sea along a coast|SEA:A large body of salt water partly enclosed|DUNE:A hill of sand shaped by the wind|CLIFF:A steep rock face often along a coast|CAVE:A natural chamber hollowed out in rock|URBAN:Pertaining to a densely built city area|RURAL:Pertaining to the open countryside|ARCTIC:The polar region at the top of the globe',
 Sports:'TENNIS:A racket sport played on a court with a net|SOCCER:A team sport played by kicking a ball|SPRINT:A short race run at top speed|GOALIE:The player who defends the goal|MEDALS:Awards given to the top finishers|RACKET:The gear used to hit the ball in tennis|RUNNER:A person who competes in a race|LEAGUE:A group of teams competing together|COACH:The person who trains and instructs a team|RACING:A contest of speed between competitors|BOXING:A combat sport fought with gloves|HOCKEY:A sport played with sticks and a puck|PLAYER:A person who takes part in a game|TEAM:A group of players competing as one|MATCH:A contest between two sides|TRACK:The course on which races are run|FIELD:The area where outdoor sports are played|SCORE:The points tallied in a game or match|BALL:A round sphere used in many sports|GOAL:The target a team tries to score on|POINT:A single unit of score|SERVE:The stroke that starts a rally|COURT:The playing surface for certain sports|NET:The mesh barrier dividing a court|BAT:Gear used to strike a ball|CLUB:A stick used to hit a golf ball|GLOVE:Gear worn on the hand for protection|SKATE:A blade worn for moving on ice|SKI:A long runner used to travel on snow|RACE:A contest to see who is fastest|LAP:One complete circuit of a track|JUMP:A leap for height or distance|THROW:A field event heaving an object|SWIM:To propel oneself through water|DIVE:A headfirst entry into water|GOLF:A sport played by hitting a ball into holes',
-Literature:'NOVELS:long fiction|AUTHOR:book writer|POETRY:verse writing|SONNET:14-line poem|VERSES:poem lines|STANZA:line group|PROSE:plain writing|NOVELA:short novel|DRAMA:stage writing|RHYME:matching sounds|EPILOG:closing section|FABLE:moral story|PAGES:book leaves|TITLE:work name|STORY:narrative|TALES:short stories|METER:verse rhythm|THEME:central idea|BOOK:work|POEM:verse|NOVEL:fiction|EPIC:heroic|MYTH:tale|ESSAY:prose|PLOT:events|HERO:lead|QUOTE:citation|SCENE:section|ACT:division|LINE:text|WORD:unit|PAGE:leaf|EDIT:revise|READ:interpret|TALE:story|SAGA:narrative'
+Literature:'NOVELS:Long works of fiction telling an extended story|AUTHOR:The writer who creates a book|POETRY:Writing arranged in verse form|SONNET:A poem of exactly fourteen lines|VERSES:The individual lines of a poem|STANZA:A group of lines forming a unit in a poem|PROSE:Ordinary writing not set in verse|NOVELA:A short novel or long novella|DRAMA:A written work intended for the stage|RHYME:The matching of sounds at line endings|EPILOG:A section that closes a literary work|FABLE:A short story conveying a moral|PAGES:The numbered leaves of a book|TITLE:The name given to a written work|STORY:A narrative recounting events|TALES:Short narratives often passed orally|METER:The rhythmic pattern in verse|THEME:The central idea explored in a work|BOOK:A bound written or printed work|POEM:A composition in verse|NOVEL:A long work of fiction|EPIC:A long narrative celebrating heroic deeds|MYTH:A traditional story explaining natural phenomena|ESSAY:A short prose piece on a single subject|PLOT:The sequence of events in a story|HERO:The lead character of a narrative|QUOTE:A passage cited from another work|SCENE:A subdivision of an act in a play|ACT:A major division of a play|LINE:A single row of text|WORD:The smallest unit of language|PAGE:One side of a leaf in a book|EDIT:To revise a text for correctness|READ:To interpret written words|TALE:A story often involving adventure|SAGA:A long narrative of events and adventures'
 };
 for(const k in D) D[k]=D[k].split('|').map(v=>v.split(':')).filter(x=>x[0].length<=6);
 
@@ -507,11 +508,11 @@ document.getElementById('rs').onclick=()=>{score=0;sol.clear();letm={};draw()};
 
 function positionHint(){
   const hb=document.getElementById('hintbar');
-  const kw=document.getElementById('kbWrap');
-  if(!hb||!kw)return;
-  const kwRect=kw.getBoundingClientRect();
+  const kbEl=document.getElementById('kb');
+  if(!hb||!kbEl)return;
+  const kbRect=kbEl.getBoundingClientRect();
   const kcRect=document.getElementById('kc').getBoundingClientRect();
-  hb.style.top=(kwRect.bottom-kcRect.top+14)+'px';
+  hb.style.top=(kbRect.bottom-kcRect.top+14)+'px';
 }
 
 window.addEventListener('resize',positionHint);
