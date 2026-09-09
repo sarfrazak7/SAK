@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { RotateCw, Lightbulb } from 'lucide-react';
+import { RotateCw, Lightbulb, Maximize, Minimize } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260908-12';
+const GAME_VERSION = '20260909-18';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [showTips, setShowTips] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -32,75 +33,134 @@ export default function Crossword3DPage() {
     if (iframe) iframe.src = `/crossword3d.html?v=${GAME_VERSION}&t=${Date.now()}`;
   };
 
+  const toggleFullscreen = () => {
+    setIsFullscreen((prev) => {
+      const next = !prev;
+      if (next) {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || (el as any).webkitRequestFullscreen;
+        if (req) {
+          const result = req.call(el);
+          if (result && typeof result.catch === 'function') {
+            result.catch(() => {});
+          }
+        }
+        window.scrollTo(0, 0);
+      } else {
+        const exit = document.exitFullscreen || (document as any).webkitExitFullscreen;
+        if (exit) exit.call(document);
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const onFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement || !!(document as any).webkitFullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange);
+      document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
+    };
+  }, []);
+
+  const btnStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 12,
+    zIndex: 100,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(255,255,255,0.08)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    cursor: 'pointer',
+    transition: 'background 0.2s',
+  };
+
+  const hoverIn = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+  };
+  const hoverOut = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+  };
+
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#000' }}>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100dvh',
+        background: '#000',
+        overflow: 'hidden',
+      }}
+    >
       <iframe
         ref={iframeRef}
         src={`/crossword3d.html?v=${GAME_VERSION}`}
         title="CrossWord Pro 3D"
         style={{
           position: 'absolute',
-          top: TOP_BAR,
+          top: isFullscreen ? 0 : TOP_BAR,
           left: 0,
           width: '100%',
-          height: `calc(100% - ${TOP_BAR}px)`,
+          height: isFullscreen ? '100dvh' : `calc(100dvh - ${TOP_BAR}px)`,
           border: 'none',
           display: 'block',
+          zIndex: 1,
         }}
         allow="autoplay; fullscreen"
+        allowFullScreen
       />
-      <BackToHomeButton />
+      {!isFullscreen && <BackToHomeButton />}
+      {!isFullscreen && (
+        <button
+          onClick={() => setShowTips(true)}
+          aria-label="Pro Tips"
+          style={{ ...btnStyle, right: 180 }}
+          onMouseEnter={hoverIn}
+          onMouseLeave={hoverOut}
+        >
+          <Lightbulb className="h-4 w-4 text-red-500 protip-blink" />
+        </button>
+      )}
+      {!isFullscreen && (
+        <button
+          onClick={reloadGame}
+          aria-label="Reload game"
+          style={{ ...btnStyle, right: 140 }}
+          onMouseEnter={hoverIn}
+          onMouseLeave={hoverOut}
+        >
+          <RotateCw className="h-4 w-4 text-white/80" />
+        </button>
+      )}
       <button
-        onClick={() => setShowTips(true)}
-        aria-label="Pro Tips"
+        onClick={toggleFullscreen}
+        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         style={{
-          position: 'fixed',
-          top: 12,
-          right: 140,
-          zIndex: 100,
-          width: 32,
-          height: 32,
-          borderRadius: 8,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          cursor: 'pointer',
-          transition: 'background 0.2s',
+          ...btnStyle,
+          top: isFullscreen ? 'max(12px, env(safe-area-inset-top))' : 12,
+          right: isFullscreen ? 'max(12px, env(safe-area-inset-right))' : 100,
+          zIndex: 300,
+          background: isFullscreen ? 'rgba(220,160,30,0.3)' : btnStyle.background,
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
-      >
-        <Lightbulb className="h-4 w-4 text-red-500 protip-blink" />
-      </button>
-      <button
-        onClick={reloadGame}
-        aria-label="Reload game"
-        style={{
-          position: 'fixed',
-          top: 12,
-          right: 100,
-          zIndex: 100,
-          width: 32,
-          height: 32,
-          borderRadius: 8,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          cursor: 'pointer',
-          transition: 'background 0.2s',
+        onMouseEnter={hoverIn}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = isFullscreen ? 'rgba(220,160,30,0.3)' : 'rgba(255,255,255,0.08)';
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
       >
-        <RotateCw className="h-4 w-4 text-white/80" />
+        {isFullscreen
+          ? <Minimize className="h-4 w-4 text-white" />
+          : <Maximize className="h-4 w-4 text-white/80" />}
       </button>
       {showTips && <CrosswordProTips onClose={() => setShowTips(false)} />}
     </div>
