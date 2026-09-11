@@ -13,16 +13,20 @@ export default function ViewCounter() {
     (async () => {
       try {
         const { data, error } = await supabase.rpc('increment_page_view');
-        if (!error && typeof data === 'number') {
-          setCount(data);
+        if (!error && data != null) {
+          setCount(Number(data));
           return;
         }
+      } catch {
+        // fall through to direct read
+      }
+      try {
         const { data: row } = await supabase
           .from('page_views')
           .select('count')
           .eq('id', 1)
           .maybeSingle();
-        if (row) setCount(row.count);
+        if (row) setCount(Number(row.count));
       } catch {
         // offline or not configured
       }

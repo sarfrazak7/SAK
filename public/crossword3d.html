@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <style>
-:root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px)}
+:root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px);--cube-top:160px;--cw:min(82vw,304px,calc(100vh - 405px));--kw:min(82vw,374px,calc(100vh - 375px))}
 @keyframes blinkArrow{0%,100%{opacity:1}50%{opacity:.2}}
 #nextArrow{display:inline-flex;align-items:center;cursor:pointer;pointer-events:auto;animation:blinkArrow 1s ease-in-out infinite;color:#d6a21f;font-size:16px;font-weight:900;padding-left:6px}
 #nextArrow:active{transform:scale(1.2)}
@@ -41,10 +41,10 @@ select,button{font:inherit}
 #scoreboard #atc{font-size:13px;color:#d6a21f;min-width:36px;text-align:left}
 #scoreboard #atc.loading{color:#555}
 
-/* Stage - full screen for cube dragging */
-#stagediv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1e1e1e,#0a0a0a);overflow:hidden}
-#st{display:grid;place-items:center;perspective:900px;touch-action:none;overflow:hidden;width:100%;height:100%;position:relative}
-#cu{--s:min(70vw,300px);--h:calc(var(--s)/2);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d;will-change:transform}
+/* Stage - below controls, cube pushed up */
+#stagediv{position:absolute;left:0;right:0;top:var(--cube-top);bottom:calc(var(--sbb) + 197px);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1e1e1e,#0a0a0a);overflow:visible;padding-bottom:0}
+#st{display:grid;place-items:center;perspective:900px;touch-action:none;overflow:visible;width:100%;height:100%;position:relative}
+#cu{--s:var(--cw);--h:calc(var(--s)/2);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d;will-change:transform}
 .f{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);background:#c91f28;border:3px solid #333;backface-visibility:hidden}
 .a{transform:translateZ(var(--h))}
 .b{transform:rotateY(-90deg) translateZ(var(--h))}
@@ -56,6 +56,8 @@ select,button{font:inherit}
 .x.o{background:#fff;color:#111}
 .x.s{background:#ffe18a;color:#111}
 .x.ok{background:#cdeecf;color:#111}
+.x.err{animation:flashRed .6s ease-out}
+@keyframes flashRed{0%{background:#ff0000;color:#fff;box-shadow:0 0 8px #ff0000}30%{background:#ff0000;color:#fff;box-shadow:0 0 12px #ff0000}100%{background:#fff;color:#111}}
 .n{position:absolute;left:1px;top:0;font-size:12px;font-weight:900;color:#222;line-height:1;pointer-events:none}
 
 /* FACE indicator - in action button row */
@@ -66,26 +68,28 @@ select,button{font:inherit}
 }
 
 /* Category dropdown - below action buttons, centered */
-#catwrap{position:absolute;left:50%;transform:translateX(-50%);top:118px;z-index:10;display:flex;flex-direction:column;gap:4px;align-items:center}
+#catwrap{position:absolute;left:50%;transform:translateX(-50%);top:72px;z-index:10;display:flex;flex-direction:column;gap:2px;align-items:center}
 #catwrap label{font-size:8px;font-weight:900;color:#888;text-transform:uppercase;letter-spacing:1px;text-align:center}
-select#cat{padding:6px 10px;border:1px solid #444;border-radius:8px;background:#222;color:#eee;min-width:110px;max-width:160px;font-size:11px}
+select#cat{padding:4px 10px;border:1px solid #444;border-radius:8px;background:#222;color:#eee;min-width:110px;max-width:160px;font-size:11px}
 
-/* Difficulty slider - below category, centered */
-#diffwrap{position:absolute;left:50%;transform:translateX(-50%);top:160px;z-index:10;display:flex;flex-direction:column;gap:3px;align-items:center;width:min(70vw,300px)}
-#diffwrap label{font-size:8px;font-weight:900;color:#888;text-transform:uppercase;letter-spacing:1px;text-align:center}
-#diffBar{width:100%;appearance:none;-webkit-appearance:none;height:12px;border-radius:8px;border:1px solid #444;background:linear-gradient(90deg,#4ade80,#facc15,#f87171);outline:none;cursor:pointer}
-#diffBar::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #333;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-#diffBar::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #333;cursor:pointer}
-#diffLabels{display:flex;justify-content:space-between;width:100%;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
-#diffLabels span{color:#666;cursor:pointer;flex:1;text-align:center;transition:color .2s;padding-top:1px}
-#diffLabels span.active{color:#fff}
+/* Difficulty slider - below category, centered (labels removed) */
+#diffwrap{position:absolute;left:50%;transform:translateX(-50%);top:121px;z-index:10;display:flex;flex-direction:column;gap:0;align-items:center;width:var(--cw)}
+#diffBar{width:100%;appearance:none;-webkit-appearance:none;height:24px;border-radius:8px;border:1px solid #444;background:linear-gradient(90deg,#4ade80,#facc15,#f87171);outline:none;cursor:pointer;position:relative;z-index:1}
+#diffBar::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #333;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+#diffBar::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #333;cursor:pointer}
+#diffLabels{display:flex;width:100%;justify-content:space-between;font-size:6px;font-weight:900;text-transform:uppercase;letter-spacing:.3px;position:absolute;top:0;left:0;right:0;height:24px;align-items:center;z-index:2;pointer-events:none}
+#diffLabels a{flex:1;text-align:center;color:#333;cursor:pointer;padding:0;border-radius:4px;transition:color .15s,background .15s;text-decoration:none;line-height:24px;pointer-events:auto}
+#diffLabels a.act{color:#fff}
+#diffLabels a[data-d="0"].act{background:rgba(74,222,128,.35)}
+#diffLabels a[data-d="1"].act{background:rgba(250,204,21,.35)}
+#diffLabels a[data-d="2"].act{background:rgba(248,113,113,.35)}
 
-/* Hint bar - below keyboard, same width as cube */
+/* Hint bar - fixed at bottom, always visible */
 #hintbar{
   position:absolute;left:50%;transform:translateX(-50%);
-  z-index:15;width:min(70vw,300px);
+  bottom:14px;z-index:20;width:calc(var(--cw) + 30px);
   background:#1a1a1a;border:1px solid #d6a21f;border-radius:8px;
-  padding:6px 12px;text-align:left;overflow:hidden;
+  padding:5px 12px;text-align:left;overflow:hidden;
   display:flex;align-items:center;gap:4px;
 }
 #hintbar .hlabel{font-weight:900;font-size:11px;color:#d6a21f;letter-spacing:.05em;flex-shrink:0}
@@ -93,43 +97,49 @@ select#cat{padding:6px 10px;border:1px solid #444;border-radius:8px;background:#
 
 /* Score panel removed - score now in scoreboard */
 
-/* Keyboard - 1.4x, below cube bottom edge, centered */
+/* Keyboard - QWERTY, positioned above clue bar from bottom */
 #kbWrap{
   position:absolute;left:50%;transform:translateX(-50%);
-  top:calc(50% + min(42vw,180px) + 10px);
+  bottom:calc(var(--sbb) + 54px);
+  width:var(--kw);
   z-index:15;
   border:3px solid #444;border-radius:10px;padding:6px;
   background:#0a0a0a;box-shadow:0 0 12px rgba(0,0,0,.6);
-  margin-bottom:env(safe-area-inset-bottom,0px);
 }
-#kb{transform:scale(1.4);transform-origin:center top;padding:2px;display:grid;gap:3px}
-.r{display:flex;gap:3px;justify-content:center}
-.k{flex:1;max-width:35px;height:36px;border:0;border-radius:5px;background:#2a2a2a;color:#eee;box-shadow:0 1px 1px #000;font-weight:900;font-size:14px}
-.w{max-width:58px}
+#kb{width:100%;padding:2px;display:grid;gap:2px}
+.r{display:flex;gap:2px;justify-content:center;width:100%}
+.k{flex:1;min-width:0;height:39px;border:0;border-radius:5px;background:#2a2a2a;color:#eee;box-shadow:0 1px 1px #000;font-weight:900;font-size:14px}
+.w{flex:1.6;min-width:0}
+.k.act{background:#06b6d4;color:#111}
+.k.del{background:#444;color:#eee}
 
 /* Action buttons - below scoreboard */
 #ac{
   position:absolute;left:50%;transform:translateX(-50%);
-  top:82px;display:flex;gap:5px;justify-content:center;z-index:15;
+  top:46px;display:flex;gap:4px;justify-content:center;z-index:15;
 }
-.q{border:0;border-radius:5px;background:#06b6d4;color:#111;padding:4px 9px;font-weight:900;font-size:9px}
+.q{border:0;border-radius:5px;background:#06b6d4;color:#111;padding:3px 8px;font-weight:900;font-size:9px}
 .q.alt{background:#333;color:#eee;border:1px solid #555}
 
 #sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
 
 @media(min-width:700px){
-  #cu{--s:360px}
-  #kbWrap{top:calc(50% + 235px)}
-  #hintbar{width:360px}
-}
-@media(max-width:600px){
-  #kb{transform:scale(1.15);transform-origin:center top}
+  :root{--cw:min(344px,calc(100vh - 405px));--kw:min(414px,calc(100vh - 375px))}
+  #hintbar{width:410px}
 }
 @media(max-width:420px){
-  #kb{transform:scale(0.95);transform-origin:center top}
   #scoreboard{width:220px}
   #scoreboard .scoreHeader{font-size:10px}
-  #catwrap{left:50%;transform:translateX(-50%);top:118px}
+  #catwrap{left:50%;transform:translateX(-50%);top:72px}
+  #diffwrap{top:121px}
+}
+@media(max-height:700px){
+  :root{--cube-top:153px;--cw:min(82vw,304px,calc(100vh - 395px));--kw:min(82vw,374px,calc(100vh - 365px))}
+  #diffwrap{top:118px}
+}
+@media(min-width:700px) and (max-height:800px){
+  :root{--cube-top:153px;--cw:min(344px,calc(100vh - 395px));--kw:min(414px,calc(100vh - 365px))}
+  #diffwrap{top:118px}
 }
 </style>
 </head>
@@ -154,9 +164,8 @@ select#cat{padding:6px 10px;border:1px solid #444;border-radius:8px;background:#
     <select id="cat"></select>
   </div>
   <div id="diffwrap">
-    <label>Difficulty</label>
     <input type="range" id="diffBar" min="0" max="2" step="1" value="1">
-    <div id="diffLabels"><span data-d="0">Beginner</span><span data-d="1" class="active">Intermediate</span><span data-d="2">Expert</span></div>
+    <div id="diffLabels"><a data-d="0">Beginner</a><a data-d="1" class="act">Intermediate</a><a data-d="2">Expert</a></div>
   </div>
   <div id="stagediv"><div id="st"><div id="cu"></div></div></div>
   <div id="kbWrap"><div id="kb"></div></div>
@@ -182,7 +191,7 @@ Literature:'NOVELS:Long works of fiction telling an extended story|AUTHOR:The wr
 for(const k in D) D[k]=D[k].split('|').map(v=>v.split(':')).filter(x=>x[0].length<=10);
 
 const C=Object.keys(D), F=['a','b','c','d','e','g'];
-let cat=C[0],diff=1,face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={};
+let cat=C[0],diff=1,face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={},flashRed=new Set,flashTimer=null;
 const cu=document.getElementById('cu'),st=document.getElementById('st'),se=document.getElementById('cat'),
 sc=document.getElementById('sc'),fb=document.getElementById('fb'),cd=document.getElementById('cd'),
 ct=document.getElementById('ct'),kb=document.getElementById('kb'),atc=document.getElementById('atc');
@@ -200,11 +209,11 @@ function getPool(){
 }
 function setDiff(d){
   diff=d;diffBar.value=d;
-  [...diffLabels.children].forEach(s=>s.classList.toggle('active',+s.dataset.d===d));
+  diffLabels.querySelectorAll('a').forEach(a=>a.classList.toggle('act',+a.dataset.d===d));
   face=0;rx=ry=score=0;sol.clear();letm={};P=groups();selw=P[0].W[0];tr();clue();draw();
 }
 diffBar.oninput=()=>setDiff(+diffBar.value);
-[...diffLabels.children].forEach(s=>s.onclick=()=>setDiff(+s.dataset.d));
+diffLabels.querySelectorAll('a').forEach(a=>a.onclick=()=>setDiff(+a.dataset.d));
 
 /* --- Player identity & score sync (mirrors Pangram device_id pattern) --- */
 let SUPA_URL='',SUPA_KEY='',DEV_ID='';
@@ -443,6 +452,7 @@ function draw(){
           const starts=allW.filter(q=>q.r===r&&q.c===c).sort((a,b)=>a.n-b.n);
           if(starts.length>0){const nn=document.createElement('span');nn.className='n';nn.textContent=starts.map(s=>s.n).join('/');z.append(nn)}
           if(f===face) z.append(document.createTextNode(letm[cellKey(r,c)]||''));
+          if(f===face&&flashRed.has(cellKey(r,c)))z.classList.add('err');
           if(f===face) z.onclick=()=>{
             if(allW.length>1){
               const curIdx=allW.findIndex(ww=>selw&&ww.id===selw.id);
@@ -471,9 +481,13 @@ function type(ch){
   if(!selw)return;
   for(let i=0;i<selw.ans.length;i++){
     let r=selw.r+(selw.d==='D'?i:0),c=selw.c+(selw.d==='A'?i:0),k=cellKey(r,c);
-    if(!letm[k]){letm[k]=ch;break}
+    if(!letm[k]){letm[k]=ch;if(ch!==selw.ans[i]){flashRed.add(k);scheduleFlashClear()}break}
   }
   draw();
+}
+function scheduleFlashClear(){
+  if(flashTimer)clearTimeout(flashTimer);
+  flashTimer=setTimeout(()=>{flashRed.clear();flashTimer=null;draw()},600);
 }
 function back(){
   if(!selw)return;
@@ -512,6 +526,9 @@ function nextWord(){
 function check(){
   if(answer(selw)===selw.ans&&!sol.has(wordKey(selw))){
     sol.add(wordKey(selw));score+=100;sc.classList.remove('pop');void sc.offsetWidth;sc.classList.add('pop');syncStats(100,0);nextWord();
+  }else if(answer(selw)!==selw.ans){
+    for(let i=0;i<selw.ans.length;i++)flashRed.add(cellKey(selw.r+(selw.d==='D'?i:0),selw.c+(selw.d==='A'?i:0)));
+    scheduleFlashClear();
   }
   draw();
 }
@@ -557,53 +574,34 @@ document.getElementById('nextArrow').onclick=()=>{
   selw=a[(i+1)%a.length];clue();draw();
 };
 
-['ABCDEFGHIJKL','MNOPQRSTUV'].forEach((r)=>{
+['QWERTYUIOP','ASDFGHJKL'].forEach((r)=>{
   let d=document.createElement('div');d.className='r';
   [...r].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
   kb.append(d);
 });
 {
   let d=document.createElement('div');d.className='r';
-  let bb=document.createElement('button');bb.className='k w';bb.textContent='⌫';bb.onclick=back;d.append(bb);
-  [...'WXYZ'].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
-  let cb=document.createElement('button');cb.className='k w';cb.textContent='✓';cb.onclick=check;d.append(cb);
+  let bb=document.createElement('button');bb.className='k del w';bb.textContent='⌫';bb.onclick=back;d.append(bb);
+  [...'ZXCVBNM'].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
+  let cb=document.createElement('button');cb.className='k act w';cb.textContent='✓';cb.onclick=check;d.append(cb);
   kb.append(d);
 }
-
-function positionHint(){
-  const hb=document.getElementById('hintbar');
-  const kbEl=document.getElementById('kb');
-  if(!hb||!kbEl)return;
-  const kbRect=kbEl.getBoundingClientRect();
-  const kcRect=document.getElementById('kc').getBoundingClientRect();
-  const hintTop=kbRect.bottom-kcRect.top+8;
-  const hintH=hb.offsetHeight||40;
-  const maxTop=kcRect.height-hintH-6;
-  hb.style.top=Math.min(hintTop,maxTop)+'px';
-}
-
-function reposition(){positionHint()}
-
-window.addEventListener('resize',reposition);
-window.addEventListener('load',()=>setTimeout(reposition,50));
-document.addEventListener('fullscreenchange',()=>setTimeout(reposition,100));
-window.addEventListener('orientationchange',()=>setTimeout(reposition,200));
 
 let dg=0,sx=0,sy=0,bx=0,by=0;
 st.addEventListener('pointerdown',e=>{
   dg=1;sx=e.clientX;sy=e.clientY;bx=rx;by=ry;
-  st.setPointerCapture(e.pointerId);
+  e.preventDefault();
 });
-st.addEventListener('pointermove',e=>{
+window.addEventListener('pointermove',e=>{
   if(!dg)return;
   ry=by+(e.clientX-sx)*.75;
   rx=Math.max(-90,Math.min(90,bx-(e.clientY-sy)*.75));
   tr();live();
 });
-st.addEventListener('pointerup',()=>{dg=0;snap()});
-st.addEventListener('pointercancel',()=>{dg=0;snap()});
+window.addEventListener('pointerup',()=>{if(dg){dg=0;snap()}});
+window.addEventListener('pointercancel',()=>{if(dg){dg=0;snap()}});
 
-selw=P[0].W[0];tr();clue();draw();reposition();
+selw=P[0].W[0];tr();clue();draw();
 })();
 </script>
 </body>

@@ -16,8 +16,10 @@ const ROUTE_MAP: Record<string, Route> = {
 };
 
 function parseHash(): Route {
-  const h = window.location.hash.toLowerCase();
-  return ROUTE_MAP[h] ?? 'home';
+  const raw = window.location.hash.toLowerCase();
+  // Strip query string / trailing slash so "#/crossword?cat=Space" still resolves
+  const h = raw.split('?')[0].replace(/\/+$/, '') || raw;
+  return ROUTE_MAP[h] ?? ROUTE_MAP[raw] ?? 'home';
 }
 
 export function useRouter() {

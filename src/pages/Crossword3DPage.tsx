@@ -4,7 +4,7 @@ import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260909-18';
+const GAME_VERSION = '20260909-24';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
@@ -30,7 +30,7 @@ export default function Crossword3DPage() {
 
   const reloadGame = () => {
     const iframe = iframeRef.current;
-    if (iframe) iframe.src = `/crossword3d.html?v=${GAME_VERSION}&t=${Date.now()}`;
+    if (iframe) iframe.src = `./crossword3d.html?v=${GAME_VERSION}&t=${Date.now()}`;
   };
 
   const toggleFullscreen = () => {
@@ -105,7 +105,7 @@ export default function Crossword3DPage() {
     >
       <iframe
         ref={iframeRef}
-        src={`/crossword3d.html?v=${GAME_VERSION}`}
+        src={`./crossword3d.html?v=${GAME_VERSION}`}
         title="CrossWord Pro 3D"
         style={{
           position: 'absolute',

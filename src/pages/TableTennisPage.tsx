@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
-const GAME_VERSION = '20260908-60';
+const GAME_VERSION = '20260909-61';
 const TOP_BAR = 66;
 
 export default function TableTennisPage() {
@@ -25,14 +25,14 @@ export default function TableTennisPage() {
 
   const reloadGame = () => {
     const iframe = iframeRef.current;
-    if (iframe) iframe.src = `/pingpong.html?v=${GAME_VERSION}&t=${Date.now()}`;
+    if (iframe) iframe.src = `./pingpong.html?v=${GAME_VERSION}&t=${Date.now()}`;
   };
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#000' }}>
       <iframe
         ref={iframeRef}
-        src={`/pingpong.html?v=${GAME_VERSION}`}
+        src={`./pingpong.html?v=${GAME_VERSION}`}
         title="Table Tennis"
         style={{
           position: 'absolute',

@@ -8,6 +8,7 @@ import Crossword3DPage from '@/pages/Crossword3DPage';
 import TableTennisPage from '@/pages/TableTennisPage';
 import ContactPage from '@/pages/ContactPage';
 import FeedbackPage from '@/pages/FeedbackPage';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function App() {
   const { route, navigate } = useRouter();
@@ -15,22 +16,22 @@ export default function App() {
   let page: React.ReactNode;
   switch (route) {
     case 'crossword':
-      page = <CrosswordPage />;
+      page = <ErrorBoundary key="crossword"><CrosswordPage /></ErrorBoundary>;
       break;
     case 'crossword3d':
-      page = <Crossword3DPage />;
+      page = <ErrorBoundary key="crossword3d"><Crossword3DPage /></ErrorBoundary>;
       break;
     case 'panagram':
-      page = <PanagramPage />;
+      page = <ErrorBoundary key="panagram"><PanagramPage /></ErrorBoundary>;
       break;
     case 'tabletennis':
-      page = <TableTennisPage />;
+      page = <ErrorBoundary key="tabletennis"><TableTennisPage /></ErrorBoundary>;
       break;
     case 'contact':
-      page = <ContactPage />;
+      page = <ErrorBoundary key="contact"><ContactPage /></ErrorBoundary>;
       break;
     case 'feedback':
-      page = <FeedbackPage />;
+      page = <ErrorBoundary key="feedback"><FeedbackPage /></ErrorBoundary>;
       break;
     default:
       page = <LandingPage onNavigate={navigate} />;
