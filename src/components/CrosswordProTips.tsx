@@ -14,7 +14,9 @@ const TIPS: { n: number; text: React.ReactNode }[] = [
   { n: 6, text: <>Press <strong>Reveal</strong> to fill in the selected word automatically — but it costs <strong>100 points</strong>.</> },
   { n: 7, text: <>Press <strong>Hint</strong> to reveal a single letter in the selected word — it costs <strong>50 points</strong>. Use it when you're stuck but don't want to give up the whole word.</> },
   { n: 8, text: <>Tap the blinking <strong>arrow</strong> at the right end of the clue bar to jump to the next word on the current face.</> },
-  { n: 9, text: <>Use the <strong>Category</strong> dropdown to switch themes — each category has its own word pool.</> },
+  { n: 9, text: <>Use the <strong>Category</strong> dropdown to switch themes — each category has its own word pool of beginner, intermediate, and expert words.</> },
+  { n: 10, text: <>Use the <strong>Difficulty</strong> slider to choose <strong>Beginner</strong> (short words), <strong>Intermediate</strong> (medium words), or <strong>Expert</strong> (long words).</> },
+  { n: 11, text: <>Press <strong>Reset</strong> at any time to shuffle and bring up a <strong>brand-new set of words</strong> on every face — the category is picked at random and the board is regenerated fresh.</> },
 ];
 
 export default function CrosswordProTips({ onClose }: CrosswordProTipsProps) {
