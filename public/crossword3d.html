@@ -144,6 +144,8 @@ select,button{font:inherit}
 .q.alt{background:#333;color:#eee;border:1px solid #555}
 .q.timer-low{background:#ef4444;color:#fff;animation:timerPulse 1s infinite}
 @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.q.play-btn{background:#22c55e;color:#111;font-size:10px;padding:3px 7px}
+.q.play-btn.running{background:#ef4444;color:#fff}
 
 #sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
 
@@ -178,6 +180,7 @@ select,button{font:inherit}
     </div>
   </div>
   <div id="ac">
+    <button class="q play-btn" id="playBtn">&#9658;</button>
     <div class="q" id="ck">2:00</div>
     <button class="q alt" id="nx">HINT</button>
     <button class="q alt" id="rv">REVEAL</button>
@@ -246,6 +249,7 @@ function setDiff(d){
   diff=d;diffBar.value=d;
   diffLabels.querySelectorAll('a').forEach(a=>a.classList.toggle('act',+a.dataset.d===d));
   face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();
+setPlayBtn(false);
 }
 diffBar.oninput=()=>setDiff(+diffBar.value);
 diffLabels.querySelectorAll('a').forEach(a=>a.onclick=()=>setDiff(+a.dataset.d));
@@ -618,14 +622,15 @@ function snap(){
   setTimeout(()=>cu.style.transition='',160);
   selw=P[face].W[0];clue();draw();
   stopTimer();
+  setPlayBtn(false);
 }
 
-function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();}
+function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();setPlayBtn(false);}
 document.getElementById('nx').onclick=hint;
 document.getElementById('rv').onclick=reveal;
 document.getElementById('rs').onclick=()=>{
   cat=C[Math.floor(Math.random()*C.length)];catBtnLabel.textContent=cat;[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
-  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();
+  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();setPlayBtn(false);
 };
 document.getElementById('nextArrow').onclick=()=>{
   let a=P[face].W,i=a.findIndex(w=>w.id===selw.id);
@@ -662,11 +667,34 @@ window.addEventListener('pointercancel',()=>{if(dg){dg=0;snap()}});
 selw=P[0].W[0];tr();clue();draw();[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
 
 const timerEl=document.getElementById('ck');
+const playBtn=document.getElementById('playBtn');
 const FACE_TIME=120;
 let timeLeft=FACE_TIME;
 let timerInterval=null,tickInterval=null;
 let clickAudioCtx=null;
 let muted=false;
+let timerRunning=false;
+
+function setPlayBtn(running){
+  timerRunning=running;
+  if(running){
+    playBtn.innerHTML='&#10074;&#10074;';
+    playBtn.classList.add('running');
+  }else{
+    playBtn.innerHTML='&#9658;';
+    playBtn.classList.remove('running');
+  }
+}
+
+playBtn.onclick=()=>{
+  if(timerRunning){
+    stopTimer();
+    setPlayBtn(false);
+  }else{
+    startTimer();
+    setPlayBtn(true);
+  }
+};
 
 window.addEventListener('message',e=>{
   const m=e.data;
@@ -732,7 +760,7 @@ function stopTimer(){
 
 function startTimer(){
   stopTimer();
-  timeLeft=FACE_TIME;
+  if(timeLeft<=0)timeLeft=FACE_TIME;
   updateTimerDisplay();
   timerInterval=setInterval(()=>{
     timeLeft--;
@@ -740,13 +768,14 @@ function startTimer(){
     if(timeLeft<=0){
       playEndChime();
       gotoNextFace();
-      startTimer();
+      timeLeft=FACE_TIME;
+      updateTimerDisplay();
     }
   },1000);
   tickInterval=setInterval(()=>{playTick()},2000);
 }
 
-startTimer();
+updateTimerDisplay();
 })();
 </script>
 </body>
