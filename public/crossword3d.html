@@ -245,7 +245,7 @@ function getPool(){
 function setDiff(d){
   diff=d;diffBar.value=d;
   diffLabels.querySelectorAll('a').forEach(a=>a.classList.toggle('act',+a.dataset.d===d));
-  face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();resetTimer();
+  face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();
 }
 diffBar.oninput=()=>setDiff(+diffBar.value);
 diffLabels.querySelectorAll('a').forEach(a=>a.onclick=()=>setDiff(+a.dataset.d));
@@ -617,14 +617,15 @@ function snap(){
   cu.style.transition='transform .15s';tr();
   setTimeout(()=>cu.style.transition='',160);
   selw=P[face].W[0];clue();draw();
+  stopTimer();
 }
 
-function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();resetTimer();}
+function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();}
 document.getElementById('nx').onclick=hint;
 document.getElementById('rv').onclick=reveal;
 document.getElementById('rs').onclick=()=>{
   cat=C[Math.floor(Math.random()*C.length)];catBtnLabel.textContent=cat;[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
-  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();resetTimer();
+  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();
 };
 document.getElementById('nextArrow').onclick=()=>{
   let a=P[face].W,i=a.findIndex(w=>w.id===selw.id);
@@ -640,7 +641,7 @@ document.getElementById('nextArrow').onclick=()=>{
   let d=document.createElement('div');d.className='r';
   let bb=document.createElement('button');bb.className='k del w';bb.textContent='⌫';bb.onclick=back;d.append(bb);
   [...'ZXCVBNM'].forEach(ch=>{let b=document.createElement('button');b.className='k';b.textContent=ch;b.onclick=()=>type(ch);d.append(b)});
-  let cb=document.createElement('button');cb.className='k act w';cb.textContent='✓';cb.onclick=()=>{if(selw){check();}};d.append(cb);
+  let cb=document.createElement('button');cb.className='k act w';cb.textContent='✓';cb.onclick=check;d.append(cb);
   kb.append(d);
 }
 
@@ -665,8 +666,16 @@ const FACE_TIME=120;
 let timeLeft=FACE_TIME;
 let timerInterval=null,tickInterval=null;
 let clickAudioCtx=null;
+let muted=false;
+
+window.addEventListener('message',e=>{
+  const m=e.data;
+  if(!m)return;
+  if(m.type==='crossword3d-mute')muted=!!m.muted;
+});
 
 function playTick(){
+  if(muted)return;
   try{
     if(!clickAudioCtx)clickAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
     const ctx=clickAudioCtx;
@@ -682,6 +691,7 @@ function playTick(){
 }
 
 function playEndChime(){
+  if(muted)return;
   try{
     if(!clickAudioCtx)clickAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
     const ctx=clickAudioCtx;
@@ -715,9 +725,13 @@ function gotoNextFace(){
   selw=P[face].W[0];clue();draw();
 }
 
-function resetTimer(){
-  if(timerInterval)clearInterval(timerInterval);
-  if(tickInterval)clearInterval(tickInterval);
+function stopTimer(){
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  if(tickInterval){clearInterval(tickInterval);tickInterval=null;}
+}
+
+function startTimer(){
+  stopTimer();
   timeLeft=FACE_TIME;
   updateTimerDisplay();
   timerInterval=setInterval(()=>{
@@ -726,14 +740,13 @@ function resetTimer(){
     if(timeLeft<=0){
       playEndChime();
       gotoNextFace();
-      timeLeft=FACE_TIME;
-      updateTimerDisplay();
+      startTimer();
     }
   },1000);
   tickInterval=setInterval(()=>{playTick()},2000);
 }
 
-resetTimer();
+startTimer();
 })();
 </script>
 </body>

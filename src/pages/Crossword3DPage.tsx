@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { RotateCw, Lightbulb, Maximize, Minimize } from 'lucide-react';
+import { RotateCw, Lightbulb, Maximize, Minimize, Volume2, VolumeX } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
@@ -11,6 +11,7 @@ export default function Crossword3DPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [showTips, setShowTips] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -23,10 +24,24 @@ export default function Crossword3DPage() {
         { type: 'crossword3d-creds', url, key, deviceId },
         '*',
       );
+      iframe.contentWindow?.postMessage(
+        { type: 'crossword3d-mute', muted },
+        '*',
+      );
     };
     iframe.addEventListener('load', send);
     return () => iframe.removeEventListener('load', send);
   }, []);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow?.postMessage(
+        { type: 'crossword3d-mute', muted },
+        '*',
+      );
+    }
+  }, [muted]);
 
   const reloadGame = () => {
     const iframe = iframeRef.current;
@@ -121,6 +136,20 @@ export default function Crossword3DPage() {
         allowFullScreen
       />
       {!isFullscreen && <BackToHomeButton />}
+      {!isFullscreen && (
+        <button
+          onClick={() => setMuted(!muted)}
+          aria-label={muted ? 'Unmute' : 'Mute'}
+          title={muted ? 'Unmute' : 'Mute'}
+          style={{ ...btnStyle, right: 220 }}
+          onMouseEnter={hoverIn}
+          onMouseLeave={hoverOut}
+        >
+          {muted
+            ? <VolumeX className="h-4 w-4 text-white/80" />
+            : <Volume2 className="h-4 w-4 text-white/80" />}
+        </button>
+      )}
       {!isFullscreen && (
         <button
           onClick={() => setShowTips(true)}
