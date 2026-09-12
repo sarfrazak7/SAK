@@ -4,7 +4,7 @@ import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260912-25';
+const GAME_VERSION = '20260912-31';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
@@ -83,7 +83,7 @@ export default function Crossword3DPage() {
 
   const btnStyle: React.CSSProperties = {
     position: 'fixed',
-    top: 12,
+    top: 16,
     zIndex: 100,
     width: 32,
     height: 32,
@@ -141,7 +141,7 @@ export default function Crossword3DPage() {
           onClick={() => setMuted(!muted)}
           aria-label={muted ? 'Unmute' : 'Mute'}
           title={muted ? 'Unmute' : 'Mute'}
-          style={{ ...btnStyle, right: 220 }}
+          style={{ ...btnStyle, right: 152 }}
           onMouseEnter={hoverIn}
           onMouseLeave={hoverOut}
         >
@@ -154,7 +154,7 @@ export default function Crossword3DPage() {
         <button
           onClick={() => setShowTips(true)}
           aria-label="Pro Tips"
-          style={{ ...btnStyle, right: 180 }}
+          style={{ ...btnStyle, right: 108 }}
           onMouseEnter={hoverIn}
           onMouseLeave={hoverOut}
         >
@@ -165,7 +165,7 @@ export default function Crossword3DPage() {
         <button
           onClick={reloadGame}
           aria-label="Reload game"
-          style={{ ...btnStyle, right: 140 }}
+          style={{ ...btnStyle, right: 64 }}
           onMouseEnter={hoverIn}
           onMouseLeave={hoverOut}
         >
@@ -178,7 +178,7 @@ export default function Crossword3DPage() {
         style={{
           ...btnStyle,
           top: isFullscreen ? 'max(12px, env(safe-area-inset-top))' : 12,
-          right: isFullscreen ? 'max(12px, env(safe-area-inset-right))' : 100,
+          right: isFullscreen ? 'max(12px, env(safe-area-inset-right))' : 20,
           zIndex: 300,
           background: isFullscreen ? 'rgba(220,160,30,0.3)' : btnStyle.background,
         }}

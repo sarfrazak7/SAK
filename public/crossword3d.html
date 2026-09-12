@@ -204,9 +204,11 @@ select,button{font:inherit}
   <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span><span id="nextArrow">→</span></div>
 </div>
 
+<script src="expert-words.js"></script>
 <script>
 (()=>{
 const D={
+'AI & Machine Learning':'ROBOT:A programmable machine that performs tasks|DATA:Facts and figures collected for analysis|MODEL:A representation trained to make predictions|TRAIN:To teach a model using examples|LEARN:To acquire knowledge from data|NEURAL:Relating to networks inspired by the brain|TOKENS:Pieces of text processed by a language model|AGENT:An AI that acts to achieve a goal|IMAGE:A visual input analyzed by computer vision|VOICE:Spoken audio processed for recognition|BOTS:Automated programs that perform tasks|CHAT:A conversational AI interface|PROMPT:An instruction given to an AI model|LLM:A large language model that generates text|CODE:Instructions written for a computer|GPU:A graphics chip used to train AI models|DEPTH:The number of layers in a neural network|BIAS:An unfair skew in model predictions|LOSS:A measure of how wrong a model is|BATCH:A group of examples processed together|EPOCH:One full pass through the training data|SCALAR:A single number in a computation|MATRIX:A grid of numbers used in AI math|VECTOR:An array of numbers representing features|ENSOR:A multi-dimensional array of numbers (abbr.)|SYNAPSE:A connection between artificial neurons|LOGITS:Raw scores output by a model before softmax|KERNEL:A small matrix used in convolution|ATTENTION:A mechanism letting a model focus on relevant input|TRANSFORMER:A neural architecture using self-attention|EMBEDDING:A vector representation of meaning|BACKPROP:The algorithm that trains neural networks|GRADIENT:The direction of steepest error change|REGULARIZE:To constrain a model to prevent overfitting|CLASSIFIER:A model that sorts inputs into categories|GENERATIVE:An AI that creates new content like text or images|DETECTOR:A model that finds objects in images|SEGMENTER:A model that labels each pixel in an image|REINFORCE:To reward good actions in a learning agent|INFERENCE:Using a trained model to make predictions|PYTHON:The dominant programming language for AI|PYTORCH:A popular open deep learning framework|TENSORFLOW:Googles deep learning framework|DATASET:A collection of examples for training|LABEL:An answer paired with a training example|FEATURE:A measurable property used as input|OVERFIT:A model memorizing rather than generalizing|SOFTMAX:A function turning scores into probabilities|ENCODER:A network that compresses input into a representation|DECODER:A network that generates output from a representation|BENCHMARK:A standardized test for comparing models|PARAMETER:A weight the model learns during training|HYPER:Settings chosen before training begins (prefix)|CUDA:Nvidias parallel computing platform|LANGCHAIN:A framework for building LLM applications|AGENTIC:Acting autonomously to pursue a goal|RAG:Retrieval augmented generation using external knowledge|FINETUNE:To adapt a pretrained model to a specific task|HALLUCINATE:When an LLM generates false information|PROMPTENG:The practice of crafting effective AI instructions (abbr.)|RLHF:Reinforcement learning from human feedback|MLOPS: Practices for deploying and monitoring models|DIFFUSION:A process generating images from noise|TOKENIZE:To split text into pieces for a model|AUTOREG:Generating one token at a time conditionally (abbr.)|EMBED:To convert text into vector form|SENTIMENT:Emotion detected from text by an AI|NAMEDENT:Identifying people places and organizations in text (abbr.)|MULTIMODAL:Handling text images and audio together|FEW:Learning from just a handful of examples (prefix)|ROBUST:Resistant to noise and adversarial inputs|ETHICS:The study of moral implications of AI|ALIGNMENT:Ensuring AI goals match human values|SAFETY:Preventing harmful AI outputs|INTERPRET:Understanding why a model makes a decision|EXPLAIN:Making model decisions understandable to humans|PRIVACY:Protecting user data in AI systems|DEEP:Using many layers in a neural network (prefix)|CONVOLVE:Applying a filter across an image|ATTEND:To focus attention on specific parts|MEMORY:A networks ability to retain information|CONTEXT:The text a model considers when generating|TEMPERATURE:A setting controlling output randomness|TOPP:A sampling method limiting token choices (abbr.)|BEAMSEARCH:A decoding method keeping top candidates|PERPLEXITY:A measure of how confused a model is by text|CORPUS:A large body of text used for training|VOCAB:The set of tokens a model knows (abbr.)|CHECKPOINT:A saved model state during or after training|DISTILL:Transferring knowledge from a large model to a small one|PRUNE:Removing weights to make a model smaller|QUANTIZE:Reducing precision to shrink model size|SERVE:Deploying a model for use|LATENCY:Time taken for a model to respond|THROUGHPUT:Number of requests handled per second',
 'Horticulture & Botany':'RADISH:A red root vegetable with a peppery bite|TOMATO:A red garden fruit used in salads and sauces|TROWEL:A small hand tool used for digging in soil|FLOWER:A colorful bloom that brightens a garden|PETALS:The delicate colored parts of a flower head|PRUNER:A cutting tool used to trim back branches|SHOVEL:A tool with a broad blade for moving earth|SPROUT:A young shoot just emerging from a seed|BLOOMS:Flowers that are open and in full color|HEDGES:Rows of shrubs planted as a living fence|GRAVEL:Small stones used to surface a garden path|SEEDS:Tiny embryos that grow into new plants|HERBS:Aromatic plants used to flavor cooking|VINES:Long climbing stems that wrap around supports|ROOTS:The underground parts that anchor a plant|LAWNS:Areas of grass kept neatly mowed|PONDS:Small bodies of water built into a garden|SOILS:Different types of earth used for growing|HOSES:Flexible tubes used to water the garden|RAKES:Tools with teeth used to gather leaves|BULBS:Round underground buds that store nutrients|SHRUB:A woody bush smaller than a tree|TREES:Tall woody plants that provide shade|WEEDS:Unwanted plants that crowd out crops|MOSS:A soft green growth that carpets damp ground|FERN:A leafy plant with feathery fronds|LILAC:A shrub known for its fragrant purple flowers|ROSES:Prickly bushes bearing fragrant red blooms|DAISY:A white-petaled flower with a yellow center|TULIP:A cup-shaped spring flower from a bulb|PEONY:A lush round bloom often pink or white|IRIS:A tall flower with sword-shaped leaves|SOD:Strips of grass used to start a lawn|BEDS:Prepared plots where plants are arranged|POTS:Containers used for holding potted plants|LOAM:A rich crumbly soil ideal for growing|FERTILIZER:Plant food added to soil to boost growth|COMPOST:Decayed organic matter used as plant food|TRELLIS:A lattice frame that supports climbing plants|MULCH:A layer of bark spread on soil to hold moisture|PERENNIAL:A plant that returns year after year|SEEDLING:A young plant grown from a seed|WATERING:Giving plants the moisture they need|GREENHOUSE:A glass structure for growing plants in warmth|TOPSOIL:The uppermost fertile layer of earth|MANURE:Animal waste used to enrich garden soil|CLIPPINGS:Cut pieces of stem and leaf gathered up|FLORIST:A person who sells and arranges cut flowers|LANDSCAPE:The overall arrangement of a garden area|EVERGREEN:A tree that keeps its leaves year round|CLEMATIS:A climbing vine with showy flowers|FUCHSIA:A shrub with dangling colorful flowers|GLADIOLUS:A tall spike of funnel shaped flowers|HIBISCUS:A tropical shrub with large trumpet blooms|JASMINE:A fragrant white flowering vine|LAVENDER:A purple flowered fragrant herb|MARIGOLD:A golden orange garden flower|NASTURTIUM:A trailing plant with edible bright blooms|TRANSPLANT:To move a plant from one spot to another|GERANIUM:A popular bedding plant with rounded leaves',
 'Medicine & Healthcare':'ARTERY:A thick-walled blood vessel carrying blood away from the heart|TISSUE:A group of similar cells working together|NERVES:Fibers that transmit signals throughout the body|SUTURE:A stitch used to close a wound after surgery|CANCER:A disease caused by uncontrolled cell growth|PLASMA:The liquid portion of blood|PULSE:The rhythmic beat felt at an artery|TENDON:A cord connecting muscle to bone|CORNEA:The clear front surface of the eye|SPINAL:Relating to the column of vertebrae|NEURON:A specialized cell that carries nerve impulses|OXYGEN:A gas essential for blood and breathing|BLOOD:The red fluid circulated by the heart|HEART:The muscular organ that pumps blood|LUNGS:The paired organs used for breathing|BRAIN:The organ that controls thought and movement|BONES:The rigid parts forming the skeleton|VEINS:Vessels that return blood to the heart|CLINIC:A facility where patients receive care|DOCTOR:A licensed physician who treats patients|NURSE:A caregiver who tends to the sick|FEVER:An elevated body temperature signaling illness|VIRUS:A tiny infectious agent that invades cells|WOUND:An injury breaking the skin or tissue|XRAYS:Images used to view bones inside the body|DRUGS:Medications prescribed to treat conditions|DOSE:The measured amount of a medication|SERUM:A fluid derived from blood used in therapy|SKIN:The outer covering protecting the body|LIVER:A large organ that filters toxins|KIDNEY:An organ that filters waste from blood|MUSCLE:Tissue that contracts to produce movement|JOINT:The point where two bones meet|NERVE:A fiber carrying sensory or motor signals|ULCER:An open sore on a lining or surface|HEAL:To recover from an injury or illness|ANTIBIOTIC:A drug that kills bacteria|SURGERY:A procedure that cuts the body to fix it|PATIENT:A person receiving medical care|SYRINGE:A device used to inject fluids|DIAGNOSIS:The identification of an illness|FRACTURE:A crack or break in a bone|INJECTION:The act of forcing fluid into tissue|THERAPY:Treatment for an illness or injury|ANESTHESIA:Loss of sensation for painless surgery|APPENDIX:A small pouch attached to the intestine|ARTHRITIS:Joint inflammation causing pain|BRONCHITIS:Inflammation of the lung airways|CONTAGIOUS:Able to spread from person to person|EMBOLISM:A blocked blood vessel by a clot|GENETIC:Relating to inherited traits|HEMORRHAGE:Heavy bleeding from a vessel|IMMUNITY:The bodys defense against infection|LIGAMENT:A band connecting bones together|PATHOGEN:A microbe that causes disease|PROGNOSIS:The likely outcome of an illness|TRANSPLANT:Moving an organ from donor to patient|WELLNESS:The state of being healthy|RADILOGY:Imaging used to diagnose disease|MALARIA:A disease spread by mosquito bites',
 'Engineering & Technology':'TORQUE:A twisting force that causes rotation|STRESS:The internal force per unit area in a material|SIGNAL:An information-bearing quantity in a system|BRIDGE:A structure spanning a gap or obstacle|PISTON:A sliding cylinder inside an engine|VECTOR:A quantity with both size and direction|GEAR:A toothed wheel that transmits rotation|SENSOR:A device that detects physical conditions|ROBOT:A programmable machine that performs tasks|FORCE:A push or pull acting on a body|BEAMS:Structural members that carry loads|STEEL:A strong alloy of iron used in construction|MOTOR:A machine that produces motion|VALVE:A device that controls fluid flow|SHAFT:A rotating rod transmitting power|LOADS:Forces applied to a structure|FRAME:The supporting skeleton of an assembly|WELDS:Joints formed by fusing metal together|NUT:A small fastener that screws onto a bolt|BOLT:A threaded pin used with a nut|SCREW:A fastener turned into material|WIRE:A conductor that carries current|CHIP:A tiny integrated circuit|BOARD:A base on which components are mounted|TRACE:A conductive path on a circuit board|POWER:The rate at which work is done|INPUT:What enters a system for processing|OUTPUT:What comes out of a system|LATHE:A machine that shapes rotating stock|DRILL:A tool that bores holes|PUMP:A device that moves fluids|PIPE:A tube for conveying fluids|FLOW:The continuous motion of a fluid|PRESS:A machine that applies compressive force|SPRING:An elastic component that stores energy|WHEEL:A rotating component that reduces friction|FRICTION:Resistance when surfaces slide|MOMENTUM:The quantity of motion of a body|CIRCUIT:A path for electric current|VOLTAGE:Electrical pressure in a circuit|CONCRETE:A building material of cement and stone|FIRMWARE:Software embedded in hardware|MECHANISM:A system of moving parts|ARCHITECT:One who designs buildings|TURBINE:A rotor that extracts energy from flow|FOUNDRY:A workshop where metal is cast|BLUEPRINT:A detailed plan for a structure|HINGE:A joint that allows a door to swing|EFFICIENCY:Useful output per unit of input|TOLERANCE:The allowable variation in size|DYNAMICS:Forces that affect motion|RELAY:An electrically operated switch|OSCILLATE:To swing back and forth|INSULATOR:A material that blocks current|WELDING:Fusing metal parts with heat|FITTING:A part that connects pipes|GALVANIZE:To coat iron with zinc|ELECTRICAL:Relating to electric power|HYDRAULIC:Operated by liquid pressure|TELEMETRY:Remote measurement of data',
@@ -223,6 +225,7 @@ const D={
 'Cosmology & Astrophysics':'GALAXY:A vast system of stars gas and dust|QUASAR:A brilliantly bright distant galactic nucleus|PULSAR:A rapidly spinning neutron star emitting beams|NEBULA:A cloud of gas and dust where stars form|COSMOS:The universe as an orderly whole|ORBIT:The curved path of one body around another|STAR:A luminous ball of burning gas|PLANET:A large body orbiting a star|COMET:An icy body that trails a tail near the sun|ASTEROID:A rocky body orbiting between Mars and Jupiter|METEOR:A streak of light from a rock burning up|MOON:A natural satellite orbiting a planet|SUN:The star at the center of our solar system|ECLIPSE:The blocking of light by one body passing in front|GRAVITY:The force that pulls objects together|SPACETIME:The four dimensional fabric of the universe|BLACKHOLE:A region where gravity traps everything|SINGULARITY:A point of infinite density at a black holes center|HORIZON:The edge of the observable universe|EXPANSION:The ongoing stretching of space itself|REDSHIFT:The stretching of light toward red as sources recede|BIGBANG:The explosive birth of the universe|DARKMATTER:Invisible mass holding galaxies together|DARKENERGY:A mysterious force accelerating expansion|INFLATION:A brief rapid stretching of the early universe|PARSEC:A unit of distance used in astronomy|LIGHTYEAR:The distance light travels in one year|SUPERNOVA:A powerful explosion ending a massive stars life|NOVA:A star that suddenly brightens greatly|WHITEWARF:A dense hot remnant of a low mass star|NEUTRONSTAR:A dense remnant of collapsed core matter|BINARIES:Two stars orbiting a common center|CLUSTER:A group of galaxies bound by gravity|VOID:A vast region nearly empty of galaxies|FILAMENT:A thread of galaxies spanning the cosmos|SPECTRUM:The range of colors in light split apart|TELESCOPE:A device that gathers light from distant objects|OBSERVATORY:A facility housing telescopes for study|COSMIC:Relating to the universe as a whole|ANGULAR:Relating to rotational motion or measure|KEPLER:The astronomer who described planetary orbits|GALILEO:The astronomer who first used a telescope|NEWTON:The scientist who formulated gravity laws|EINSTEIN:The physicist who described relativity|HUBBLE:The astronomer who proved the universe expands|HAWKING:The physicist who described black hole radiation|RELATIVITY:Einsteins theory of space time and gravity|QUANTUM:The smallest possible unit of energy|ANTIMATTER:Material that annihilates on contact with matter|PHOTON:A quantum packet of light energy|LEPTON:A fundamental particle like the electron|BOSON:A particle carrying a fundamental force|GRAVITYWAVE:A ripple in spacetime from violent events|EXOPLANET:A planet orbiting a star other than the sun|HABITABLE:Capable of supporting life as we know it|TERRESTRIAL:A rocky planet like Earth|MAGNETAR:A neutron star with an extreme field|PROPERMOTION:The apparent movement of a star across the sky|ZODIAC:The belt of constellations along the ecliptic|ECLIPTIC:The apparent path of the sun across the sky|EQUINOX:When day and night are equal in length|SOLSTICE:When the sun reaches its highest or lowest point|PRECESSION:The slow wobble of a planets rotation axis|DOPPLER:The shift in frequency from relative motion|LUMINOSITY:The total energy output of a star per second|SPECTRAL:Relating to the spectrum of light emitted|THERMONUCLEAR:Fusion reactions powering stars|OPACITY:The degree to which gas blocks light|CHROMOSPHERE:A thin layer of the solar atmosphere|CORONA:The outer atmosphere of the sun visible during eclipse|FLARE:A sudden bright eruption on a star|PROMINENCE:A loop of gas above the suns surface|HELIOSPHERE:The bubble of solar wind around the sun|SATELLITE:A body orbiting a larger one|ROVER:A vehicle exploring another planets surface|PROBE:An unmanned spacecraft sent to explore'
 };
 for(const k in D) D[k]=D[k].split('|').map(v=>v.split(':')).filter(x=>x[0].length<=10);
+if(typeof EXPERT_D!=='undefined'){for(const k in EXPERT_D) EXPERT_D[k]=EXPERT_D[k].split('|').map(v=>v.split(':')).filter(x=>x[0].length<=10&&x[0].length>=6);}
 
 const C=Object.keys(D), F=['a','b','c','d','e','g'];
 let cat=C[0],diff=1,face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={},flashRed=new Set;
@@ -237,10 +240,18 @@ document.addEventListener('pointerdown',e=>{if(catPopup.classList.contains('open
 
 const diffBar=document.getElementById('diffBar'),diffLabels=document.getElementById('diffLabels');
 function getPool(){
+  if(diff===2&&typeof EXPERT_D!=='undefined'&&EXPERT_D[cat]){
+    let ep=EXPERT_D[cat];
+    if(ep.length>=6)return ep;
+  }
   let pool=D[cat];
   let f;
   if(diff===0)f=pool.filter(w=>w[0].length<=5);
-  else if(diff===2)f=pool.filter(w=>w[0].length>=8);
+  else if(diff===2){
+    f=pool.filter(w=>w[0].length>=8);
+    if(f.length<30)f=pool.filter(w=>w[0].length>=7);
+    if(f.length<30)f=pool.filter(w=>w[0].length>=6);
+  }
   else f=pool.filter(w=>w[0].length>=5&&w[0].length<=8);
   if(f.length<6)f=pool;
   return f;
@@ -248,8 +259,7 @@ function getPool(){
 function setDiff(d){
   diff=d;diffBar.value=d;
   diffLabels.querySelectorAll('a').forEach(a=>a.classList.toggle('act',+a.dataset.d===d));
-  face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();
-setPlayBtn(false);
+  face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();resetTimer();
 }
 diffBar.oninput=()=>setDiff(+diffBar.value);
 diffLabels.querySelectorAll('a').forEach(a=>a.onclick=()=>setDiff(+a.dataset.d));
@@ -375,9 +385,12 @@ function tryPlace(G,word,d){
   }
   return best;
 }
-function buildFace(pool){
+function buildFace(pool,minWords){
+  minWords=minWords||2;
+  let target=Math.min(pool.length,8);
+  let maxAttempts=diff===2?150:80;
   let bestG=null,bestPlaced=null,bestCount=0;
-  for(let attempt=0;attempt<80;attempt++){
+  for(let attempt=0;attempt<maxAttempts;attempt++){
     let G=Array.from({length:10},()=>Array(10).fill(''));
     let placed=[];
     let shuf=[...pool].sort(()=>Math.random()-0.5);
@@ -394,6 +407,7 @@ function buildFace(pool){
       placed.push({word:first[0],clue:first[1],d,r,c});
     }
     for(let j=1;j<shuf.length;j++){
+      if(placed.length>=10)break;
       let word=shuf[j][0],clue=shuf[j][1];
       if(word.length>10)continue;
       let dA=tryPlace(G,word,'A');
@@ -408,10 +422,10 @@ function buildFace(pool){
       }
     }
     if(placed.length>bestCount){bestCount=placed.length;bestG=G;bestPlaced=placed;}
-    if(bestCount>=Math.min(pool.length,8))break;
+    if(bestCount>=target)break;
   }
-  if(!bestG||bestCount<2){
-    for(let attempt=0;attempt<80;attempt++){
+  if(!bestG||bestCount<minWords){
+    for(let attempt=0;attempt<maxAttempts;attempt++){
       let G=Array.from({length:10},()=>Array(10).fill(''));
       let placed=[];
       let allPool=[...getPool()].sort(()=>Math.random()-0.5);
@@ -437,7 +451,7 @@ function buildFace(pool){
         }
       }
       if(placed.length>bestCount){bestCount=placed.length;bestG=G;bestPlaced=placed;}
-      if(bestCount>=6)break;
+      if(bestCount>=minWords)break;
     }
   }
   if(!bestG){bestG=Array.from({length:10},()=>Array(10).fill(''));bestPlaced=[];}
@@ -448,12 +462,13 @@ function buildFace(pool){
 }
 function groups(){
   let R=[];
+  let gid=0;
   let pool=[...getPool()].sort(()=>Math.random()-0.5);
-  let facePools=Array.from({length:6},()=>[]);
-  pool.forEach((w,i)=>facePools[i%6].push(w));
+  let perFace=Math.max(Math.ceil(pool.length/6),diff===2?14:8);
   for(let f=0;f<6;f++){
-    let{G,W}=buildFace(facePools[f]);
-    W.forEach(w=>w.id=f*10+W.indexOf(w));
+    let facePool=[...pool].sort(()=>Math.random()-0.5).slice(0,perFace);
+    let{G,W}=buildFace(facePool,diff===2?5:2);
+    W.forEach((w,i)=>w.id=gid++);
     R.push({G,W});
   }
   return R;
@@ -520,7 +535,8 @@ function draw(){
           if(starts.length>0){const nn=document.createElement('span');nn.className='n';nn.textContent=starts.map(s=>s.n).join('/');z.append(nn)}
           if(f===face) z.append(document.createTextNode(letm[cellKey(r,c)]||''));
           if(f===face&&flashRed.has(cellKey(r,c)))z.classList.add('err');
-          if(f===face) z.onclick=()=>{
+          if(f===face) z.onclick=(ev)=>{
+            ev.stopPropagation();
             if(allW.length>1){
               const curIdx=allW.findIndex(ww=>selw&&ww.id===selw.id);
               selw=allW[(curIdx+1)%allW.length];
@@ -529,6 +545,8 @@ function draw(){
             }
             clue();draw();
           };
+          if(f===face) z.style.pointerEvents='auto';
+          else z.style.pointerEvents='none';
         }
       }
       fe.append(z);
@@ -540,6 +558,7 @@ function draw(){
 }
 function clue(){
   if(!selw||!P[face].W.some(w=>w.id===selw.id))selw=P[face].W[0];
+  if(!selw){cd.textContent='';ct.textContent='';return}
   const dir=selw.d==='A'?'Across':'Down';
   cd.textContent=selw.n+' '+dir+': ';
   ct.textContent=selw.cl;
@@ -619,18 +638,16 @@ function snap(){
   let T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
   rx=T[0];ry=T[1];
   cu.style.transition='transform .15s';tr();
-  setTimeout(()=>cu.style.transition='',160);
-  selw=P[face].W[0];clue();draw();
-  stopTimer();
-  setPlayBtn(false);
+  setTimeout(()=>{cu.style.transition='';selw=P[face].W[0]||null;clue();draw();},160);
+  resetTimer();
 }
 
-function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();setPlayBtn(false);}
+function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();resetTimer();}
 document.getElementById('nx').onclick=hint;
 document.getElementById('rv').onclick=reveal;
 document.getElementById('rs').onclick=()=>{
   cat=C[Math.floor(Math.random()*C.length)];catBtnLabel.textContent=cat;[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
-  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();stopTimer();setPlayBtn(false);
+  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();resetTimer();
 };
 document.getElementById('nextArrow').onclick=()=>{
   let a=P[face].W,i=a.findIndex(w=>w.id===selw.id);
@@ -650,20 +667,29 @@ document.getElementById('nextArrow').onclick=()=>{
   kb.append(d);
 }
 
-let dg=0,sx=0,sy=0,bx=0,by=0;
+let dg=0,sx=0,sy=0,bx=0,by=0,dragMoved=false;
 st.addEventListener('pointerdown',e=>{
-  dg=1;sx=e.clientX;sy=e.clientY;bx=rx;by=ry;
-  e.preventDefault();
+  dg=1;sx=e.clientX;sy=e.clientY;bx=rx;by=ry;dragMoved=false;
 });
 window.addEventListener('pointermove',e=>{
   if(!dg)return;
+  if(Math.abs(e.clientX-sx)>4||Math.abs(e.clientY-sy)>4)dragMoved=true;
+  if(!dragMoved)return;
   ry=by+(e.clientX-sx)*.75;
   rx=Math.max(-90,Math.min(90,bx-(e.clientY-sy)*.75));
   tr();live();
 });
-window.addEventListener('pointerup',()=>{if(dg){dg=0;snap()}});
-window.addEventListener('pointercancel',()=>{if(dg){dg=0;snap()}});
+window.addEventListener('pointerup',()=>{if(dg){dg=0;if(dragMoved)snap()}});
+window.addEventListener('pointercancel',()=>{if(dg){dg=0;if(dragMoved)snap()}});
 
+fb.onclick=()=>{
+  face=(face+1)%6;
+  const T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
+  rx=T[0];ry=T[1];
+  cu.style.transition='transform .3s';tr();
+  selw=P[face].W[0]||null;clue();
+  setTimeout(()=>{cu.style.transition='';draw();},310);
+};
 selw=P[0].W[0];tr();clue();draw();[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
 
 const timerEl=document.getElementById('ck');
@@ -688,8 +714,7 @@ function setPlayBtn(running){
 
 playBtn.onclick=()=>{
   if(timerRunning){
-    stopTimer();
-    setPlayBtn(false);
+    resetTimer();
   }else{
     startTimer();
     setPlayBtn(true);
@@ -749,13 +774,20 @@ function gotoNextFace(){
   const T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
   rx=T[0];ry=T[1];
   cu.style.transition='transform .3s';tr();
-  setTimeout(()=>cu.style.transition='',310);
-  selw=P[face].W[0];clue();draw();
+  selw=P[face].W[0]||null;clue();
+  setTimeout(()=>{cu.style.transition='';draw();},310);
 }
 
 function stopTimer(){
   if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
   if(tickInterval){clearInterval(tickInterval);tickInterval=null;}
+}
+
+function resetTimer(){
+  stopTimer();
+  timeLeft=FACE_TIME;
+  updateTimerDisplay();
+  setPlayBtn(false);
 }
 
 function startTimer(){
@@ -768,8 +800,7 @@ function startTimer(){
     if(timeLeft<=0){
       playEndChime();
       gotoNextFace();
-      timeLeft=FACE_TIME;
-      updateTimerDisplay();
+      resetTimer();
     }
   },1000);
   tickInterval=setInterval(()=>{playTick()},2000);
