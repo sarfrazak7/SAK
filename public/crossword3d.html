@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px);--cube-top:160px;--cw:min(82vw,304px,calc(100vh - 405px));--kw:min(82vw,374px,calc(100vh - 375px))}
 @keyframes blinkArrow{0%,100%{opacity:1}50%{opacity:.2}}
@@ -69,9 +72,9 @@ select,button{font:inherit}
 
 /* Category dropdown - below action buttons, centered */
 #catwrap{position:absolute;left:50%;transform:translateX(-50%);top:72px;z-index:10;display:flex;flex-direction:column;gap:2px;align-items:center}
-#catwrap label{font-size:8px;font-weight:900;color:#888;text-transform:uppercase;letter-spacing:1px;text-align:center}
-select#cat{padding:4px 10px;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(255,255,255,.12);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#fff;min-width:110px;max-width:260px;font-size:16px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);outline:none;appearance:none;-webkit-appearance:none}
-select#cat option{background:rgba(15,15,28,.85);color:#eee}
+#catwrap label{font-size:8px;font-weight:900;color:#d4af37;text-transform:uppercase;letter-spacing:1px;text-align:center;font-family:'Cinzel',serif}
+select#cat{padding:5px 12px;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(15,15,28,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#f2f6fa;min-width:110px;max-width:260px;font-size:14px;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,230,130,.06);outline:none;appearance:none;-webkit-appearance:none;cursor:pointer}
+select#cat option{background:rgba(15,15,28,.92);color:#cbd5e1;font-family:'Inter',sans-serif;font-size:13px}
 
 /* Difficulty slider - below category, centered (labels removed) */
 #diffwrap{position:absolute;left:50%;transform:translateX(-50%);top:121px;z-index:10;display:flex;flex-direction:column;gap:0;align-items:center;width:var(--cw)}

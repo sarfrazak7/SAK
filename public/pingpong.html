@@ -10,6 +10,9 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <title>Robo Ping Pro v60</title>
 <style>
@@ -70,9 +73,11 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1017;col
 #tip .tipBody::-webkit-scrollbar-track{background:transparent}
 #tip .tipBody::-webkit-scrollbar-thumb{background:rgba(212,175,55,.4);border-radius:3px}
 #tip .tipSubtitle{font-size:11px;color:#d4af37;letter-spacing:.06em;margin-bottom:8px}
-#tip .tipItem{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-#tip .tipItem:last-child{border-bottom:0}
-#tip b{color:#f4d03f}
+#tip .tipList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+#tip .tipRow{display:flex;gap:10px;align-items:flex-start}
+#tip .tipNum{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#d4af37;font-family:'Inter',sans-serif}
+#tip .tipText{font-family:'Inter',sans-serif;font-size:12px;line-height:1.5;color:#cbd5e1;flex:1;min-width:0;word-wrap:break-word;overflow-wrap:break-word}
+#tip .tipText b{color:#f4d03f;font-size:11px;letter-spacing:.03em;display:block;margin-bottom:2px}
 #tip .tipFooter{padding:10px 16px 12px;border-radius:0 0 20px 20px;border-top:1px solid rgba(212,175,55,.1);background:rgba(0,0,0,.15);text-align:center;font-size:11px;color:#666}
 @keyframes tipLedBlink{0%,100%{opacity:1;box-shadow:0 0 5px rgba(255,40,60,.9),0 0 12px rgba(255,40,60,.5),inset 0 0 2px rgba(255,200,200,.6)}50%{opacity:.35;box-shadow:0 0 2px rgba(255,40,60,.3),0 0 4px rgba(255,40,60,.12),inset 0 0 1px rgba(255,100,100,.3)}}
 #playBtn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(108px + var(--safe-bottom));width:92px;height:36px;pointer-events:auto;border:0;border-radius:9px;color:#fff;font-size:16px;font-weight:800;background:#35637f}
@@ -182,7 +187,9 @@ button,input{touch-action:manipulation}
  }
  #tip .tipHeader{padding:8px 11px 6px}
  #tip .tipBody{padding:8px 11px}
- #tip .tipItem{padding:5px 0}
+ #tip .tipList{gap:7px}
+ #tip .tipNum{width:18px;height:18px;font-size:9px}
+ #tip .tipText{font-size:10px;line-height:1.32}
  #tip .tipFooter{padding:6px 11px 8px;font-size:9px}
 }
 
@@ -606,19 +613,20 @@ function clearPointInteractionState(){
 
 
 const PRO_TIPS=[
- `<div class="tipItem"><b>1 • PLAY & POSTURE</b><br>Press PLAY to unlock the Human. Tap a body part to control it independently. Drag empty space to control the whole body.</div>`,
- `<div class="tipItem"><b>2 • HEAD</b><br>Drag the head sideways/up/down to rotate it in 3D through the neck joint. The head remains attached to the neck.</div>`,
- `<div class="tipItem"><b>3 • HANDS</b><br>Drag either hand independently. Fixed shoulder→elbow→wrist bone lengths make the elbow bend instead of stretching the arm.</div>`,
- `<div class="tipItem"><b>4 • LEGS</b><br>Drag either foot/leg sideways or forward/back. The hip stays connected and the knee solves the leg position with fixed thigh and shin lengths.</div>`,
- `<div class="tipItem"><b>5 • WHOLE BODY</b><br>Drag empty space after PLAY. Sideways drag rotates the Human through 360°. Up/down drag raises/lowers the body and bends the spine while the knees flex.</div>`,
- `<div class="tipItem"><b>6 • SERVING</b><br>Use the serve button for the player whose turn it is. Human serve: position the paddle, drag through the serve motion, then release.</div>`,
- `<div class="tipItem"><b>7 • SHOTS</b><br>FH = forehand drive • BH = backhand • TOP = topspin dip/kick • SLICE = low reverse-spin skid • SMASH = fastest attack.</div>`,
- `<div class="tipItem"><b>8 • AUTO MODE</b><br>AUTO cycles very slow TOP, SLICE and SMASH, then very fast TOP, SLICE and SMASH. Each routine has a 5-second slot: 3 seconds active + 2 seconds transition.</div>`,
- `<div class="tipItem"><b>9 • MATCH</b><br>Games are to 11, win by 2. Match is best of 5, first to 3. Watch SERVER, SERVES LEFT, rally count and stroke telemetry.</div>`
+ {n:1,title:'PLAY & POSTURE',body:'Press PLAY to unlock the Human. Tap a body part to control it independently. Drag empty space to control the whole body.'},
+ {n:2,title:'HEAD',body:'Drag the head sideways/up/down to rotate it in 3D through the neck joint. The head remains attached to the neck.'},
+ {n:3,title:'HANDS',body:'Drag either hand independently. Fixed shoulder→elbow→wrist bone lengths make the elbow bend instead of stretching the arm.'},
+ {n:4,title:'LEGS',body:'Drag either foot/leg sideways or forward/back. The hip stays connected and the knee solves the leg position with fixed thigh and shin lengths.'},
+ {n:5,title:'WHOLE BODY',body:'Drag empty space after PLAY. Sideways drag rotates the Human through 360°. Up/down drag raises/lowers the body and bends the spine while the knees flex.'},
+ {n:6,title:'SERVING',body:'Use the serve button for the player whose turn it is. Human serve: position the paddle, drag through the serve motion, then release.'},
+ {n:7,title:'SHOTS',body:'FH = forehand drive • BH = backhand • TOP = topspin dip/kick • SLICE = low reverse-spin skid • SMASH = fastest attack.'},
+ {n:8,title:'AUTO MODE',body:'AUTO cycles very slow TOP, SLICE and SMASH, then very fast TOP, SLICE and SMASH. Each routine has a 5-second slot: 3 seconds active + 2 seconds transition.'},
+ {n:9,title:'MATCH',body:'Games are to 11, win by 2. Match is best of 5, first to 3. Watch SERVER, SERVES LEFT, rally count and stroke telemetry.'}
 ];
 
 function renderProTips(){
- $('tip').innerHTML=`<div class="tipHeader"><div class="tipHeaderRow"><div class="tipHeaderTitle"><span class="tipLed"><span class="tipLedCore"></span></span><span class="tipTitleText">PRO TIPS • HOW TO PLAY</span></div><button class="tipClose" onclick="$('tip').style.display='none'">×</button></div></div><div class="tipDivider"></div><div class="tipBody"><div class="tipSubtitle">3D CONTROL GUIDE</div>`+PRO_TIPS.join('')+`</div><div class="tipFooter">Tap the light bulb to close</div>`;
+ const items=PRO_TIPS.map(t=>`<li class="tipRow"><span class="tipNum">${t.n}</span><p class="tipText"><b>${t.title}</b>${t.body}</p></li>`).join('');
+ $('tip').innerHTML=`<div class="tipHeader"><div class="tipHeaderRow"><div class="tipHeaderTitle"><span class="tipLed"><span class="tipLedCore"></span></span><span class="tipTitleText">PRO TIPS • HOW TO PLAY</span></div><button class="tipClose" onclick="$('tip').style.display='none'">×</button></div></div><div class="tipDivider"></div><div class="tipBody"><div class="tipSubtitle">3D CONTROL GUIDE</div><ol class="tipList">`+items+`</ol></div><div class="tipFooter">Tap the light bulb to close</div>`;
 }
 function stopAutoDemo(){
  if(!S.autoDemo)return;
