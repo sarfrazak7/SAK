@@ -146,8 +146,8 @@ select,button{font:inherit}
 #sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
 
 @media(min-width:700px){
-  :root{--cw:min(344px,calc(100vh - 405px));--kw:min(414px,calc(100vh - 375px))}
-  #hintbar{width:410px}
+  :root{--cw:min(70vw,calc(100vh - 357px));--kw:min(414px,calc(100vh - 375px))}
+  #hintbar{width:calc(var(--cw) + 30px)}
 }
 @media(max-width:420px){
   #scoreboard{width:220px}
@@ -161,7 +161,7 @@ select,button{font:inherit}
   #diffwrap{top:118px}
 }
 @media(min-width:700px) and (max-height:800px){
-  :root{--cube-top:153px;--cw:min(344px,calc(100vh - 395px));--kw:min(414px,calc(100vh - 365px))}
+  :root{--cube-top:153px;--cw:min(70vw,calc(100vh - 347px));--kw:min(414px,calc(100vh - 365px))}
   #diffwrap{top:118px}
 }
 </style>
