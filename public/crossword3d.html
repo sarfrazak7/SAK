@@ -243,7 +243,7 @@ function getPool(){
 function setDiff(d){
   diff=d;diffBar.value=d;
   diffLabels.querySelectorAll('a').forEach(a=>a.classList.toggle('act',+a.dataset.d===d));
-  face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=groups();selw=P[0].W[0];tr();clue();draw();
+  face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();
 }
 diffBar.oninput=()=>setDiff(+diffBar.value);
 diffLabels.querySelectorAll('a').forEach(a=>a.onclick=()=>setDiff(+a.dataset.d));
@@ -452,7 +452,35 @@ function groups(){
   }
   return R;
 }
-let P=groups();
+
+const PUZZLE_SETS=25;
+const puzzleCache={};
+const puzzleIndex={};
+
+function cacheKey(c,d){return c+'|'+d}
+function deepCloneGroups(R){return R.map(f=>({G:f.G.map(r=>[...r]),W:f.W.map(w=>({...w}))}))}
+
+function ensureCache(c,d){
+  const k=cacheKey(c,d);
+  if(!puzzleCache[k]){
+    let savedDiff=diff;diff=d;
+    puzzleCache[k]=[];
+    for(let i=0;i<PUZZLE_SETS;i++){
+      puzzleCache[k].push(deepCloneGroups(groups()));
+    }
+    diff=savedDiff;
+    puzzleIndex[k]=0;
+  }
+}
+function nextPuzzle(c,d){
+  const k=cacheKey(c,d);
+  ensureCache(c,d);
+  const idx=puzzleIndex[k];
+  puzzleIndex[k]=(idx+1)%puzzleCache[k].length;
+  return deepCloneGroups(puzzleCache[k][idx]);
+}
+
+let P=nextPuzzle(cat,diff);
 
 function wordKey(w){return cat+'|'+face+'|'+w.id}
 function cellKey(r,c){return cat+'|'+face+'|'+r+'|'+c}
@@ -589,13 +617,13 @@ function snap(){
   selw=P[face].W[0];clue();draw();
 }
 
-function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=groups();selw=P[0].W[0];tr();clue();draw();}
+function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};flashRed.clear();P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();}
 document.getElementById('ck').onclick=check;
 document.getElementById('nx').onclick=hint;
 document.getElementById('rv').onclick=reveal;
 document.getElementById('rs').onclick=()=>{
   cat=C[Math.floor(Math.random()*C.length)];catBtnLabel.textContent=cat;[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
-  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=groups();selw=P[0].W[0];tr();clue();draw();
+  score=0;sol.clear();letm={};flashRed.clear();face=0;rx=ry=0;P=nextPuzzle(cat,diff);selw=P[0].W[0];tr();clue();draw();
 };
 document.getElementById('nextArrow').onclick=()=>{
   let a=P[face].W,i=a.findIndex(w=>w.id===selw.id);
