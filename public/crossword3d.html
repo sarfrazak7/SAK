@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px);--cube-top:160px;--cw:min(82vw,304px,calc(100vh - 405px));--kw:min(82vw,374px,calc(100vh - 375px))}
+:root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px);--cube-top:160px;--cw:min(82vw,304px,calc(100vh - 405px));--cube-size:var(--cw);--kw:min(82vw,374px,calc(100vh - 375px))}
 @keyframes blinkArrow{0%,100%{opacity:1}50%{opacity:.2}}
 #nextArrow{display:inline-flex;align-items:center;cursor:pointer;pointer-events:auto;animation:blinkArrow 1s ease-in-out infinite;color:#d6a21f;font-size:16px;font-weight:900;padding-left:6px}
 #nextArrow:active{transform:scale(1.2)}
@@ -47,7 +47,7 @@ select,button{font:inherit}
 /* Stage - below controls, cube pushed up */
 #stagediv{position:absolute;left:0;right:0;top:var(--cube-top);bottom:calc(var(--sbb) + 197px);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1e1e1e,#0a0a0a);overflow:visible;padding-bottom:0}
 #st{display:grid;place-items:center;perspective:900px;touch-action:none;overflow:visible;width:100%;height:100%;position:relative}
-#cu{--s:var(--cw);--h:calc(var(--s)/2);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d;will-change:transform}
+#cu{--s:var(--cube-size);--h:calc(var(--s)/2);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d;will-change:transform}
 .f{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);background:#c91f28;border:3px solid #333;backface-visibility:hidden}
 .a{transform:translateZ(var(--h))}
 .b{transform:rotateY(-90deg) translateZ(var(--h))}
@@ -146,7 +146,7 @@ select,button{font:inherit}
 #sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
 
 @media(min-width:700px){
-  :root{--cw:min(70vw,calc(100vh - 357px));--kw:min(414px,calc(100vh - 375px))}
+  :root{--cw:min(70vw,calc(100vh - 357px));--cube-size:min(35vw,calc((100vh - 357px)/2));--kw:min(414px,calc(100vh - 375px))}
   #hintbar{width:calc(var(--cw) + 30px)}
 }
 @media(max-width:420px){
@@ -161,7 +161,7 @@ select,button{font:inherit}
   #diffwrap{top:118px}
 }
 @media(min-width:700px) and (max-height:800px){
-  :root{--cube-top:153px;--cw:min(70vw,calc(100vh - 347px));--kw:min(414px,calc(100vh - 365px))}
+  :root{--cube-top:153px;--cw:min(70vw,calc(100vh - 347px));--cube-size:min(35vw,calc((100vh - 347px)/2));--kw:min(414px,calc(100vh - 365px))}
   #diffwrap{top:118px}
 }
 </style>
