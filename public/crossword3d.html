@@ -70,11 +70,29 @@ select,button{font:inherit}
   z-index:15;cursor:pointer;letter-spacing:.05em;
 }
 
-/* Category dropdown - below action buttons, centered */
-#catwrap{position:absolute;left:50%;transform:translateX(-50%);top:72px;z-index:10;display:flex;flex-direction:column;gap:2px;align-items:center}
-#catwrap label{font-size:8px;font-weight:900;color:#d4af37;text-transform:uppercase;letter-spacing:1px;text-align:center;font-family:'Cinzel',serif}
-select#cat{padding:5px 12px;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(15,15,28,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#f2f6fa;min-width:110px;max-width:260px;font-size:14px;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,230,130,.06);outline:none;appearance:none;-webkit-appearance:none;cursor:pointer}
-select#cat option{background:rgba(15,15,28,.92);color:#cbd5e1;font-family:'Inter',sans-serif;font-size:13px}
+/* Category button - top right area */
+#catwrap{position:absolute;right:10px;top:calc(46px + var(--sb));z-index:20;display:flex;flex-direction:column;gap:0;align-items:flex-end}
+#catBtn{padding:4px 12px;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(15,15,28,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#f2f6fa;font-size:11px;font-family:'Inter',sans-serif;font-weight:600;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,230,130,.06);outline:none;cursor:pointer;pointer-events:auto;display:flex;align-items:center;gap:5px;transition:all .15s}
+#catBtn:hover{border-color:rgba(212,175,55,.6);color:#d4af37}
+#catBtn .catIcon{font-size:14px}
+#catBtn .catLabel{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Category popup - frosted glass panel on right side */
+#catPopup{position:absolute;right:10px;top:calc(72px + var(--sb));z-index:40;width:min(260px,72vw);max-height:calc(100vh - 140px);display:none;flex-direction:column;color:#f2f6fa;background:rgba(15,15,28,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(212,175,55,.35);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.65),0 0 0 1px rgba(212,175,55,.08),inset 0 1px 0 rgba(255,230,130,.06);overflow:hidden;pointer-events:auto;animation:catPopIn .22s cubic-bezier(.34,1.56,.64,1)}
+@keyframes catPopIn{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#catPopup.open{display:flex}
+#catPopup .catHeader{padding:10px 14px 8px;background:rgba(212,175,55,.05);border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between}
+#catPopup .catHeaderTitle{font-family:'Cinzel',serif;font-weight:700;font-size:12px;color:#d4af37;letter-spacing:.06em}
+#catPopup .catClose{width:24px;height:24px;border-radius:6px;border:0;background:transparent;color:#888;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .15s}
+#catPopup .catClose:hover{background:rgba(212,175,55,.15);color:#d4af37}
+#catPopup .catDivider{height:1px;margin:0 14px;background:linear-gradient(90deg,transparent,#d4af37,transparent)}
+#catPopup .catList{overflow-y:auto;overflow-x:hidden;flex:1;padding:6px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(212,175,55,.5) transparent}
+#catPopup .catList::-webkit-scrollbar{width:4px}
+#catPopup .catList::-webkit-scrollbar-thumb{background:rgba(212,175,55,.4);border-radius:3px}
+#catPopup .catItem{padding:8px 12px;border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#cbd5e1;cursor:pointer;transition:all .12s;line-height:1.4}
+#catPopup .catItem:hover{background:rgba(212,175,55,.12);color:#f2f6fa}
+#catPopup .catItem.active{background:rgba(212,175,55,.18);color:#d4af37;font-weight:600}
+#catPopup .catItem.active::before{content:'\2713  '}
 
 /* Difficulty slider - below category, centered (labels removed) */
 #diffwrap{position:absolute;left:50%;transform:translateX(-50%);top:121px;z-index:10;display:flex;flex-direction:column;gap:0;align-items:center;width:var(--cw)}
@@ -134,7 +152,8 @@ select#cat option{background:rgba(15,15,28,.92);color:#cbd5e1;font-family:'Inter
 @media(max-width:420px){
   #scoreboard{width:220px}
   #scoreboard .scoreHeader{font-size:10px}
-  #catwrap{left:50%;transform:translateX(-50%);top:72px}
+  #catwrap{right:8px;top:calc(46px + var(--sb))}
+  #catPopup{right:8px;top:calc(72px + var(--sb));width:min(220px,72vw)}
   #diffwrap{top:121px}
 }
 @media(max-height:700px){
@@ -164,8 +183,12 @@ select#cat option{background:rgba(15,15,28,.92);color:#cbd5e1;font-family:'Inter
     <button class="q" id="fb">FACE 1</button>
   </div>
   <div id="catwrap">
-    <label>Category</label>
-    <select id="cat"></select>
+    <button id="catBtn"><span class="catIcon">\u{1F4D6}</span><span class="catLabel" id="catBtnLabel">Horticulture & Botany</span></button>
+  </div>
+  <div id="catPopup">
+    <div class="catHeader"><span class="catHeaderTitle">CATEGORIES</span><button class="catClose" id="catClose">\u00d7</button></div>
+    <div class="catDivider"></div>
+    <div class="catList" id="catList"></div>
   </div>
   <div id="diffwrap">
     <input type="range" id="diffBar" min="0" max="2" step="1" value="1">
@@ -197,10 +220,14 @@ for(const k in D) D[k]=D[k].split('|').map(v=>v.split(':')).filter(x=>x[0].lengt
 
 const C=Object.keys(D), F=['a','b','c','d','e','g'];
 let cat=C[0],diff=1,face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={},flashRed=new Set,flashTimer=null;
-const cu=document.getElementById('cu'),st=document.getElementById('st'),se=document.getElementById('cat'),
+const cu=document.getElementById('cu'),st=document.getElementById('st'),
 sc=document.getElementById('sc'),fb=document.getElementById('fb'),cd=document.getElementById('cd'),
 ct=document.getElementById('ct'),kb=document.getElementById('kb'),atc=document.getElementById('atc');
-C.forEach(v=>se.add(new Option(v,v)));
+const catBtn=document.getElementById('catBtn'),catBtnLabel=document.getElementById('catBtnLabel'),catPopup=document.getElementById('catPopup'),catCloseBtn=document.getElementById('catClose'),catListEl=document.getElementById('catList');
+C.forEach(v=>{let it=document.createElement('div');it.className='catItem';it.textContent=v;it.dataset.cat=v;it.onclick=()=>{selectCategory(v);[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===v));catPopup.classList.remove('open')};catListEl.append(it)});
+catBtn.onclick=()=>catPopup.classList.toggle('open');
+catCloseBtn.onclick=()=>catPopup.classList.remove('open');
+document.addEventListener('pointerdown',e=>{if(catPopup.classList.contains('open')&&!catPopup.contains(e.target)&&!catBtn.contains(e.target))catPopup.classList.remove('open')});
 
 const diffBar=document.getElementById('diffBar'),diffLabels=document.getElementById('diffLabels');
 function getPool(){
@@ -564,14 +591,12 @@ function snap(){
   selw=P[face].W[0];clue();draw();
 }
 
-se.onchange=()=>{
-  cat=se.value;face=0;rx=ry=score=0;sol.clear();letm={};P=groups();selw=P[0].W[0];tr();clue();draw();
-};
+function selectCategory(v){cat=v;catBtnLabel.textContent=v;face=0;rx=ry=score=0;sol.clear();letm={};P=groups();selw=P[0].W[0];tr();clue();draw();}
 document.getElementById('ck').onclick=check;
 document.getElementById('nx').onclick=hint;
 document.getElementById('rv').onclick=reveal;
 document.getElementById('rs').onclick=()=>{
-  cat=C[Math.floor(Math.random()*C.length)];se.value=cat;
+  cat=C[Math.floor(Math.random()*C.length)];catBtnLabel.textContent=cat;[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
   score=0;sol.clear();letm={};face=0;rx=ry=0;P=groups();selw=P[0].W[0];tr();clue();draw();
 };
 document.getElementById('nextArrow').onclick=()=>{
@@ -606,7 +631,7 @@ window.addEventListener('pointermove',e=>{
 window.addEventListener('pointerup',()=>{if(dg){dg=0;snap()}});
 window.addEventListener('pointercancel',()=>{if(dg){dg=0;snap()}});
 
-selw=P[0].W[0];tr();clue();draw();
+selw=P[0].W[0];tr();clue();draw();[...catListEl.children].forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
 })();
 </script>
 </body>
