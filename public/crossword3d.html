@@ -70,8 +70,8 @@ select,button{font:inherit}
   z-index:15;cursor:pointer;letter-spacing:.05em;
 }
 
-/* Category button - top right area */
-#catwrap{position:absolute;right:10px;top:calc(46px + var(--sb));z-index:20;display:flex;flex-direction:column;gap:0;align-items:flex-end}
+/* Category button - centered, same spot as before */
+#catwrap{position:absolute;left:50%;transform:translateX(-50%);top:72px;z-index:20;display:flex;flex-direction:column;gap:2px;align-items:center}
 #catBtn{padding:4px 12px;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(15,15,28,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#f2f6fa;font-size:11px;font-family:'Inter',sans-serif;font-weight:600;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,230,130,.06);outline:none;cursor:pointer;pointer-events:auto;display:flex;align-items:center;gap:5px;transition:all .15s}
 #catBtn:hover{border-color:rgba(212,175,55,.6);color:#d4af37}
 #catBtn .catIcon{font-size:14px}
@@ -152,8 +152,8 @@ select,button{font:inherit}
 @media(max-width:420px){
   #scoreboard{width:220px}
   #scoreboard .scoreHeader{font-size:10px}
-  #catwrap{right:8px;top:calc(46px + var(--sb))}
-  #catPopup{right:8px;top:calc(72px + var(--sb));width:min(220px,72vw)}
+  #catwrap{left:50%;transform:translateX(-50%);top:72px}
+  #catPopup{right:8px;width:min(220px,72vw)}
   #diffwrap{top:121px}
 }
 @media(max-height:700px){
