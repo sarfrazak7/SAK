@@ -4,7 +4,7 @@ import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260912-34';
+const GAME_VERSION = '20260916-35';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {

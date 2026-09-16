@@ -67,7 +67,7 @@ const GAMES = [
     route: 'crossword3d' as Route,
     name: 'CrossWord 3D',
     desc: 'An immersive 3D crossword experience across rotating cube faces.',
-    tag: 'COMING SOON',
+    tag: 'PLAY NOW',
     img: 'https://images.pexels.com/photos/6005365/pexels-photo-6005365.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
   {
