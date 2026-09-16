@@ -62,6 +62,8 @@ select,button{font:inherit}
 .x.err{animation:flashRed .6s ease-in-out infinite}
 @keyframes flashRed{0%,100%{background:#ff0000;color:#fff;box-shadow:0 0 8px #ff0000}50%{background:#fff;color:#111;box-shadow:0 0 4px rgba(255,0,0,.3)}}
 .n{position:absolute;left:1px;top:0;font-size:12px;font-weight:900;color:#222;line-height:1;pointer-events:none}
+#tapGrid{position:absolute;left:50%;top:50%;width:var(--cube-size);height:var(--cube-size);transform:translate(-50%,-50%);display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);z-index:10;pointer-events:auto}
+.tap-cell{min-width:0;min-height:0;background:transparent;touch-action:none}
 
 /* FACE indicator - in action button row */
 #fb{
@@ -199,7 +201,7 @@ select,button{font:inherit}
     <input type="range" id="diffBar" min="0" max="2" step="1" value="1">
     <div id="diffLabels"><a data-d="0">Beginner</a><a data-d="1" class="act">Intermediate</a><a data-d="2">Expert</a></div>
   </div>
-  <div id="stagediv"><div id="st"><div id="cu"></div></div></div>
+  <div id="stagediv"><div id="st"><div id="cu"></div><div id="tapGrid" aria-hidden="true"></div></div></div>
   <div id="kbWrap"><div id="kb"></div></div>
   <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span><span id="nextArrow">→</span></div>
 </div>
@@ -229,7 +231,7 @@ if(typeof EXPERT_D!=='undefined'){for(const k in EXPERT_D) EXPERT_D[k]=EXPERT_D[
 
 const C=Object.keys(D), F=['a','b','c','d','e','g'];
 let cat=C[0],diff=1,face=0,rx=0,ry=0,selw=null,score=0,sol=new Set,letm={},flashRed=new Set;
-const cu=document.getElementById('cu'),st=document.getElementById('st'),
+const cu=document.getElementById('cu'),st=document.getElementById('st'),tapGrid=document.getElementById('tapGrid'),
 sc=document.getElementById('sc'),fb=document.getElementById('fb'),cd=document.getElementById('cd'),
 ct=document.getElementById('ct'),kb=document.getElementById('kb'),atc=document.getElementById('atc');
 const catBtn=document.getElementById('catBtn'),catBtnLabel=document.getElementById('catBtnLabel'),catPopup=document.getElementById('catPopup'),catCloseBtn=document.getElementById('catClose'),catListEl=document.getElementById('catList');
@@ -522,14 +524,15 @@ function draw(){
   cu.innerHTML='';
   for(let f=0;f<6;f++){
     const fe=document.createElement('div');fe.className='f '+F[f];
+    fe.style.pointerEvents=(f===face)?'auto':'none';
     for(let r=0;r<10;r++)for(let c=0;c<10;c++){
       const z=document.createElement('div');z.className='x';
       if(P[f].G[r][c]){
         z.classList.add('o');
         const allW=wordsAt(f,r,c);
         const w=findWord(f,r,c);
+        if(f===face&&selw&&allW.some(ww=>ww.id===selw.id))z.classList.add('s');
         if(w){
-          if(f===face&&selw&&allW.some(ww=>ww.id===selw.id))z.classList.add('s');
           if(f===face&&allW.some(ww=>sol.has(wordKey(ww))))z.classList.add('ok');
           const starts=allW.filter(q=>q.r===r&&q.c===c).sort((a,b)=>a.n-b.n);
           if(starts.length>0){const nn=document.createElement('span');nn.className='n';nn.textContent=starts.map(s=>s.n).join('/');z.append(nn)}
@@ -544,6 +547,13 @@ function draw(){
       fe.append(z);
     }
     cu.append(fe);
+  }
+  tapGrid.innerHTML='';
+  for(let r=0;r<10;r++)for(let c=0;c<10;c++){
+    const cell=document.createElement('div');
+    cell.className='tap-cell';
+    cell.dataset.r=r;cell.dataset.c=c;
+    tapGrid.append(cell);
   }
   fb.textContent='FACE '+(face+1);
   sc.textContent=score;
@@ -620,14 +630,14 @@ function live(){
   else if(p>=45)f=5;
   else{
     let y=((ry%360)+360)%360;
-    f=[0,3,2,1][Math.round(y/90)%4];
+    f=[0,1,2,3][Math.round(y/90)%4];
   }
   fb.textContent='FACE '+(f+1);
   return f;
 }
 function snap(){
   face=live();
-  let T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
+  let T=[[0,0],[0,90],[0,180],[0,-90],[-90,0],[90,0]][face];
   rx=T[0];ry=T[1];
   cu.style.transition='transform .15s';tr();
   setTimeout(()=>{cu.style.transition='';selw=P[face].W[0]||null;clue();draw();},160);
@@ -671,15 +681,8 @@ window.addEventListener('pointermove',e=>{
   rx=Math.max(-90,Math.min(90,bx-(e.clientY-sy)*.75));
   tr();live();
 });
-function tapCell(x,y){
-  const el=document.elementFromPoint(x,y);
-  if(!el)return;
-  const cell=el.closest('.x');
-  if(!cell||!cell.dataset.wids)return;
-  const f=+cell.dataset.f;
-  if(f!==face)return;
-  const r=+cell.dataset.r,c=+cell.dataset.c;
-  const allW=wordsAt(f,r,c);
+function handleCellTap(r,c){
+  const allW=wordsAt(face,r,c);
   if(allW.length===0)return;
   if(allW.length>1){
     const curIdx=allW.findIndex(ww=>selw&&ww.id===selw.id);
@@ -689,6 +692,20 @@ function tapCell(x,y){
   }
   clue();draw();
 }
+function tapCell(x,y){
+  const el=document.elementFromPoint(x,y);
+  const tap=el&&el.closest('.tap-cell');
+  if(tap){handleCellTap(+tap.dataset.r,+tap.dataset.c);return;}
+  const cell=el&&el.closest('.x');
+  if(cell&&cell.dataset.wids&&+cell.dataset.f===face){
+    handleCellTap(+cell.dataset.r,+cell.dataset.c);return;
+  }
+  const rect=tapGrid.getBoundingClientRect();
+  if(x<rect.left||x>=rect.right||y<rect.top||y>=rect.bottom)return;
+  const col=Math.max(0,Math.min(9,Math.floor((x-rect.left)/rect.width*10)));
+  const row=Math.max(0,Math.min(9,Math.floor((y-rect.top)/rect.height*10)));
+  handleCellTap(row,col);
+}
 let lastTapX=0,lastTapY=0;
 st.addEventListener('pointerup',e=>{
   if(dg){dg=0;if(dragMoved){snap()}else{tapCell(e.clientX,e.clientY)}}
@@ -697,7 +714,7 @@ window.addEventListener('pointercancel',()=>{if(dg){dg=0;if(dragMoved)snap()}});
 
 fb.onclick=()=>{
   face=(face+1)%6;
-  const T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
+  const T=[[0,0],[0,90],[0,180],[0,-90],[-90,0],[90,0]][face];
   rx=T[0];ry=T[1];
   cu.style.transition='transform .3s';tr();
   selw=P[face].W[0]||null;clue();
@@ -784,7 +801,7 @@ function updateTimerDisplay(){
 
 function gotoNextFace(){
   face=(face+1)%6;
-  const T=[[0,0],[0,-90],[0,180],[0,90],[-90,0],[90,0]][face];
+  const T=[[0,0],[0,90],[0,180],[0,-90],[-90,0],[90,0]][face];
   rx=T[0];ry=T[1];
   cu.style.transition='transform .3s';tr();
   selw=P[face].W[0]||null;clue();
