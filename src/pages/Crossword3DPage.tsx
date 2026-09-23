@@ -4,7 +4,7 @@ import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
 
-const GAME_VERSION = '20260916-35';
+const GAME_VERSION = '20260916-39';
 const TOP_BAR = 66;
 
 export default function Crossword3DPage() {
@@ -12,6 +12,32 @@ export default function Crossword3DPage() {
   const [showTips, setShowTips] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [muted, setMuted] = useState(false);
+  const mutedRef = useRef(false);
+  const speechUnlockedRef = useRef(false);
+
+  useEffect(() => { mutedRef.current = muted; }, [muted]);
+
+  // iOS Safari requires a user gesture to unlock speechSynthesis.
+  // We prime it on the first tap anywhere in the document.
+  useEffect(() => {
+    const unlock = () => {
+      if (speechUnlockedRef.current) return;
+      speechUnlockedRef.current = true;
+      try {
+        if (window.speechSynthesis) {
+          const u = new SpeechSynthesisUtterance('');
+          u.volume = 0;
+          window.speechSynthesis.speak(u);
+        }
+      } catch {}
+    };
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('touchstart', unlock, { once: true });
+    return () => {
+      document.removeEventListener('pointerdown', unlock);
+      document.removeEventListener('touchstart', unlock);
+    };
+  }, []);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -81,6 +107,46 @@ export default function Crossword3DPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let keepAlive: ReturnType<typeof setInterval> | null = null;
+    const onMessage = (e: MessageEvent) => {
+      const m = e.data;
+      if (!m) return;
+      if (m.type === 'crossword3d-speak' && !mutedRef.current) {
+        try {
+          if (window.speechSynthesis) {
+            const u = new SpeechSynthesisUtterance(m.text);
+            u.rate = 0.75;
+            u.pitch = 1.0;
+            u.volume = 0.8;
+            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+            window.speechSynthesis.speak(u);
+            // iOS Safari stops speechSynthesis after ~15s; keep it alive
+            if (!keepAlive) {
+              keepAlive = setInterval(() => {
+                if (window.speechSynthesis && !window.speechSynthesis.speaking) {
+                  if (keepAlive) { clearInterval(keepAlive); keepAlive = null; }
+                } else if (window.speechSynthesis) {
+                  window.speechSynthesis.resume();
+                }
+              }, 5000);
+            }
+          }
+        } catch {}
+      } else if (m.type === 'crossword3d-speak-cancel') {
+        try {
+          if (window.speechSynthesis) window.speechSynthesis.cancel();
+          if (keepAlive) { clearInterval(keepAlive); keepAlive = null; }
+        } catch {}
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => {
+      window.removeEventListener('message', onMessage);
+      if (keepAlive) clearInterval(keepAlive);
+    };
+  }, []);
+
   const btnStyle: React.CSSProperties = {
     position: 'fixed',
     top: 16,
@@ -138,7 +204,18 @@ export default function Crossword3DPage() {
       {!isFullscreen && <BackToHomeButton />}
       {!isFullscreen && (
         <button
-          onClick={() => setMuted(!muted)}
+          onClick={() => {
+            // This tap also unlocks speech on iOS Safari
+            if (!speechUnlockedRef.current && window.speechSynthesis) {
+              speechUnlockedRef.current = true;
+              try {
+                const u = new SpeechSynthesisUtterance('');
+                u.volume = 0;
+                window.speechSynthesis.speak(u);
+              } catch {}
+            }
+            setMuted(!muted);
+          }}
           aria-label={muted ? 'Unmute' : 'Mute'}
           title={muted ? 'Unmute' : 'Mute'}
           style={{ ...btnStyle, right: 152 }}

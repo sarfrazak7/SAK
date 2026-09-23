@@ -151,6 +151,21 @@ select,button{font:inherit}
 
 #sc.pop{animation:p .3s}@keyframes p{50%{transform:scale(1.4);color:#6ee787}}
 
+/* Phonics popup */
+#phonicsOverlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#phonicsOverlay.open{display:flex;animation:phonicsFade .2s}
+@keyframes phonicsFade{from{opacity:0}to{opacity:1}}
+#phonicsBox{background:linear-gradient(145deg,#1a1a2e,#16213e);border:1px solid rgba(6,182,212,.35);border-radius:16px;padding:28px 32px;text-align:center;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 30px rgba(6,182,212,.15)}
+#phonicsWord{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:#06b6d4;margin-bottom:14px;letter-spacing:.04em}
+#phonicsSyl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:16px}
+.sylChip{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);border-radius:8px;padding:8px 14px;font-size:18px;font-weight:700;color:#e2f6fb;font-family:'Inter',sans-serif;transition:all .3s}
+.sylChip.active{background:rgba(6,182,212,.3);border-color:rgba(6,182,212,.6);transform:scale(1.15);box-shadow:0 0 12px rgba(6,182,212,.4)}
+#phonicsClose,#phonicsReplay{padding:6px 20px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);color:#cbd5e1;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+#phonicsClose:hover,#phonicsReplay:hover{background:rgba(255,255,255,.12);color:#fff}
+#phonicsReplay{background:rgba(6,182,212,.15);border-color:rgba(6,182,212,.35);color:#06b6d4}
+#phonicsReplay:hover{background:rgba(6,182,212,.25);color:#22d3ee}
+#phonicsBtns{display:flex;gap:8px;justify-content:center}
+
 @media(min-width:700px){
   :root{--cw:min(70vw,calc(100vh - 357px));--cube-size:min(35vw,calc((100vh - 357px)/2));--kw:min(414px,calc(100vh - 375px))}
   #hintbar{width:calc(var(--cw) + 30px)}
@@ -204,6 +219,16 @@ select,button{font:inherit}
   <div id="stagediv"><div id="st"><div id="cu"></div><div id="tapGrid" aria-hidden="true"></div></div></div>
   <div id="kbWrap"><div id="kb"></div></div>
   <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span><span id="nextArrow">→</span></div>
+</div>
+<div id="phonicsOverlay">
+  <div id="phonicsBox">
+    <div id="phonicsWord"></div>
+    <div id="phonicsSyl"></div>
+    <div id="phonicsBtns">
+      <button id="phonicsReplay">Hear Again</button>
+      <button id="phonicsClose">Close</button>
+    </div>
+  </div>
 </div>
 
 <script src="expert-words.js"></script>
@@ -615,6 +640,7 @@ function check(){
   if(answer(selw)===selw.ans&&!sol.has(wordKey(selw))){
     sol.add(wordKey(selw));score+=100;sc.classList.remove('pop');void sc.offsetWidth;sc.classList.add('pop');syncStats(100,0);
     for(let i=0;i<selw.ans.length;i++)flashRed.delete(cellKey(selw.r+(selw.d==='D'?i:0),selw.c+(selw.d==='A'?i:0)));
+    showPhonics(selw.ans);
     nextWord();
   }else if(answer(selw)!==selw.ans){
     for(let i=0;i<selw.ans.length;i++){const k=cellKey(selw.r+(selw.d==='D'?i:0),selw.c+(selw.d==='A'?i:0));if(letm[k]!==selw.ans[i])flashRed.add(k)}
@@ -626,6 +652,7 @@ function reveal(){
   let K=wordKey(selw);
   for(let i=0;i<selw.ans.length;i++){const k=cellKey(selw.r+(selw.d==='D'?i:0),selw.c+(selw.d==='A'?i:0));letm[k]=selw.ans[i];flashRed.delete(k)}
   if(!sol.has(K)){sol.add(K);score-=100;syncStats(0,100)}
+  showPhonics(selw.ans);
   nextWord();
 }
 function live(){
@@ -761,6 +788,22 @@ window.addEventListener('message',e=>{
   if(m.type==='crossword3d-mute')muted=!!m.muted;
 });
 
+// iOS Safari: unlock speechSynthesis on first user gesture in the iframe
+let speechUnlocked=false;
+function unlockSpeech(){
+  if(speechUnlocked)return;
+  speechUnlocked=true;
+  try{
+    if(window.speechSynthesis){
+      const u=new SpeechSynthesisUtterance('');
+      u.volume=0;
+      window.speechSynthesis.speak(u);
+    }
+  }catch(e){}
+}
+document.addEventListener('pointerdown',unlockSpeech,{once:true});
+document.addEventListener('touchstart',unlockSpeech,{once:true});
+
 function playTick(){
   if(muted)return;
   try{
@@ -841,6 +884,109 @@ function startTimer(){
 }
 
 updateTimerDisplay();
+
+/* --- Phonics syllabification & read-aloud --- */
+function syllabify(word){
+  word=word.toUpperCase();
+  if(word.length<=3)return [word];
+  const V=new Set(['A','E','I','O','U']);
+  const cons=/[^AEIOU]/;
+  let syls=[];let cur='';
+  for(let i=0;i<word.length;i++){
+    const ch=word[i];
+    cur+=ch;
+    if(V.has(ch)){
+      let rest=word.slice(i+1);
+      let nextV=rest.search(/[AEIOU]/);
+      if(nextV===-1){
+        syls.push(cur);cur='';
+      }else if(nextV===0){
+        syls.push(cur);cur='';
+      }else{
+        let consBlock=rest.slice(0,nextV);
+        if(consBlock.length>=2){
+          cur+=consBlock[0];
+          syls.push(cur);
+          cur=consBlock.slice(1);
+        }else{
+          syls.push(cur+consBlock);
+          cur='';
+        }
+        i+=consBlock.length;
+      }
+    }
+  }
+  if(cur)syls.push(cur);
+  return syls.length?syls:[word];
+}
+
+const phonicsOverlay=document.getElementById('phonicsOverlay');
+const phonicsWordEl=document.getElementById('phonicsWord');
+const phonicsSylEl=document.getElementById('phonicsSyl');
+const phonicsCloseBtn=document.getElementById('phonicsClose');
+const phonicsReplayBtn=document.getElementById('phonicsReplay');
+let phonicsTimer=null;
+let phonicsLastWord='';
+
+phonicsCloseBtn.onclick=()=>closePhonics();
+phonicsReplayBtn.onclick=()=>{if(phonicsLastWord)showPhonics(phonicsLastWord);};
+phonicsOverlay.addEventListener('pointerdown',e=>{if(e.target===phonicsOverlay)closePhonics();});
+
+function closePhonics(){
+  phonicsOverlay.classList.remove('open');
+  if(phonicsTimer){clearTimeout(phonicsTimer);phonicsTimer=null;}
+  try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}
+  try{window.parent.postMessage({type:'crossword3d-speak-cancel'},'*');}catch(e){}
+}
+
+function showPhonics(word){
+  if(!word||word.length<2)return;
+  phonicsLastWord=word;
+  if(phonicsTimer){clearTimeout(phonicsTimer);phonicsTimer=null;}
+  const syls=syllabify(word);
+  phonicsWordEl.textContent=word;
+  phonicsSylEl.innerHTML='';
+  syls.forEach((s,i)=>{const c=document.createElement('div');c.className='sylChip';c.textContent=s;c.dataset.idx=i;phonicsSylEl.append(c);});
+  phonicsOverlay.classList.add('open');
+  const chips=[...phonicsSylEl.children];
+  chips.forEach(c=>c.classList.remove('active'));
+  // iOS Safari requires the FIRST speechSynthesis.speak() to be within a user gesture.
+  // check() and reveal() are called from onclick handlers, so we are in a gesture now.
+  // Speak the full word immediately to unlock the engine, then do syllables via setTimeout.
+  speakText(word,true);
+  let delay=600;
+  syls.forEach((s,i)=>{
+    phonicsTimer=setTimeout(()=>{
+      chips.forEach(c=>c.classList.remove('active'));
+      if(chips[i])chips[i].classList.add('active');
+      speakText(s);
+    },delay);
+    delay+=Math.max(s.length*200,500);
+  });
+  phonicsTimer=setTimeout(()=>{
+    chips.forEach(c=>c.classList.remove('active'));
+    phonicsWordEl.style.color='#6ee787';
+    setTimeout(()=>{phonicsWordEl.style.color='#06b6d4';},800);
+    speakText(word);
+  },delay);
+  phonicsTimer=setTimeout(()=>{closePhonics();},delay+word.length*180+1200);
+}
+
+function speakText(text,sync){
+  if(muted)return;
+  try{
+    if(window.speechSynthesis){
+      if(sync){window.speechSynthesis.cancel();}
+      const u=new SpeechSynthesisUtterance(text);
+      u.rate=0.75;u.pitch=1.0;u.volume=0.9;
+      if(window.speechSynthesis.paused)window.speechSynthesis.resume();
+      window.speechSynthesis.speak(u);
+    }
+  }catch(e){}
+  // Also notify parent as fallback (parent-page speech works on desktop)
+  try{window.parent.postMessage({type:'crossword3d-speak',text:text},'*');}catch(e){}
+}
+
 })();
 </script>
 </body>
