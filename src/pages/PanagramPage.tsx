@@ -9,6 +9,7 @@ import WordDefinition from '@/panagram/components/WordDefinition';
 import RouletteWheel from '@/panagram/components/RouletteWheel';
 import { playSpinSound, playBallLandSound, playPassBell, playFailSound, playTickSound } from '@/panagram/lib/sounds';
 import BackToHomeButton from '@/components/BackToHomeButton';
+import SilentViewCounter from '@/components/SilentViewCounter';
 
 type Toast = { id: number; message: string; type: 'success' | 'error' | 'info' };
 type GamePhase = 'spinning' | 'filling' | 'guessing' | 'won' | 'lost';
@@ -24,7 +25,15 @@ function matchesRevealedLetters(word: string, tiles: (string | null)[]): boolean
   return true;
 }
 
+import sevenLetterWords from '@/panagram/lib/sevenLetterWords.json';
+const sevenLetterWordSet = new Set(sevenLetterWords as string[]);
+
+function isKnownWord(word: string): boolean {
+  return sevenLetterWordSet.has(word.toLowerCase().trim());
+}
+
 async function isValidDictionaryWord(word: string): Promise<boolean> {
+  if (isKnownWord(word)) return true;
   try {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`);
     if (!res.ok) return false;
@@ -81,6 +90,10 @@ export default function PanagramPage() {
     (phase === 'guessing' && timeLeft > 0);
   const hubTimerSeconds = phase === 'guessing' ? timeLeft : spinTimeLeft;
   const hubTimerCritical = hubTimerSeconds <= 5;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -293,38 +306,26 @@ export default function PanagramPage() {
     const guess = guessInput.trim().toLowerCase();
     if (!guess || !targetWord) return;
 
-    if (guess === targetWord.toLowerCase()) {
+    if (guess.length !== 7) {
+      addToast('Please enter a 7-letter word', 'error');
+      return;
+    }
+
+    if (isCommonWord(guess) || await isValidDictionaryWord(guess)) {
       const jackpot = jackpotForSpin(spinsUsed);
       setLastJackpot(jackpot);
       setRunningScore((s) => s + jackpot);
       syncStats(jackpot, 0);
-      setWinningWord(targetWord);
-      setTiles(targetWord.toUpperCase().split(''));
+      setWinningWord(guess);
+      setTiles(guess.toUpperCase().split(''));
       setPhase('won');
       if (timerRef.current) clearInterval(timerRef.current);
       if (!muted) playPassBell();
-      addToast(`Jackpot! "${targetWord}" — +${jackpot} pts (spin ${spinsUsed})`, 'success');
-    } else if (guess.length === 7 && matchesRevealedLetters(guess, tiles)) {
-      if (isCommonWord(guess) || await isValidDictionaryWord(guess)) {
-        const jackpot = jackpotForSpin(spinsUsed);
-        setLastJackpot(jackpot);
-        setRunningScore((s) => s + jackpot);
-        syncStats(jackpot, 0);
-        setWinningWord(guess);
-        setTiles(guess.toUpperCase().split(''));
-        setPhase('won');
-        if (timerRef.current) clearInterval(timerRef.current);
-        if (!muted) playPassBell();
-        addToast(`Jackpot! "${guess}" — +${jackpot} pts (spin ${spinsUsed})`, 'success');
-      } else {
-        addToast(`"${guess}" is not a valid 7-letter word`, 'error');
-      }
-    } else if (guess.length === 7 && (isCommonWord(guess) || await isValidDictionaryWord(guess))) {
-      addToast(`"${guess}" is valid but doesn't match your revealed letters`, 'error');
+      addToast(`Jackpot! "${guess}" — +${jackpot} pts (spin ${spinsUsed})`, 'success');
     } else {
       addToast(`"${guess}" is not a valid 7-letter word`, 'error');
     }
-  }, [guessInput, targetWord, spinsUsed, tiles, addToast, muted, syncStats]);
+  }, [guessInput, targetWord, spinsUsed, addToast, muted, syncStats]);
 
   const handleReveal = useCallback(() => {
     if (!targetWord || revealActive) return;
@@ -373,13 +374,17 @@ export default function PanagramPage() {
   }, []);
 
   return (
-    <div className="panagram-root bg-felt-pattern relative overflow-hidden" style={{ minHeight: '100dvh' }}>
-      <BackToHomeButton />
+    <div
+      className="panagram-root bg-felt-pattern relative overflow-hidden"
+      style={{ position: 'fixed', inset: 0, width: '100%', height: '100dvh' }}
+    >
+      <BackToHomeButton compact />
+      <SilentViewCounter />
       <div className="overflow-hidden flex flex-col" style={{ minHeight: '100dvh' }}>
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-casino-gold/10 blur-[120px] rounded-full" />
 
         {/* Toasts */}
-        <div className="fixed top-20 right-4 z-50 flex flex-col gap-2">
+        <div className="fixed top-16 right-4 z-50 flex flex-col gap-2">
           {toasts.map((t) => (
             <div
               key={t.id}
@@ -399,9 +404,28 @@ export default function PanagramPage() {
           ))}
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-4 pt-4 pb-4 flex-1 min-h-0 flex flex-col items-center">
-          {/* Header — pro tips + mute toggle */}
-          <header className="flex items-center justify-between mb-2 w-full">
+        {/* Top bar — logo (left) | timer (center) | pro tips + mute (right) */}
+        <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-3 py-2 pointer-events-none">
+          {/* Center timer */}
+          <div className="pointer-events-auto absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-xl border border-casino-gold/25 bg-black/40 px-3 py-1.5 backdrop-blur-sm">
+            <Timer className={`w-4 h-4 ${hubTimerCritical ? 'text-rose-400 timer-flash-red' : showHubTimer ? 'text-casino-gold' : 'text-gray-600'}`} />
+            <span
+              className={`font-display text-sm font-bold tabular-nums leading-none ${
+                showHubTimer
+                  ? hubTimerCritical
+                    ? 'text-rose-400 timer-flash-red'
+                    : 'text-casino-gold'
+                  : 'text-gray-600'
+              }`}
+            >
+              {showHubTimer ? hubTimerSeconds : '–'}
+            </span>
+          </div>
+        </header>
+
+        <div className="relative max-w-5xl mx-auto px-4 pt-20 sm:pt-6 pb-4 flex-1 min-h-0 flex flex-col items-center">
+          {/* Header — pro tips + mute toggle (top-right cluster) */}
+          <header className="fixed right-4 top-3 z-40 flex items-center gap-1 rounded-xl border border-casino-gold/20 bg-black/30 p-1 backdrop-blur-sm">
             <button
               onClick={() => setShowProTips(true)}
               className="flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-casino-gold/10 text-gray-400 hover:text-casino-gold transition-colors"
@@ -448,7 +472,7 @@ export default function PanagramPage() {
               <div className="coin-cup coin-cup-br" />
 
               {/* Roulette wheel */}
-              <div className="relative flex items-center justify-center py-3 px-4">
+              <div className="relative flex items-center justify-center py-1.5 px-4">
                 <RouletteWheel
                   spinning={spinning}
                   rotation={rotation}

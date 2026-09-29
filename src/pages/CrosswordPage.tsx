@@ -9,6 +9,7 @@ import type { Cell, SpinDir, Subject } from '@/game/types';
 import { playClap, playBuzzer, unlockAudio } from '@/lib/sound';
 import { bonusForElapsed, tierLabel } from '@/game/scoring';
 import CrosswordProTips from '@/components/CrosswordProTips';
+import SilentViewCounter from '@/components/SilentViewCounter';
 
 const FACE_HOME_ROT: Array<{ x: number; y: number }> = [
   { x: 0, y: 0 },
@@ -167,6 +168,7 @@ export default function CrosswordPage() {
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       <BackdropGlow />
       <BackToHomeButton />
+      <SilentViewCounter />
 
       {/* Pro Tips icon — top right corner */}
       <button

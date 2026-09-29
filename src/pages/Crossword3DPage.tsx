@@ -3,6 +3,7 @@ import { RotateCw, Lightbulb, Maximize, Minimize, Volume2, VolumeX } from 'lucid
 import BackToHomeButton from '@/components/BackToHomeButton';
 import CrosswordProTips from '@/components/CrosswordProTips';
 import { getDeviceId } from '@/game/crossword3dPlayerStats';
+import SilentViewCounter from '@/components/SilentViewCounter';
 
 const GAME_VERSION = '20260916-39';
 const TOP_BAR = 66;
@@ -184,6 +185,7 @@ export default function Crossword3DPage() {
         overflow: 'hidden',
       }}
     >
+      <SilentViewCounter />
       <iframe
         ref={iframeRef}
         src={`./crossword3d.html?v=${GAME_VERSION}`}

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { RotateCw } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
+import SilentViewCounter from '@/components/SilentViewCounter';
 
 const GAME_VERSION = '20260909-61';
 const TOP_BAR = 66;
@@ -46,6 +47,7 @@ export default function TableTennisPage() {
         allow="autoplay; fullscreen"
       />
       <BackToHomeButton />
+      <SilentViewCounter />
       <button
         onClick={reloadGame}
         aria-label="Reload game"
