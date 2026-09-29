@@ -77,6 +77,13 @@ const GAMES = [
     tag: 'PLAY NOW',
     img: 'https://images.pexels.com/photos/13793163/pexels-photo-13793163.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
+  {
+    route: 'robostoryland' as Route,
+    name: 'RoboStoryLand',
+    desc: 'Interactive robot tales where every choice shapes the adventure.',
+    tag: 'PLAY NOW',
+    img: 'https://images.pexels.com/photos/8294819/pexels-photo-8294819.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+  },
 ];
 
 export default function LandingPage({ onNavigate }: Props) {

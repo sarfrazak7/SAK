@@ -8,6 +8,7 @@ import Crossword3DPage from '@/pages/Crossword3DPage';
 import TableTennisPage from '@/pages/TableTennisPage';
 import ContactPage from '@/pages/ContactPage';
 import FeedbackPage from '@/pages/FeedbackPage';
+import RoboStoryLandPage from '@/pages/RoboStoryLandPage';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function App() {
@@ -33,12 +34,15 @@ export default function App() {
     case 'feedback':
       page = <ErrorBoundary key="feedback"><FeedbackPage /></ErrorBoundary>;
       break;
+    case 'robostoryland':
+      page = <ErrorBoundary key="robostoryland"><RoboStoryLandPage /></ErrorBoundary>;
+      break;
     default:
       page = <LandingPage onNavigate={navigate} />;
   }
 
   const showFooter = route === 'home';
-  const showNavbar = route !== 'tabletennis' && route !== 'panagram' && route !== 'crossword' && route !== 'crossword3d';
+  const showNavbar = route !== 'tabletennis' && route !== 'panagram' && route !== 'crossword' && route !== 'crossword3d' && route !== 'robostoryland';
 
   return (
     <div className="min-h-screen bg-black">

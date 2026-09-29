@@ -18,7 +18,7 @@ export default function Navbar({ current, onNavigate }: Props) {
     setGamesOpen(false);
   };
 
-  const isGame = current === 'crossword' || current === 'crossword3d' || current === 'panagram' || current === 'tabletennis';
+  const isGame = current === 'crossword' || current === 'crossword3d' || current === 'panagram' || current === 'tabletennis' || current === 'robostoryland';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
@@ -79,6 +79,12 @@ export default function Navbar({ current, onNavigate }: Props) {
                     active={current === 'tabletennis'}
                     onClick={() => go('tabletennis')}
                   />
+                  <GameLink
+                    label="RoboStoryLand"
+                    desc="AI story adventures"
+                    active={current === 'robostoryland'}
+                    onClick={() => go('robostoryland')}
+                  />
                 </div>
               </div>
             )}
@@ -111,6 +117,7 @@ export default function Navbar({ current, onNavigate }: Props) {
             <MobileLink active={current === 'panagram'} onClick={() => go('panagram')}>Pangram</MobileLink>
             <MobileLink active={current === 'crossword3d'} onClick={() => go('crossword3d')}>CrossWord 3D</MobileLink>
             <MobileLink active={current === 'tabletennis'} onClick={() => go('tabletennis')}>Ping Pong 3D</MobileLink>
+            <MobileLink active={current === 'robostoryland'} onClick={() => go('robostoryland')}>RoboStoryLand</MobileLink>
             <div className="my-2 h-px bg-white/10" />
             <MobileLink active={current === 'contact'} onClick={() => go('contact')}>Contact</MobileLink>
             <MobileLink active={current === 'feedback'} onClick={() => go('feedback')}>Feedback</MobileLink>
