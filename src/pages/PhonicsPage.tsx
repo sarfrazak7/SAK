@@ -1,7 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Volume2, RotateCw, X, BookOpen, ExternalLink, Loader2, Clock } from 'lucide-react';
-import { useRouter } from '@/lib/router';
-import { Boxes } from 'lucide-react';
+import { Volume2, RotateCw, X, BookOpen, ExternalLink, Loader2, Clock, Boxes } from 'lucide-react';
 
 interface DictDefinition {
   partOfSpeech: string;
@@ -143,7 +141,6 @@ async function fetchDefinition(wLower: string): Promise<DictResult> {
 }
 
 export default function PhonicsPage() {
-  const { navigate } = useRouter();
   const [input, setInput] = useState('');
   const [word, setWord] = useState('');
   const [syllables, setSyllables] = useState<string[]>([]);
@@ -319,7 +316,7 @@ export default function PhonicsPage() {
     >
       {/* ARCADEAI logo — top left, returns to landing page */}
       <button
-        onClick={() => navigate('home')}
+        onClick={() => { window.location.href = '/'; }}
         className="group flex items-center gap-2.5"
         style={{
           position: 'fixed',
