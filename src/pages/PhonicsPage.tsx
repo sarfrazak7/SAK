@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Volume2, RotateCw, X, BookOpen, ExternalLink, Loader2, Clock, Boxes } from 'lucide-react';
+import { Volume2, RotateCw, X, BookOpen, ExternalLink, Loader2, Clock, Boxes, ArrowLeft } from 'lucide-react';
 
 interface DictDefinition {
   partOfSpeech: string;
@@ -341,6 +341,34 @@ export default function PhonicsPage() {
         </div>
         <span className="text-sm tracking-[0.18em] font-bold text-white" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
           ARCADE<span className="text-cyan-300">AI</span>
+        </span>
+      </button>
+
+      {/* Back to Crossword 3D — top right */}
+      <button
+        onClick={() => { window.location.hash = '#/crossword3d'; }}
+        className="group flex items-center gap-2"
+        style={{
+          position: 'fixed',
+          top: 12,
+          right: 12,
+          zIndex: 100,
+          padding: '6px 14px',
+          borderRadius: 12,
+          background: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(6,182,212,0.25)',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.75)'; e.currentTarget.style.borderColor = 'rgba(6,182,212,0.45)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; e.currentTarget.style.borderColor = 'rgba(6,182,212,0.25)'; }}
+        aria-label="Back to Crossword 3D"
+      >
+        <ArrowLeft className="h-4 w-4 text-cyan-300 transition-transform group-hover:-translate-x-0.5" />
+        <span className="text-xs font-bold tracking-wide text-cyan-300" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+          Crossword 3D
         </span>
       </button>
 
