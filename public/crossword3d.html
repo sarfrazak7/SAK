@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px);--cube-top:160px;--cw:min(82vw,304px,calc(100vh - 405px));--cube-size:var(--cw);--kw:min(82vw,374px,calc(100vh - 375px))}
+:root{--sb:env(safe-area-inset-top,0px);--sbb:env(safe-area-inset-bottom,0px);--cube-top:180px;--cw:min(82vw,304px,calc(100vh - 425px));--cube-size:var(--cw);--kw:min(82vw,374px,calc(100vh - 375px))}
 @keyframes blinkArrow{0%,100%{opacity:1}50%{opacity:.2}}
 #nextArrow{display:inline-flex;align-items:center;cursor:pointer;pointer-events:auto;animation:blinkArrow 1s ease-in-out infinite;color:#d6a21f;font-size:16px;font-weight:900;padding-left:6px}
 #nextArrow:active{transform:scale(1.2)}
@@ -107,6 +107,8 @@ select,button{font:inherit}
 #diffLabels a[data-d="0"].act{background:rgba(74,222,128,.35)}
 #diffLabels a[data-d="1"].act{background:rgba(250,204,21,.35)}
 #diffLabels a[data-d="2"].act{background:rgba(248,113,113,.35)}
+#phonicsLink{position:absolute;left:50%;transform:translateX(-50%);top:148px;z-index:12;padding:3px 16px;border:1px solid rgba(6,182,212,.35);border-radius:8px;background:rgba(6,182,212,.12);color:#06b6d4;font-size:10px;font-weight:900;letter-spacing:.08em;text-decoration:none;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+#phonicsLink:hover{background:rgba(6,182,212,.22);border-color:rgba(6,182,212,.55);color:#22d3ee}
 
 /* Hint bar - fixed at bottom, always visible */
 #hintbar{
@@ -178,12 +180,14 @@ select,button{font:inherit}
   #diffwrap{top:121px}
 }
 @media(max-height:700px){
-  :root{--cube-top:153px;--cw:min(82vw,304px,calc(100vh - 395px));--kw:min(82vw,374px,calc(100vh - 365px))}
+  :root{--cube-top:173px;--cw:min(82vw,304px,calc(100vh - 415px));--kw:min(82vw,374px,calc(100vh - 365px))}
   #diffwrap{top:118px}
+  #phonicsLink{top:138px}
 }
 @media(min-width:700px) and (max-height:800px){
-  :root{--cube-top:153px;--cw:min(70vw,calc(100vh - 347px));--cube-size:min(35vw,calc((100vh - 347px)/2));--kw:min(414px,calc(100vh - 365px))}
+  :root{--cube-top:173px;--cw:min(70vw,calc(100vh - 367px));--cube-size:min(35vw,calc((100vh - 367px)/2));--kw:min(414px,calc(100vh - 365px))}
   #diffwrap{top:118px}
+  #phonicsLink{top:138px}
 }
 </style>
 </head>
@@ -216,6 +220,7 @@ select,button{font:inherit}
     <input type="range" id="diffBar" min="0" max="2" step="1" value="1">
     <div id="diffLabels"><a data-d="0">Beginner</a><a data-d="1" class="act">Intermediate</a><a data-d="2">Expert</a></div>
   </div>
+  <a id="phonicsLink" href="/phonics">PHONICS</a>
   <div id="stagediv"><div id="st"><div id="cu"></div><div id="tapGrid" aria-hidden="true"></div></div></div>
   <div id="kbWrap"><div id="kb"></div></div>
   <div id="hintbar"><span class="hlabel" id="cd">1 Across</span> <span class="htext" id="ct"></span><span id="nextArrow">→</span></div>
