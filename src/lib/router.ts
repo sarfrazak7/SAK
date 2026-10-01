@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export type Route = 'home' | 'crossword' | 'crossword3d' | 'panagram' | 'tabletennis' | 'robostoryland' | 'contact' | 'feedback';
+export type Route = 'home' | 'crossword' | 'crossword3d' | 'panagram' | 'tabletennis' | 'robostoryland' | 'contact' | 'feedback' | 'phonics';
 
 const ROUTE_MAP: Record<string, Route> = {
   '': 'home',
@@ -14,9 +14,15 @@ const ROUTE_MAP: Record<string, Route> = {
   '#/contact': 'contact',
   '#/feedback': 'feedback',
   '#/robostoryland': 'robostoryland',
+  '#/phonics': 'phonics',
 };
 
 function parseHash(): Route {
+  // Check pathname first — supports direct visits like gamesai.dev/phonics
+  const path = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+  if (path && path !== '/' && ROUTE_MAP[`#${path}`]) {
+    return ROUTE_MAP[`#${path}`];
+  }
   const raw = window.location.hash.toLowerCase();
   // Strip query string / trailing slash so "#/crossword?cat=Space" still resolves
   const h = raw.split('?')[0].replace(/\/+$/, '') || raw;
