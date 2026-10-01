@@ -346,7 +346,7 @@ export default function PhonicsPage() {
 
       {/* Back to Crossword 3D — top right */}
       <button
-        onClick={() => { window.location.hash = '#/crossword3d'; }}
+        onClick={() => { window.location.href = '/#/crossword3d'; }}
         className="group flex items-center gap-2"
         style={{
           position: 'fixed',
