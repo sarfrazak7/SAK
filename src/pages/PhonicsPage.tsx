@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Volume2, RotateCw, X, BookOpen, ExternalLink, Loader2 } from 'lucide-react';
+import { Volume2, RotateCw, X, BookOpen, ExternalLink, Loader2, Clock } from 'lucide-react';
+import { useRouter } from '@/lib/router';
+import { Boxes } from 'lucide-react';
 
 interface DictDefinition {
   partOfSpeech: string;
@@ -11,6 +13,7 @@ interface DictResult {
   phonetic?: string;
   definitions: DictDefinition[];
   sourceUrl: string;
+  source: string;
 }
 
 function syllabify(word: string): string[] {
@@ -49,7 +52,98 @@ function syllabify(word: string): string[] {
   return syls.length ? syls : [word];
 }
 
+const HISTORY_KEY = 'phonics-history';
+const MAX_HISTORY = 50;
+
+function loadHistory(): string[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.slice(0, MAX_HISTORY) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(words: string[]) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(words.slice(0, MAX_HISTORY)));
+  } catch {}
+}
+
+async function fetchDefinition(wLower: string): Promise<DictResult> {
+  // Try dictionaryapi.dev first
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(wLower)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length) {
+        const entry = data[0];
+        const phonetic = entry.phonetic || (entry.phonetics && entry.phonetics.find((p: any) => p.text)?.text) || '';
+        const defs: DictDefinition[] = [];
+        for (const meaning of entry.meanings || []) {
+          for (const d of meaning.definitions || []) {
+            defs.push({
+              partOfSpeech: meaning.partOfSpeech || '',
+              definition: d.definition || '',
+              example: d.example,
+            });
+            if (defs.length >= 4) break;
+          }
+          if (defs.length >= 4) break;
+        }
+        if (defs.length) {
+          return {
+            phonetic,
+            definitions: defs,
+            sourceUrl: `https://www.merriam-webster.com/dictionary/${encodeURIComponent(wLower)}`,
+            source: 'dictionaryapi.dev',
+          };
+        }
+      }
+    }
+  } catch {}
+
+  // Fallback: Wiktionary REST API (much broader coverage, includes medical/scientific terms)
+  try {
+    const res = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(wLower)}`);
+    if (res.ok) {
+      const data = await res.json();
+      const langEntry = data['en'];
+      if (langEntry && langEntry.length) {
+        const defs: DictDefinition[] = [];
+        for (const posEntry of langEntry) {
+          const pos = posEntry.partOfSpeech || 'definition';
+          for (const def of (posEntry.definitions || [])) {
+            const defText = def.definition
+              ? def.definition.replace(/<[^>]*>/g, '').trim()
+              : '';
+            if (!defText) continue;
+            const example = def.examples && def.examples[0]
+              ? def.examples[0].text?.replace(/<[^>]*>/g, '').trim() || undefined
+              : undefined;
+            defs.push({ partOfSpeech: pos, definition: defText, example });
+            if (defs.length >= 4) break;
+          }
+          if (defs.length >= 4) break;
+        }
+        if (defs.length) {
+          return {
+            definitions: defs,
+            sourceUrl: `https://en.wiktionary.org/wiki/${encodeURIComponent(wLower)}`,
+            source: 'Wiktionary',
+          };
+        }
+      }
+    }
+  } catch {}
+
+  throw new Error('Not found');
+}
+
 export default function PhonicsPage() {
+  const { navigate } = useRouter();
   const [input, setInput] = useState('');
   const [word, setWord] = useState('');
   const [syllables, setSyllables] = useState<string[]>([]);
@@ -59,8 +153,23 @@ export default function PhonicsPage() {
   const [dictResult, setDictResult] = useState<DictResult | null>(null);
   const [dictLoading, setDictLoading] = useState(false);
   const [dictError, setDictError] = useState('');
+  const [history, setHistory] = useState<string[]>([]);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const speechUnlockedRef = useRef(false);
+
+  useEffect(() => {
+    setHistory(loadHistory());
+  }, []);
+
+  const addToHistory = useCallback((w: string) => {
+    const lower = w.toLowerCase();
+    setHistory((prev) => {
+      const filtered = prev.filter((h) => h !== lower);
+      const next = [lower, ...filtered].slice(0, MAX_HISTORY);
+      saveHistory(next);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     const unlock = () => {
@@ -121,43 +230,16 @@ export default function PhonicsPage() {
     setIsPlaying(true);
     setDictResult(null);
     setDictError('');
+    addToHistory(w);
 
     speak(w, true);
 
-    // Fetch dictionary definition
+    // Fetch dictionary definition (with Wiktionary fallback)
     setDictLoading(true);
     const wLower = w.toLowerCase();
-    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(wLower)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Not found');
-        return res.json();
-      })
-      .then((data: any[]) => {
-        if (!data || !data.length) throw new Error('Not found');
-        const entry = data[0];
-        const phonetic = entry.phonetic || (entry.phonetics && entry.phonetics.find((p: any) => p.text)?.text) || '';
-        const defs: DictDefinition[] = [];
-        for (const meaning of entry.meanings || []) {
-          for (const d of meaning.definitions || []) {
-            defs.push({
-              partOfSpeech: meaning.partOfSpeech || '',
-              definition: d.definition || '',
-              example: d.example,
-            });
-            if (defs.length >= 4) break;
-          }
-          if (defs.length >= 4) break;
-        }
-        if (!defs.length) throw new Error('No definitions');
-        setDictResult({
-          phonetic,
-          definitions: defs,
-          sourceUrl: `https://www.merriam-webster.com/dictionary/${encodeURIComponent(wLower)}`,
-        });
-      })
-      .catch(() => {
-        setDictError(`No dictionary entry found for "${wLower}"`);
-      })
+    fetchDefinition(wLower)
+      .then((result) => setDictResult(result))
+      .catch(() => setDictError(`No dictionary entry found for "${wLower}"`))
       .finally(() => setDictLoading(false));
 
     let delay = 600;
@@ -184,7 +266,7 @@ export default function PhonicsPage() {
         setIsPlaying(false);
       }, delay + w.length * 180 + 1200),
     );
-  }, [clearTimers, speak]);
+  }, [clearTimers, speak, addToHistory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,6 +293,16 @@ export default function PhonicsPage() {
     setDictLoading(false);
   };
 
+  const handleHistoryClick = (w: string) => {
+    setInput(w);
+    playWord(w);
+  };
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    saveHistory([]);
+  };
+
   return (
     <div
       style={{
@@ -225,6 +317,36 @@ export default function PhonicsPage() {
         paddingBottom: 40,
       }}
     >
+      {/* ARCADEAI logo — top left, returns to landing page */}
+      <button
+        onClick={() => navigate('home')}
+        className="group flex items-center gap-2.5"
+        style={{
+          position: 'fixed',
+          top: 12,
+          left: 12,
+          zIndex: 100,
+          padding: '6px 12px',
+          borderRadius: 12,
+          background: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          cursor: 'pointer',
+          transition: 'background 0.2s',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.75)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; }}
+        aria-label="Back to ARCADEAI home"
+      >
+        <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 ring-1 ring-white/15 transition-transform group-hover:scale-105">
+          <Boxes className="h-5 w-5 text-cyan-300" />
+        </div>
+        <span className="text-sm tracking-[0.18em] font-bold text-white" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+          ARCADE<span className="text-cyan-300">AI</span>
+        </span>
+      </button>
+
       <div
         style={{
           fontWeight: 900,
@@ -321,6 +443,59 @@ export default function PhonicsPage() {
         </button>
       </form>
 
+      {/* Word history */}
+      {history.length > 0 && (
+        <div style={{ width: '100%', maxWidth: 600, marginTop: 24, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <Clock className="h-3.5 w-3.5 text-amber-400/40" />
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)' }}>
+              HISTORY
+            </span>
+            <button
+              onClick={handleClearHistory}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.2)',
+                padding: 0,
+                textDecoration: 'underline',
+              }}
+            >
+              clear
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxHeight: 72, overflow: 'hidden' }}>
+            {history.map((h, i) => (
+              <button
+                key={i}
+                onClick={() => handleHistoryClick(h)}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontFamily: 'monospace',
+                  fontWeight: 600,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: word.toLowerCase() === h ? 'rgba(255,216,106,0.15)' : 'rgba(255,255,255,0.04)',
+                  color: word.toLowerCase() === h ? 'rgba(255,216,106,0.9)' : 'rgba(255,255,255,0.4)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = word.toLowerCase() === h ? 'rgba(255,216,106,0.15)' : 'rgba(255,255,255,0.04)';
+                  e.currentTarget.style.color = word.toLowerCase() === h ? 'rgba(255,216,106,0.9)' : 'rgba(255,255,255,0.4)';
+                }}
+              >
+                {h}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {word && (
         <div
           style={{
@@ -357,24 +532,24 @@ export default function PhonicsPage() {
                   padding: '10px 20px',
                   borderRadius: 12,
                   fontSize: 24,
-              fontWeight: 700,
-              fontFamily: 'monospace',
-              letterSpacing: '0.06em',
-              transition: 'all 0.25s',
-              background:
-                activeIdx === i
-                  ? 'linear-gradient(135deg, rgba(255,216,106,0.9), rgba(255,184,40,0.7))'
-                  : 'rgba(255,255,255,0.06)',
-              color: activeIdx === i ? '#1a1a2e' : 'rgba(255,255,255,0.7)',
-              border:
-                activeIdx === i
-                  ? '1px solid rgba(255,216,106,0.6)'
-                  : '1px solid rgba(255,255,255,0.08)',
-              boxShadow:
-                activeIdx === i
-                  ? '0 0 24px rgba(255,216,106,0.35), 0 4px 12px rgba(0,0,0,0.3)'
-                  : 'none',
-              transform: activeIdx === i ? 'scale(1.08)' : 'scale(1)',
+                  fontWeight: 700,
+                  fontFamily: 'monospace',
+                  letterSpacing: '0.06em',
+                  transition: 'all 0.25s',
+                  background:
+                    activeIdx === i
+                      ? 'linear-gradient(135deg, rgba(255,216,106,0.9), rgba(255,184,40,0.7))'
+                      : 'rgba(255,255,255,0.06)',
+                  color: activeIdx === i ? '#1a1a2e' : 'rgba(255,255,255,0.7)',
+                  border:
+                    activeIdx === i
+                      ? '1px solid rgba(255,216,106,0.6)'
+                      : '1px solid rgba(255,255,255,0.08)',
+                  boxShadow:
+                    activeIdx === i
+                      ? '0 0 24px rgba(255,216,106,0.35), 0 4px 12px rgba(0,0,0,0.3)'
+                      : 'none',
+                  transform: activeIdx === i ? 'scale(1.08)' : 'scale(1)',
                 }}
               >
                 {s}
@@ -457,6 +632,11 @@ export default function PhonicsPage() {
                     {dictResult.phonetic}
                   </span>
                 )}
+                {dictResult?.source && (
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginLeft: 'auto' }}>
+                    via {dictResult.source}
+                  </span>
+                )}
               </div>
 
               {dictLoading && (
@@ -468,7 +648,27 @@ export default function PhonicsPage() {
 
               {dictError && !dictLoading && (
                 <div style={{ padding: '16px 18px' }}>
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>{dictError}</p>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+                    {dictError}
+                  </p>
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(word + ' definition')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      marginTop: 10,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'rgba(255,216,106,0.6)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Search on Google
+                  </a>
                 </div>
               )}
 
@@ -521,7 +721,7 @@ export default function PhonicsPage() {
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,216,106,0.7)'; }}
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    View on Merriam-Webster
+                    {dictResult.source === 'Wiktionary' ? 'View on Wiktionary' : 'View on Merriam-Webster'}
                   </a>
                 </div>
               )}
