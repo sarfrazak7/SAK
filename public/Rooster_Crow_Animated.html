@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Rooster Crow</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1208; font-family: 'Trebuchet MS', sans-serif; }
+  #stage {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px;
+    background: radial-gradient(circle at 50% 30%, #5a3d18 0%, #2a1d0c 60%, #120c05 100%);
+    touch-action: none; overscroll-behavior: none; user-select: none;
+  }
+  #sky { position: absolute; top: 0; left: 0; right: 0; height: 55%;
+    background: linear-gradient(to bottom, #ff9a3c 0%, #ffcc70 45%, #ffe9a8 100%);
+    opacity: 0.55; }
+  #ground { position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
+    background: linear-gradient(to top, #3d2a14 0%, #6b4a26 100%); opacity: 0.6; }
+  #rooster {
+    position: relative; z-index: 2;
+    width: min(70vw, 280px); height: min(70vw, 280px);
+    cursor: pointer; transform-origin: bottom center;
+    transition: transform 0.15s ease;
+  }
+  #rooster.bounce { animation: bounce 0.5s ease; }
+  @keyframes bounce {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-22px) scale(1.05); }
+    60% { transform: translateY(4px) scale(0.97); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  #rooster.beak { }
+  .beak-open { transform: rotate(8deg) translateY(-2px); }
+  #title {
+    position: relative; z-index: 2;
+    font-size: min(6vw, 26px); font-weight: bold; letter-spacing: 0.08em;
+    color: #ffd24d; text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+  #hint {
+    position: relative; z-index: 2;
+    font-size: min(3.6vw, 15px); color: rgba(255,255,255,0.78);
+    text-align: center; max-width: 80vw;
+  }
+  #soundBtn {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid rgba(255,210,77,0.6);
+    background: rgba(0,0,0,0.4); color: #ffd24d;
+    font-size: 20px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .crow-text {
+    position: absolute; z-index: 5;
+    font-size: min(7vw, 30px); font-weight: bold; color: #fff7d6;
+    text-shadow: 0 0 8px rgba(255,210,77,0.8), 0 2px 4px rgba(0,0,0,0.6);
+    pointer-events: none; opacity: 0;
+  }
+  .crow-text.show { animation: crowPop 1.4s ease forwards; }
+  @keyframes crowPop {
+    0% { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
+    20% { opacity: 1; transform: translate(-50%, -30px) scale(1.1); }
+    70% { opacity: 1; transform: translate(-50%, -50px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -70px) scale(0.9); }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sky"></div>
+  <div id="ground"></div>
+  <div id="title">Rooster Crow</div>
+  <div id="rooster" class="bounce">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <!-- body -->
+      <ellipse cx="100" cy="125" rx="55" ry="45" fill="#1a1a1a" />
+      <ellipse cx="100" cy="125" rx="48" ry="40" fill="#2d6a4f" opacity="0.5" />
+      <!-- neck -->
+      <path d="M85,95 Q80,70 95,55 Q110,60 108,85 Z" fill="#1a1a1a" />
+      <!-- head -->
+      <circle cx="100" cy="58" r="22" fill="#1a1a1a" />
+      <!-- comb -->
+      <path d="M88,40 Q92,28 96,40 Q100,28 104,40 Q108,28 112,40 L112,48 L88,48 Z" fill="#e63946" />
+      <!-- wattle -->
+      <path d="M108,66 Q112,78 104,80 Q96,78 100,66 Z" fill="#e63946" />
+      <!-- beak -->
+      <polygon id="beak" points="118,56 132,60 118,64" fill="#ffb703" stroke="#fb8500" stroke-width="1.5" />
+      <!-- eye -->
+      <circle cx="106" cy="54" r="4" fill="#fff" />
+      <circle cx="107" cy="55" r="2.2" fill="#000" />
+      <!-- wing -->
+      <path d="M70,110 Q90,90 120,105 Q115,135 80,140 Z" fill="#0d0d0d" />
+      <path d="M78,115 Q92,100 114,110" fill="none" stroke="#2d6a4f" stroke-width="2" opacity="0.6" />
+      <!-- tail -->
+      <path d="M150,120 Q175,100 180,75 Q170,110 165,130 Q172,120 176,140 Z" fill="#1a1a1a" />
+      <path d="M152,122 Q170,108 176,88" fill="none" stroke="#2d6a4f" stroke-width="2" opacity="0.7" />
+      <!-- legs -->
+      <rect x="88" y="165" width="4" height="22" fill="#ffb703" />
+      <rect x="108" y="165" width="4" height="22" fill="#ffb703" />
+      <!-- feet -->
+      <path d="M84,187 L92,187 M88,187 L88,192 M80,187 L84,187" stroke="#ffb703" stroke-width="2" fill="none" />
+      <path d="M104,187 L112,187 M108,187 L108,192 M100,187 L104,187" stroke="#ffb703" stroke-width="2" fill="none" />
+    </svg>
+  </div>
+  <div id="hint">Tap the rooster to hear it crow at sunrise!</div>
+  <div id="crowBubble" class="crow-text" style="left:50%; top:38%;">Cock-a-doodle-doo!</div>
+</div>
+<button id="soundBtn" title="Sound">🔊</button>
+
+<script>
+  const rooster = document.getElementById('rooster');
+  const beak = document.getElementById('beak');
+  const bubble = document.getElementById('crowBubble');
+  const soundBtn = document.getElementById('soundBtn');
+  let soundOn = true;
+
+  function crow() {
+    rooster.classList.remove('bounce');
+    void rooster.offsetWidth;
+    rooster.classList.add('bounce');
+    beak.classList.add('beak-open');
+    bubble.classList.remove('show');
+    void bubble.offsetWidth;
+    bubble.classList.add('show');
+    setTimeout(() => beak.classList.remove('beak-open'), 500);
+    if (soundOn) playCrow();
+  }
+
+  let audioCtx = null;
+  function playCrow() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      // "cock-a-doodle-doo" as 3 rising calls
+      const parts = [
+        { f: 520, t: 0.0, d: 0.18 },
+        { f: 600, t: 0.2, d: 0.16 },
+        { f: 760, t: 0.38, d: 0.14 },
+        { f: 880, t: 0.54, d: 0.28 },
+        { f: 720, t: 0.84, d: 0.22 },
+        { f: 640, t: 1.08, d: 0.3 }
+      ];
+      parts.forEach(p => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(p.f, now + p.t);
+        o.frequency.exponentialRampToValueAtTime(p.f * 1.05, now + p.t + p.d);
+        g.gain.setValueAtTime(0.0001, now + p.t);
+        g.gain.exponentialRampToValueAtTime(0.18, now + p.t + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + p.t + p.d);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(now + p.t); o.stop(now + p.t + p.d + 0.02);
+      });
+    } catch (e) {}
+  }
+
+  rooster.addEventListener('click', crow);
+  rooster.addEventListener('touchstart', (e) => { e.preventDefault(); crow(); }, { passive: false });
+
+  soundBtn.addEventListener('click', () => {
+    soundOn = !soundOn;
+    soundBtn.textContent = soundOn ? '🔊' : '🔇';
+  });
+
+  // Auto-crow on load
+  setTimeout(crow, 600);
+</script>
+</body>
+</html>

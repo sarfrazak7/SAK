@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, ArrowRight, Wand2, Brain, Zap, Target, RefreshCw, Flame, Smartphone, Monitor } from 'lucide-react';
+import { Sparkles, ArrowRight, Wand2, Brain, Zap, Target, RefreshCw, Flame, Smartphone, Monitor, Mic, ExternalLink, Construction } from 'lucide-react';
 import type { Route } from '@/lib/router';
 import ChallengeModal from '@/components/ChallengeModal';
 
@@ -199,10 +199,38 @@ export default function LandingPage({ onNavigate }: Props) {
             })}
           </div>
 
-          <div className="mt-5 flex justify-center lg:justify-start">
+          <div className="mt-5 flex flex-col justify-center gap-5 lg:justify-start">
             <div className="w-full lg:w-[calc(25%-0.9375rem)]">
               <ChallengeFlyer onOpen={() => setChallengeOpen(true)} />
             </div>
+            <a
+              href="https://EnhanceVocals.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block w-full lg:w-[calc(25%-0.9375rem)]"
+            >
+              <div className="challenge-flyer group relative overflow-hidden rounded-2xl border border-fuchsia-400/30 bg-gradient-to-br from-fuchsia-500/10 via-[#0c0c12] to-purple-500/10 p-5 transition hover:border-fuchsia-400/50">
+                <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-fuchsia-500/20 blur-2xl" />
+                <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-purple-500/15 blur-2xl" />
+                <div className="relative flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-fuchsia-500/20 ring-1 ring-fuchsia-400/40">
+                    <Mic className="h-5 w-5 text-fuchsia-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[10px] font-bold tracking-widest text-fuchsia-300/80">KARAOKE TOOL</p>
+                    <h3 className="mt-0.5 flex items-center gap-1.5 text-base font-extrabold text-white">
+                      Enhance Vocals Recorder
+                    </h3>
+                    <p className="mt-1 text-xs leading-relaxed text-white/50">
+                      Record your karaoke singing with AI-powered vocal enhancement and studio effects.
+                    </p>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-fuchsia-300 transition group-hover:gap-2.5">
+                      Visit EnhanceVocals.com <ExternalLink className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
         </section>
 

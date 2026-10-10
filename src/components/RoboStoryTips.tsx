@@ -7,7 +7,7 @@ interface RoboStoryTipsProps {
 
 const TIPS: { n: number; text: React.ReactNode }[] = [
   { n: 1, text: <>Tap the <strong>Play</strong> button to have the story read aloud. Tap again to <strong>pause</strong>, and tap once more to resume.</> },
-  { n: 2, text: <>Use the <strong>category</strong> dropdown in the center to switch between Bedtime & Stars, Animal Pals, Magic & Fairytales, Little Adventures, Kindness & Friends, and Spooky Tales.</> },
+  { n: 2, text: <>Use the <strong>category</strong> dropdown in the center to switch between Bedtime & Stars, Animal Pals, Magic & Fairytales, Little Adventures, Kindness & Friends, Spooky Tales, and Lullabies.</> },
   { n: 3, text: <>Tap the <strong>story list</strong> icon on the left to open a popup showing all 10 stories in the current category. Select any story to jump straight to it.</> },
   { n: 4, text: <>Use the <strong>language</strong> button in the top-right corner to hear stories in English, Español, 日本語, Français, اردو, or ਪੰਜਾਬੀ.</> },
   { n: 5, text: <>Press <strong>Next</strong> to skip to the following story, or <strong>Previous</strong> to go back. Stories auto-advance when one finishes.</> },

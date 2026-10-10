@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export type Route = 'home' | 'crossword' | 'crossword3d' | 'panagram' | 'tabletennis' | 'robostoryland' | 'contact' | 'feedback' | 'phonics';
+export type Route = 'home' | 'crossword' | 'crossword3d' | 'panagram' | 'tabletennis' | 'robostoryland' | 'contact' | 'feedback' | 'phonics' | 'zoo';
 
 const ROUTE_MAP: Record<string, Route> = {
   '': 'home',
@@ -15,6 +15,7 @@ const ROUTE_MAP: Record<string, Route> = {
   '#/feedback': 'feedback',
   '#/robostoryland': 'robostoryland',
   '#/phonics': 'phonics',
+  '#/zoo': 'zoo',
 };
 
 function parseHash(): Route {

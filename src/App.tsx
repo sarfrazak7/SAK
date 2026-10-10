@@ -10,6 +10,7 @@ import ContactPage from '@/pages/ContactPage';
 import FeedbackPage from '@/pages/FeedbackPage';
 import RoboStoryLandPage from '@/pages/RoboStoryLandPage';
 import PhonicsPage from '@/pages/PhonicsPage';
+import ZooPage from '@/pages/ZooPage';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function App() {
@@ -41,12 +42,15 @@ export default function App() {
     case 'phonics':
       page = <ErrorBoundary key="phonics"><PhonicsPage /></ErrorBoundary>;
       break;
+    case 'zoo':
+      page = <ErrorBoundary key="zoo"><ZooPage onNavigate={navigate} /></ErrorBoundary>;
+      break;
     default:
       page = <LandingPage onNavigate={navigate} />;
   }
 
   const showFooter = route === 'home';
-  const showNavbar = route !== 'tabletennis' && route !== 'panagram' && route !== 'crossword' && route !== 'crossword3d' && route !== 'robostoryland' && route !== 'phonics';
+  const showNavbar = route !== 'tabletennis' && route !== 'panagram' && route !== 'crossword' && route !== 'crossword3d' && route !== 'robostoryland' && route !== 'phonics' && route !== 'zoo';
 
   return (
     <div className="min-h-screen bg-black">

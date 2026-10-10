@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Cat's Meow</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #14101a; font-family: 'Trebuchet MS', sans-serif; }
+  #stage {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px;
+    background: radial-gradient(circle at 50% 35%, #3a2d4a 0%, #221830 60%, #100a18 100%);
+    touch-action: none; overscroll-behavior: none; user-select: none;
+  }
+  #floor { position: absolute; bottom: 0; left: 0; right: 0; height: 25%;
+    background: linear-gradient(to top, #1a1426 0%, #2a2040 100%); opacity: 0.6; }
+  #cat {
+    position: relative; z-index: 2;
+    width: min(70vw, 280px); height: min(70vw, 280px);
+    cursor: pointer; transform-origin: bottom center;
+  }
+  #cat.bounce { animation: bounce 0.5s ease; }
+  @keyframes bounce {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-18px) scale(1.05); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  .tail-swish { transform-origin: bottom center; }
+  .tail-swish.swish { animation: swish 0.6s ease; }
+  @keyframes swish {
+    0%, 100% { transform: rotate(0); }
+    50% { transform: rotate(22deg); }
+  }
+  #title {
+    position: relative; z-index: 2;
+    font-size: min(6vw, 26px); font-weight: bold; letter-spacing: 0.08em;
+    color: #ffd24d; text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+  #hint {
+    position: relative; z-index: 2;
+    font-size: min(3.6vw, 15px); color: rgba(255,255,255,0.78);
+    text-align: center; max-width: 80vw;
+  }
+  #soundBtn {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid rgba(255,210,77,0.6);
+    background: rgba(0,0,0,0.4); color: #ffd24d;
+    font-size: 20px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .meow-text {
+    position: absolute; z-index: 5;
+    font-size: min(8vw, 34px); font-weight: bold; color: #fff7d6;
+    text-shadow: 0 0 8px rgba(255,210,77,0.8), 0 2px 4px rgba(0,0,0,0.6);
+    pointer-events: none; opacity: 0;
+  }
+  .meow-text.show { animation: meowPop 1.2s ease forwards; }
+  @keyframes meowPop {
+    0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+    25% { opacity: 1; transform: translate(-50%, -26px) scale(1.1); }
+    75% { opacity: 1; transform: translate(-50%, -36px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -46px) scale(0.9); }
+  }
+  .paw { cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="floor"></div>
+  <div id="title">Cat's Meow</div>
+  <div id="cat" class="bounce">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <!-- tail -->
+      <path id="tail" class="tail-swish" d="M148,135 Q180,130 178,95 Q172,110 165,128 Z" fill="#4a4a4a" />
+      <!-- body -->
+      <ellipse cx="100" cy="135" rx="48" ry="38" fill="#5a5a5a" />
+      <ellipse cx="100" cy="135" rx="42" ry="32" fill="#6e6e6e" opacity="0.5" />
+      <!-- head -->
+      <circle cx="100" cy="80" r="28" fill="#5a5a5a" />
+      <!-- ears -->
+      <polygon points="78,62 68,38 90,56" fill="#5a5a5a" />
+      <polygon points="122,62 132,38 110,56" fill="#5a5a5a" />
+      <polygon points="80,60 74,46 86,56" fill="#ffb0c0" opacity="0.6" />
+      <polygon points="120,60 126,46 114,56" fill="#ffb0c0" opacity="0.6" />
+      <!-- eyes -->
+      <ellipse cx="88" cy="76" rx="6" ry="8" fill="#ffd24d" />
+      <ellipse cx="112" cy="76" rx="6" ry="8" fill="#ffd24d" />
+      <ellipse cx="88" cy="76" rx="1.8" ry="7" fill="#000" />
+      <ellipse cx="112" cy="76" rx="1.8" ry="7" fill="#000" />
+      <!-- nose -->
+      <path d="M96,90 L104,90 L100,94 Z" fill="#ffb0c0" />
+      <!-- mouth -->
+      <path id="mouth" d="M100,94 Q100,100 94,98 M100,94 Q100,100 106,98" fill="none" stroke="#3a3a3a" stroke-width="1.5" />
+      <!-- whiskers -->
+      <line x1="72" y1="88" x2="86" y2="90" stroke="#ccc" stroke-width="1" />
+      <line x1="72" y1="94" x2="86" y2="93" stroke="#ccc" stroke-width="1" />
+      <line x1="128" y1="88" x2="114" y2="90" stroke="#ccc" stroke-width="1" />
+      <line x1="128" y1="94" x2="114" y2="93" stroke="#ccc" stroke-width="1" />
+      <!-- paws -->
+      <ellipse cx="82" cy="168" rx="9" ry="7" fill="#4a4a4a" />
+      <ellipse cx="118" cy="168" rx="9" ry="7" fill="#4a4a4a" />
+    </svg>
+  </div>
+  <div id="hint">Tap the cat to hear it meow!</div>
+  <div id="meowBubble" class="meow-text" style="left:50%; top:40%;">Meow~</div>
+</div>
+<button id="soundBtn" title="Sound">🔊</button>
+
+<script>
+  const cat = document.getElementById('cat');
+  const tail = document.getElementById('tail');
+  const mouth = document.getElementById('mouth');
+  const bubble = document.getElementById('meowBubble');
+  const soundBtn = document.getElementById('soundBtn');
+  let soundOn = true;
+
+  function meow() {
+    cat.classList.remove('bounce');
+    void cat.offsetWidth;
+    cat.classList.add('bounce');
+    tail.classList.remove('swish');
+    void tail.offsetWidth;
+    tail.classList.add('swish');
+    mouth.setAttribute('d', 'M100,94 Q100,108 90,102 M100,94 Q100,108 110,102');
+    bubble.classList.remove('show');
+    void bubble.offsetWidth;
+    bubble.classList.add('show');
+    setTimeout(() => mouth.setAttribute('d', 'M100,94 Q100,100 94,98 M100,94 Q100,100 106,98'), 400);
+    if (soundOn) playMeow();
+  }
+
+  let audioCtx = null;
+  function playMeow() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      // rising then falling "meow"
+      o.frequency.setValueAtTime(620, now);
+      o.frequency.linearRampToValueAtTime(820, now + 0.18);
+      o.frequency.linearRampToValueAtTime(540, now + 0.45);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.16, now + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(now); o.stop(now + 0.52);
+    } catch (e) {}
+  }
+
+  cat.addEventListener('click', meow);
+  cat.addEventListener('touchstart', (e) => { e.preventDefault(); meow(); }, { passive: false });
+
+  soundBtn.addEventListener('click', () => {
+    soundOn = !soundOn;
+    soundBtn.textContent = soundOn ? '🔊' : '🔇';
+  });
+
+  setTimeout(meow, 600);
+</script>
+</body>
+</html>

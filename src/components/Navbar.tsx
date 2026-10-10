@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Boxes, Menu, X, Gamepad2, Mail, MessageSquare } from 'lucide-react';
+import { Boxes, Menu, X, Gamepad2, Mail, MessageSquare, Construction } from 'lucide-react';
 import type { Route } from '@/lib/router';
 import { linkHref } from '@/lib/router';
 
@@ -85,6 +85,14 @@ export default function Navbar({ current, onNavigate }: Props) {
                     active={current === 'robostoryland'}
                     onClick={() => go('robostoryland')}
                   />
+                  <div className="my-1 h-px bg-white/10" />
+                  <div className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 opacity-60">
+                    <Construction className="h-4 w-4 shrink-0 text-amber-400/70" />
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-semibold text-white/70">Patting Zoo</span>
+                      <span className="text-[11px] text-amber-400/60">Under construction</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -118,6 +126,13 @@ export default function Navbar({ current, onNavigate }: Props) {
             <MobileLink active={current === 'crossword3d'} onClick={() => go('crossword3d')}>CrossWord 3D</MobileLink>
             <MobileLink active={current === 'tabletennis'} onClick={() => go('tabletennis')}>Ping Pong 3D</MobileLink>
             <MobileLink active={current === 'robostoryland'} onClick={() => go('robostoryland')}>RoboStoryLand</MobileLink>
+            <div className="flex items-center gap-2 rounded-lg px-3 py-2.5 opacity-60">
+              <Construction className="h-4 w-4 shrink-0 text-amber-400/70" />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-semibold text-white/70">Patting Zoo</span>
+                <span className="text-[11px] text-amber-400/60">Under construction</span>
+              </div>
+            </div>
             <div className="my-2 h-px bg-white/10" />
             <MobileLink active={current === 'contact'} onClick={() => go('contact')}>Contact</MobileLink>
             <MobileLink active={current === 'feedback'} onClick={() => go('feedback')}>Feedback</MobileLink>

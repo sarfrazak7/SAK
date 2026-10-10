@@ -1,49 +1,49 @@
-import { useRef, useState, useEffect } from 'react';
-import { RotateCw, Globe, Lightbulb } from 'lucide-react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import { RotateCw, Globe, Lightbulb, PawPrint } from 'lucide-react';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import SilentViewCounter from '@/components/SilentViewCounter';
 import RoboStoryTips from '@/components/RoboStoryTips';
+import { useRouter } from '@/lib/router';
 
-const GAME_VERSION = '20260930-25';
+const GAME_VERSION = '20261002-07';
 const TOP_BAR = 92;
 const RATIO = 9 / 16;
 
 const LANGUAGES = [
   { code: 'en', label: 'English', flag: 'US' },
+  { code: 'en-GB', label: 'British English', flag: 'GB' },
   { code: 'es', label: 'Español', flag: 'ES' },
   { code: 'ja', label: '日本語', flag: 'JP' },
   { code: 'fr', label: 'Français', flag: 'FR' },
-  { code: 'ur', label: 'اردو', flag: 'PK' },
-  { code: 'pa', label: 'ਪੰਜਾਬੀ', flag: 'IN' },
 ];
 
 export default function RoboStoryLandPage() {
+  const { navigate } = useRouter();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [frameSize, setFrameSize] = useState({ width: 0, height: 0 });
+  const getFrameSize = () => {
+    if (typeof window === 'undefined') return { width: 0, height: 0 };
+    const width = window.innerWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const height = Math.max(240, Math.min(width / RATIO, viewportHeight - TOP_BAR - 8));
+    return { width: Math.round(width), height: Math.round(height) };
+  };
+  const [frameSize, setFrameSize] = useState(getFrameSize);
   const [showTips, setShowTips] = useState(false);
   const [showLangs, setShowLangs] = useState(false);
   const [lang, setLang] = useState('en');
   const langRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const compute = () => {
-      const availW = window.innerWidth;
-      const availH = window.innerHeight - TOP_BAR;
-      let width = availW;
-      let height = width / RATIO;
-      if (height > availH) {
-        height = availH;
-        width = height * RATIO;
-      }
-      setFrameSize({ width: Math.round(width), height: Math.round(height) });
-    };
-    compute();
+  useLayoutEffect(() => {
+    const compute = () => setFrameSize(getFrameSize());
+    const viewport = window.visualViewport;
     window.addEventListener('resize', compute);
     window.addEventListener('orientationchange', compute);
+    viewport?.addEventListener('resize', compute);
     return () => {
       window.removeEventListener('resize', compute);
       window.removeEventListener('orientationchange', compute);
+      viewport?.removeEventListener('resize', compute);
     };
   }, []);
 
@@ -62,14 +62,26 @@ export default function RoboStoryLandPage() {
     setShowLangs(false);
     const iframe = iframeRef.current;
     if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage({ type: 'robo-language-change', lang: code }, '*');
+      iframe.contentWindow.postMessage({ type: 'robo-language-change', lang: code }, window.location.origin);
     }
   };
 
   const reloadGame = () => {
     const iframe = iframeRef.current;
+    iframe?.contentWindow?.postMessage({ type: 'robo-teardown' }, window.location.origin);
     if (iframe) iframe.src = `./robostoryland.html?v=${GAME_VERSION}&t=${Date.now()}`;
   };
+
+  useEffect(() => {
+    const sendLifecycle = (type: 'robo-pause' | 'robo-resume') => {
+      iframeRef.current?.contentWindow?.postMessage({ type }, window.location.origin);
+    };
+    const handleVisibility = () => sendLifecycle(document.visibilityState === 'hidden' ? 'robo-pause' : 'robo-resume');
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('pagehide', () => sendLifecycle('robo-pause'));
+    window.addEventListener('pageshow', () => sendLifecycle('robo-resume'));
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
 
   const { width, height } = frameSize;
 
@@ -283,6 +295,45 @@ export default function RoboStoryLandPage() {
       </button>
 
       {showTips && <RoboStoryTips onClose={() => setShowTips(false)} />}
+
+      {/* Zoo button — same line as the category bar, flush to the extreme right */}
+      <button
+        onClick={() => navigate('zoo')}
+        aria-label="Go to Zoo"
+        style={{
+          position: 'fixed',
+          top: TOP_BAR + 10,
+          right: 8,
+          zIndex: 95,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '6px 12px',
+          borderRadius: 999,
+          background: 'rgba(225, 173, 1, 0.18)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '2px solid rgba(225, 173, 1, 0.55)',
+          color: '#ffdb4d',
+          fontSize: 13,
+          fontWeight: 700,
+          letterSpacing: '0.04em',
+          cursor: 'pointer',
+          transition: 'background 0.2s, transform 0.15s',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(225, 173, 1, 0.3)';
+          e.currentTarget.style.transform = 'scale(1.04)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(225, 173, 1, 0.18)';
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        <PawPrint className="h-4 w-4" style={{ color: '#ffdb4d' }} />
+        <span>Zoo</span>
+      </button>
     </div>
   );
 }

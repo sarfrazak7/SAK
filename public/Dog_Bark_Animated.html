@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Dog's Bark</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0f1a12; font-family: 'Trebuchet MS', sans-serif; }
+  #stage {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px;
+    background: radial-gradient(circle at 50% 35%, #2d4a32 0%, #182a1c 60%, #0a140d 100%);
+    touch-action: none; overscroll-behavior: none; user-select: none;
+  }
+  #grass { position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
+    background: linear-gradient(to top, #2d4a32 0%, #3d6b42 100%); opacity: 0.5; }
+  #dog {
+    position: relative; z-index: 2;
+    width: min(72vw, 300px); height: min(72vw, 300px);
+    cursor: pointer; transform-origin: bottom center;
+  }
+  #dog.bounce { animation: bounce 0.45s ease; }
+  @keyframes bounce {
+    0% { transform: translateY(0) scale(1); }
+    25% { transform: translateY(-16px) scale(1.04); }
+    55% { transform: translateY(2px) scale(0.98); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  .ear-flap { transform-origin: top center; }
+  .ear-flap.flap { animation: flap 0.4s ease; }
+  @keyframes flap {
+    0%, 100% { transform: rotate(0); }
+    50% { transform: rotate(-18deg); }
+  }
+  #title {
+    position: relative; z-index: 2;
+    font-size: min(6vw, 26px); font-weight: bold; letter-spacing: 0.08em;
+    color: #ffd24d; text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+  #hint {
+    position: relative; z-index: 2;
+    font-size: min(3.6vw, 15px); color: rgba(255,255,255,0.78);
+    text-align: center; max-width: 80vw;
+  }
+  #soundBtn {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid rgba(255,210,77,0.6);
+    background: rgba(0,0,0,0.4); color: #ffd24d;
+    font-size: 20px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .bark-text {
+    position: absolute; z-index: 5;
+    font-size: min(8vw, 34px); font-weight: bold; color: #fff7d6;
+    text-shadow: 0 0 8px rgba(255,210,77,0.8), 0 2px 4px rgba(0,0,0,0.6);
+    pointer-events: none; opacity: 0;
+  }
+  .bark-text.show { animation: barkPop 1s ease forwards; }
+  @keyframes barkPop {
+    0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+    25% { opacity: 1; transform: translate(-50%, -24px) scale(1.15); }
+    75% { opacity: 1; transform: translate(-50%, -34px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -44px) scale(0.9); }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grass"></div>
+  <div id="title">Dog's Bark</div>
+  <div id="dog" class="bounce">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <!-- tail -->
+      <path id="tail" class="ear-flap" d="M150,130 Q175,120 172,100 Q168,115 160,125 Z" fill="#c4892c" />
+      <!-- body -->
+      <ellipse cx="100" cy="130" rx="52" ry="40" fill="#d4a04a" />
+      <ellipse cx="100" cy="130" rx="45" ry="34" fill="#e0b25e" opacity="0.6" />
+      <!-- head -->
+      <circle cx="100" cy="78" r="30" fill="#d4a04a" />
+      <!-- ears -->
+      <path id="earL" class="ear-flap" d="M74,60 Q60,48 58,72 Q68,76 78,70 Z" fill="#b07a28" />
+      <path id="earR" class="ear-flap" d="M126,60 Q140,48 142,72 Q132,76 122,70 Z" fill="#b07a28" />
+      <!-- snout -->
+      <ellipse cx="100" cy="90" rx="18" ry="13" fill="#f0d0a0" />
+      <!-- nose -->
+      <ellipse cx="100" cy="84" rx="6" ry="4.5" fill="#1a1a1a" />
+      <!-- mouth -->
+      <path id="mouth" d="M92,96 Q100,104 108,96" fill="none" stroke="#5a3a18" stroke-width="2" />
+      <!-- eyes -->
+      <circle cx="88" cy="74" r="4.5" fill="#fff" />
+      <circle cx="112" cy="74" r="4.5" fill="#fff" />
+      <circle cx="89" cy="75" r="2.5" fill="#000" />
+      <circle cx="113" cy="75" r="2.5" fill="#000" />
+      <!-- spot -->
+      <ellipse cx="118" cy="66" r="10" fill="#a06a20" opacity="0.5" />
+      <!-- legs -->
+      <rect x="78" y="160" width="10" height="26" rx="4" fill="#c4892c" />
+      <rect x="112" y="160" width="10" height="26" rx="4" fill="#c4892c" />
+      <!-- collar -->
+      <rect x="78" y="104" width="44" height="6" rx="2" fill="#e63946" />
+      <circle cx="100" cy="112" r="4" fill="#ffd24d" />
+    </svg>
+  </div>
+  <div id="hint">Tap the dog to hear it bark!</div>
+  <div id="barkBubble" class="bark-text" style="left:50%; top:40%;">Woof! Woof!</div>
+</div>
+<button id="soundBtn" title="Sound">🔊</button>
+
+<script>
+  const dog = document.getElementById('dog');
+  const earL = document.getElementById('earL');
+  const earR = document.getElementById('earR');
+  const tail = document.getElementById('tail');
+  const mouth = document.getElementById('mouth');
+  const bubble = document.getElementById('barkBubble');
+  const soundBtn = document.getElementById('soundBtn');
+  let soundOn = true;
+
+  function bark() {
+    dog.classList.remove('bounce');
+    void dog.offsetWidth;
+    dog.classList.add('bounce');
+    earL.classList.remove('flap'); earR.classList.remove('flap'); tail.classList.remove('flap');
+    void earL.offsetWidth;
+    earL.classList.add('flap'); earR.classList.add('flap'); tail.classList.add('flap');
+    mouth.setAttribute('d', 'M90,96 Q100,112 110,96');
+    bubble.classList.remove('show');
+    void bubble.offsetWidth;
+    bubble.classList.add('show');
+    setTimeout(() => mouth.setAttribute('d', 'M92,96 Q100,104 108,96'), 350);
+    if (soundOn) playBark();
+  }
+
+  let audioCtx = null;
+  function playBark() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      // Two barks
+      [0, 0.28].forEach(off => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'square';
+        o.frequency.setValueAtTime(240, now + off);
+        o.frequency.exponentialRampToValueAtTime(140, now + off + 0.12);
+        g.gain.setValueAtTime(0.0001, now + off);
+        g.gain.exponentialRampToValueAtTime(0.22, now + off + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + off + 0.14);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(now + off); o.stop(now + off + 0.16);
+      });
+    } catch (e) {}
+  }
+
+  dog.addEventListener('click', bark);
+  dog.addEventListener('touchstart', (e) => { e.preventDefault(); bark(); }, { passive: false });
+
+  soundBtn.addEventListener('click', () => {
+    soundOn = !soundOn;
+    soundBtn.textContent = soundOn ? '🔊' : '🔇';
+  });
+
+  setTimeout(bark, 600);
+</script>
+</body>
+</html>
